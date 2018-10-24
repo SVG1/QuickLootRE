@@ -1,19 +1,16 @@
 #pragma once
 
+#include "common/ITypes.h"  // UInt32
 #include "skse64/GameExtraData.h"  // InventoryEntryData
-#include <string>
-#include <utility>
+#include "skse64/GameObjects.h"  // TESObjectARMO, TESObjectBOOK, TESObjectMISC
 
-
-class InventoryEntryData;
-class TESForm;
 
 namespace QuickLootRE
 {
 	class ItemData
 	{
 	private:
-		enum Type
+		enum Type : UInt32
 		{
 			kType_None,
 			kType_DefaultWeapon,
@@ -131,8 +128,13 @@ namespace QuickLootRE
 	public:
 		ItemData(InventoryEntryData* a_entryData);
 
+		UInt32 type();
+
 	private:
-		Type getItemType();
+		void initType();
+		Type getTypeArmor(TESObjectARMO* a_armor);
+		Type getTypeBook(TESObjectBOOK* a_book);
+		Type getTypeMisc(TESObjectMISC* a_misc);
 
 		InventoryEntryData* _entryData;
 		Type _type;
