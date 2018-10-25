@@ -1,5 +1,6 @@
 ﻿#include "common/IDebugLog.h"  // IDebugLog
 #include "skse64/GameEvents.h"  // EventDispatcherList
+#include "skse64/GameInput.h"  // InputEventDispatcher
 #include "skse64/GameMenus.h"  // MenuManager
 #include "skse64/PluginAPI.h"  // PluginHandle, SKSEMessagingInterface, SKSETaskInterface, SKSEInterface, PluginInfo
 #include "skse64_common/skse_version.h"  // RUNTIME_VERSION
@@ -8,12 +9,13 @@
 
 #include "Events.h"  // g_crosshairRefEventHandler, g_menuOpenCloseEventHandler
 #include "Keywords.h"  // initializeKeywords()
-#include "LootMenu.h"  // LootMenuCreator
+#include "LootMenu.h"  // LootMenuCreator, g_task
+
+#include "RE_GameEvents.h"  // RE::EventDispatcherList
 
 
 static PluginHandle	g_pluginHandle = kPluginHandle_Invalid;
 static SKSEMessagingInterface* g_messaging = 0;
-static SKSETaskInterface* g_task = 0;
 
 
 void MessageHandler(SKSEMessagingInterface::Message* a_msg)
@@ -23,11 +25,19 @@ void MessageHandler(SKSEMessagingInterface::Message* a_msg)
 	{
 		EventDispatcher<SKSECrosshairRefEvent>* crosshairRefDispatcher = (EventDispatcher<SKSECrosshairRefEvent>*)g_messaging->GetEventDispatcher(SKSEMessagingInterface::kDispatcher_CrosshairEvent);
 		crosshairRefDispatcher->AddEventSink(&QuickLootRE::g_crosshairRefEventHandler);
+		_MESSAGE("[MESSAGE] Crosshair ref event handler sinked");
 
 		MenuManager* mm = MenuManager::GetSingleton();
 		mm->MenuOpenCloseEventDispatcher()->AddEventSink(&QuickLootRE::g_menuOpenCloseEventHandler);
+		_MESSAGE("[MESSAGE] Menu open/close event handler sinked");
 
-		_MESSAGE("[MESSAGE] Event handlers sinked");
+		InputEventDispatcher* inputDispatcher = InputEventDispatcher::GetSingleton();
+		inputDispatcher->AddEventSink(&QuickLootRE::g_inputEventHandler);
+		_MESSAGE("[MESSAGE] Input event handler sinked");
+
+		RE::EventDispatcherList* dispatcherList = reinterpret_cast<RE::EventDispatcherList*>(GetEventDispatcherList());
+		dispatcherList->containerChangedDispatcher.AddEventSink(&QuickLootRE::g_containerChangedEventHandler);
+		_MESSAGE("[MESSAGE] Container changed event handler sinked");
 
 		mm->Register("LootMenu", QuickLootRE::LootMenuCreator::Create);
 		_MESSAGE("[MESSAGE] LootMenu registered\n");
@@ -87,8 +97,8 @@ extern "C" {
 			return false;
 		}
 
-		g_task = (SKSETaskInterface*)a_skse->QueryInterface(kInterface_Task);
-		if (g_task) {
+		QuickLootRE::g_task = (SKSETaskInterface*)a_skse->QueryInterface(kInterface_Task);
+		if (QuickLootRE::g_task) {
 			_MESSAGE("[MESSAGE] Task interface query successful!");
 		} else {
 			_FATALERROR("[FATAL ERROR] Task interface query failed!");

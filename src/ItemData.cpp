@@ -37,8 +37,35 @@ namespace QuickLootRE
 	}
 
 
+	ItemData::ItemData(InventoryEntryData* a_entryData, const char* a_name) :
+		_entryData(a_entryData),
+		_name(a_name),
+		_count(0),
+		_value(0),
+		_weight(0.0),
+		_type(kType_None),
+		_isStolen(false),
+		_isEnchanted(false),
+		_priority(kPriority_Key)
+	{
+		_count = _entryData->countDelta;
+		_value = CALL_MEMBER_FN(_entryData, GetValue)();
+		_weight = getWeight();
+		_type = getType();
+		_isStolen = CALL_MEMBER_FN(_entryData, IsOwnedBy)((*g_thePlayer), false);
+		_isEnchanted = getEnchanted();
+		_priority = getPriority();
+	}
+
+
 	ItemData::~ItemData()
 	{}
+
+
+	InventoryEntryData* ItemData::entryData() const
+	{
+		return _entryData;
+	}
 
 
 	const char* ItemData::name() const

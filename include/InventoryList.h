@@ -19,10 +19,15 @@ namespace QuickLootRE
 		void add(InventoryEntryData* a_entryData);
 		void add(TESForm* a_form, UInt32 a_count);
 
-		void clear();
+		ItemData& operator[](UInt32 a_pos) { return _itemList[a_pos]; }
 
 		std::vector<ItemData>::iterator begin() noexcept { return _itemList.begin(); }
 		std::vector<ItemData>::iterator end() noexcept { return _itemList.end(); }
+
+		UInt32 size() { return _itemList.size(); }
+
+		void clear();
+		std::vector<ItemData>::iterator erase(std::vector<ItemData>::iterator a_pos) { return _itemList.erase(a_pos); }
 
 	private:
 		std::vector<ItemData> _itemList;
