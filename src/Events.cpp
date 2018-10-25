@@ -76,7 +76,8 @@ namespace QuickLootRE
 						LootMenu::ModSelectedIndex(1);
 						break;
 					case Gamepad::kGamepad_A:
-						LootMenu::TakeItem();
+						//LootMenu::TakeItem();
+						break;
 					}
 					break;
 				case kDeviceType_Mouse:
@@ -97,7 +98,8 @@ namespace QuickLootRE
 					} else if (*buttonEvent->GetControlID() == holder->zoomOut) {
 						LootMenu::ModSelectedIndex(1);
 					} else if (*buttonEvent->GetControlID() == holder->activate) {
-						LootMenu::TakeItem();
+						//LootMenu::TakeItem();
+						break;
 					}
 					break;
 				}

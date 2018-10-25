@@ -39,6 +39,9 @@
     <ClCompile Include="src\Keywords.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\Hooks.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Events.h">
@@ -70,6 +73,9 @@
     </ClInclude>
     <ClInclude Include="include\RE_TESObjectREFR.h">
       <Filter>include\RE</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Hooks.h">
+      <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

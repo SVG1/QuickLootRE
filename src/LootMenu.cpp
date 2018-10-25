@@ -167,7 +167,7 @@ namespace QuickLootRE
 				if (item.entryData()->extendDataList && item.entryData()->extendDataList->Count() > 0) {
 					xList = item.entryData()->extendDataList->GetNthItem(0);
 				}
-				containerRef->RemoveItem(&handle, item.entryData()->type, item.count(), RE::TESObjectREFR::RemoveType::kRemoveType_Take, xList, (*g_thePlayer), 0, 0);
+				containerRef->RemoveItem(&handle, item.entryData()->type, item.count(), RE::TESObjectREFR::RemoveType::kRemoveType_Take, xList, *g_thePlayer, 0, 0);
 				Update();
 			}
 		}

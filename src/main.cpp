@@ -3,11 +3,13 @@
 #include "skse64/GameInput.h"  // InputEventDispatcher
 #include "skse64/GameMenus.h"  // MenuManager
 #include "skse64/PluginAPI.h"  // PluginHandle, SKSEMessagingInterface, SKSETaskInterface, SKSEInterface, PluginInfo
+#include "skse64_common/BranchTrampoline.h"  // g_branchTrampoline
 #include "skse64_common/skse_version.h"  // RUNTIME_VERSION
 
 #include <ShlObj.h>  // CSIDL_MYDOCUMENTS
 
 #include "Events.h"  // g_crosshairRefEventHandler, g_menuOpenCloseEventHandler
+#include "Hooks.h"  // installHooks()
 #include "Keywords.h"  // initializeKeywords()
 #include "LootMenu.h"  // LootMenuCreator, g_task
 
@@ -40,7 +42,7 @@ void MessageHandler(SKSEMessagingInterface::Message* a_msg)
 		_MESSAGE("[MESSAGE] Container changed event handler sinked");
 
 		mm->Register("LootMenu", QuickLootRE::LootMenuCreator::Create);
-		_MESSAGE("[MESSAGE] LootMenu registered\n");
+		_MESSAGE("[MESSAGE] LootMenu registered");
 
 		break;
 	}
@@ -80,6 +82,13 @@ extern "C" {
 			return false;
 		}
 
+		if (g_branchTrampoline.Create(1024 * 64)) {
+			_MESSAGE("[MESSAGE] Branch trampoline creation successful!");
+		} else {
+			_ERROR("[FATAL ERROR] Branch trampoline creation failed!");
+			return false;
+		}
+
 		// supported runtime version
 		return true;
 	}
@@ -104,6 +113,8 @@ extern "C" {
 			_FATALERROR("[FATAL ERROR] Task interface query failed!");
 			return false;
 		}
+
+		QuickLootRE::installHooks();
 
 		return true;
 	}

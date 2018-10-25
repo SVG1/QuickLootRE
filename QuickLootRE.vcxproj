@@ -135,6 +135,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\ExtendDataListVisitor.cpp" />
+    <ClCompile Include="src\Hooks.cpp" />
     <ClCompile Include="src\InventoryList.cpp" />
     <ClCompile Include="src\ItemData.cpp" />
     <ClCompile Include="src\Keywords.cpp" />
@@ -146,6 +147,7 @@
   <ItemGroup>
     <ClInclude Include="include\Events.h" />
     <ClInclude Include="include\ExtendDataListVisitor.h" />
+    <ClInclude Include="include\Hooks.h" />
     <ClInclude Include="include\InventoryList.h" />
     <ClInclude Include="include\ItemData.h" />
     <ClInclude Include="include\Keywords.h" />
