@@ -7,6 +7,7 @@
 #include <ShlObj.h>  // CSIDL_MYDOCUMENTS
 
 #include "Events.h"  // g_crosshairRefEventHandler, g_menuOpenCloseEventHandler
+#include "Keywords.h"  // initializeKeywords()
 #include "LootMenu.h"  // LootMenuCreator
 
 
@@ -33,6 +34,13 @@ void MessageHandler(SKSEMessagingInterface::Message* a_msg)
 
 		break;
 	}
+	case SKSEMessagingInterface::kMessage_DataLoaded:
+		if (!QuickLootRE::initalizeKeywords()) {
+			_FATALERROR("[FATAL ERROR] Failed to initialize keywords!\n");
+		} else {
+			_MESSAGE("[MESSAGE] Keywords initialized\n");
+		}
+		break;
 	}
 }
 

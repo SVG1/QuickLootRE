@@ -33,6 +33,12 @@
     <ClCompile Include="src\InventoryList.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\ExtendDataListVisitor.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Keywords.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Events.h">
@@ -52,6 +58,12 @@
     </ClInclude>
     <ClInclude Include="include\RE_BGSBipedObjectForm.h">
       <Filter>include\RE</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ExtendDataListVisitor.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Keywords.h">
+      <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

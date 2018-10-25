@@ -134,8 +134,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\ExtendDataListVisitor.cpp" />
     <ClCompile Include="src\InventoryList.cpp" />
     <ClCompile Include="src\ItemData.cpp" />
+    <ClCompile Include="src\Keywords.cpp" />
     <ClCompile Include="src\LootMenu.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Events.cpp" />
@@ -143,8 +145,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Events.h" />
+    <ClInclude Include="include\ExtendDataListVisitor.h" />
     <ClInclude Include="include\InventoryList.h" />
     <ClInclude Include="include\ItemData.h" />
+    <ClInclude Include="include\Keywords.h" />
     <ClInclude Include="include\LootMenu.h" />
     <ClInclude Include="include\RE_BGSBipedObjectForm.h" />
     <ClInclude Include="include\Utility.h" />

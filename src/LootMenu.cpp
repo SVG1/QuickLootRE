@@ -72,19 +72,17 @@ namespace QuickLootRE
 			view->CreateArray(&dlgt.args[0]);
 			for (auto& invItem : g_invList) {
 				GFxValue text;
-				text.SetString(CALL_MEMBER_FN(invItem._entryData, GenerateName)());
+				text.SetString(invItem.name());
 				GFxValue count;
-				count.SetNumber(invItem._entryData->countDelta);
+				count.SetNumber(invItem.count());
 				GFxValue value;
-				value.SetNumber(0.0);
+				value.SetNumber(invItem.value());
 				GFxValue weight;
-				weight.SetNumber(0.0);
+				weight.SetNumber(invItem.weight());
 				GFxValue isStolen;
-				isStolen.SetBool(false);
+				isStolen.SetBool(invItem.isStolen());
 				GFxValue iconLabel;
-				iconLabel.SetString("");
-				GFxValue itemChance;
-				itemChance.SetNumber(0.0);
+				iconLabel.SetString(invItem.icon());
 
 				GFxValue item;
 				view->CreateObject(&item);
@@ -94,10 +92,8 @@ namespace QuickLootRE
 				item.SetMember("weight", &weight);
 				item.SetMember("isStolen", &isStolen);
 				item.SetMember("iconLabel", &iconLabel);
-				item.SetMember("itemChance", &itemChance);
 
 				dlgt.args[0].PushBack(&item);
-				break;
 			}
 
 			dlgt.args[1].SetNumber(g_crosshairRef->formID);
