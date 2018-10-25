@@ -1,9 +1,11 @@
 #include "LootMenu.h"
 
 #include "skse64/GameAPI.h"  // g_thePlayer
+#include "skse64/GameBSExtraData.h"  // BSExtraData
+#include "skse64/GameExtraData.h"  // ExtraContainerChanges
 #include "skse64/GameMenus.h"  // IMenu
 #include "skse64/GameReferences.h"  // TESObjectREFR
-#include "skse64/PapyrusUI.h"  // UIInvokeDelegate
+#include "skse64/GameTypes.h"  // BSFixedString
 #include "skse64/PluginAPI.h"  // SKSETaskInterface
 #include "skse64/ScaleformExtendedData.h"
 #include "skse64/ScaleformLoader.h"  // GFxLoader
@@ -94,7 +96,7 @@ namespace QuickLootRE
 			}
 
 			dlgt->args[1].SetNumber(g_crosshairRef->formID);
-			dlgt->args[2].SetString("Container");
+			dlgt->args[2].SetString(CALL_MEMBER_FN(g_crosshairRef, GetReferenceName)());
 			dlgt->args[3].SetString("Take");
 			dlgt->args[4].SetString("Search");
 			dlgt->args[5].SetNumber(_selectedIndex);
@@ -159,18 +161,41 @@ namespace QuickLootRE
 	{
 		if (_singleton) {
 			RE::TESObjectREFR* containerRef = reinterpret_cast<RE::TESObjectREFR*>(g_crosshairRef);
-			if (containerRef) {
+			if (containerRef && !g_invList.empty()) {
 				ItemData item = g_invList[_selectedIndex];
 				g_invList.erase(g_invList.begin() + _selectedIndex);
-				UInt32 handle;
+				UInt32 handle = 0;
 				BaseExtraList* xList = 0;
 				if (item.entryData()->extendDataList && item.entryData()->extendDataList->Count() > 0) {
 					xList = item.entryData()->extendDataList->GetNthItem(0);
 				}
+
+#if 0
+				ExtraContainerChanges* xContainerChanges = static_cast<ExtraContainerChanges*>(g_crosshairRef->extraData.GetByType(kExtraData_ContainerChanges));
+				if (!xContainerChanges) {
+					uintptr_t vtbl = *(uintptr_t*)item.entryData()->type;
+					xContainerChanges = static_cast<ExtraContainerChanges*>(BSExtraData::Create(kExtraData_ContainerChanges, vtbl));
+					xContainerChanges->data = (ExtraContainerChanges::Data*)Heap_Allocate(sizeof(ExtraContainerChanges::Data));
+					xContainerChanges->data->objList = EntryDataList::Create();
+				}
+
+				item.entryData()->countDelta = 0 - item.entryData()->countDelta;
+				xContainerChanges->data->objList->Push(item.entryData());
+				xContainerChanges->data->owner = g_crosshairRef;
+				xContainerChanges->data->totalWeight = item.weight();
+				xContainerChanges->data->armorWeight = 0;
+				g_crosshairRef->extraData.Add(kExtraData_ContainerChanges, xContainerChanges);
+#endif
 				containerRef->RemoveItem(&handle, item.entryData()->type, item.count(), RE::TESObjectREFR::RemoveType::kRemoveType_Take, xList, *g_thePlayer, 0, 0);
 				Update();
 			}
 		}
+	}
+
+
+	BSFixedString LootMenu::GetName()
+	{
+		return "LootMenu";
 	}
 
 

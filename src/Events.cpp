@@ -12,6 +12,7 @@
 
 #include <string>  // string
 
+#include "Hooks.h"  // startActivation()
 #include "InventoryList.h"  // g_invList
 #include "LootMenu.h"  // LootMenu, g_crosshairRef
 
@@ -36,19 +37,18 @@ namespace QuickLootRE
 
 	EventResult CrosshairRefEventHandler::ReceiveEvent(SKSECrosshairRefEvent* a_event, EventDispatcher<SKSECrosshairRefEvent>* a_dispatcher)
 	{
-		static BSFixedString name("LootMenu");
 		if (a_event && a_event->crosshairRef && a_event->crosshairRef->baseForm) {
-			g_crosshairRef = a_event->crosshairRef;
 			TESContainer* container = DYNAMIC_CAST(a_event->crosshairRef->baseForm, TESForm, TESContainer);
 			if (container) {
+				g_crosshairRef = a_event->crosshairRef;
 				g_invList.clear();
 				getInventoryList(a_event->crosshairRef->extraData.m_data, container);
-				CALL_MEMBER_FN(UIManager::GetSingleton(), AddMessage)(&name, UIMessage::kMessage_Open, 0);
-				return kEvent_Continue;
+				CALL_MEMBER_FN(UIManager::GetSingleton(), AddMessage)(&LootMenu::GetName(), UIMessage::kMessage_Close, 0);
+				CALL_MEMBER_FN(UIManager::GetSingleton(), AddMessage)(&LootMenu::GetName(), UIMessage::kMessage_Open, 0);
 			}
-		}
-		if (LootMenu::GetSingleton()) {
-			CALL_MEMBER_FN(UIManager::GetSingleton(), AddMessage)(&name, UIMessage::kMessage_Close, 0);
+		} else if (LootMenu::GetSingleton()) {
+			CALL_MEMBER_FN(UIManager::GetSingleton(), AddMessage)(&LootMenu::GetName(), UIMessage::kMessage_Close, 0);
+			g_crosshairRef = 0;
 		}
 		return kEvent_Continue;
 	}
@@ -75,8 +75,10 @@ namespace QuickLootRE
 					case Gamepad::kGamepad_Down:
 						LootMenu::ModSelectedIndex(1);
 						break;
-					case Gamepad::kGamepad_A:
-						//LootMenu::TakeItem();
+					case Gamepad::kGamepad_X:
+						CALL_MEMBER_FN(UIManager::GetSingleton(), AddMessage)(&LootMenu::GetName(), UIMessage::kMessage_Close, 0);
+						g_crosshairRef = 0;
+						startActivation(*g_thePlayer);
 						break;
 					}
 					break;
@@ -117,7 +119,6 @@ namespace QuickLootRE
 			if (container) {
 				g_invList.clear();
 				getInventoryList(g_crosshairRef->extraData.m_data, container);
-				static BSFixedString name("LootMenu");
 				LootMenu::Update();
 			}
 		}

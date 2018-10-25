@@ -24,6 +24,7 @@ namespace QuickLootRE
 		std::vector<ItemData>::iterator begin() noexcept { return _itemList.begin(); }
 		std::vector<ItemData>::iterator end() noexcept { return _itemList.end(); }
 
+		bool empty() { return _itemList.empty(); }
 		UInt32 size() { return _itemList.size(); }
 
 		void clear();

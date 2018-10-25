@@ -25,10 +25,12 @@ namespace QuickLootRE
 
 	void InventoryList::add(InventoryEntryData* a_entryData)
 	{
-		static BSFixedString emptyStr = "";
-		TESFullName* fullName = DYNAMIC_CAST(a_entryData->type, TESForm, TESFullName);
-		if (fullName && fullName->name != emptyStr) {
-			_itemList.emplace_back(a_entryData, fullName->name);
+		if (a_entryData->countDelta > 0) {
+			static BSFixedString emptyStr = "";
+			TESFullName* fullName = DYNAMIC_CAST(a_entryData->type, TESForm, TESFullName);
+			if (fullName && fullName->name != emptyStr) {
+				_itemList.emplace_back(a_entryData, fullName->name);
+			}
 		}
 	}
 

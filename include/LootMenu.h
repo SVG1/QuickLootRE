@@ -4,7 +4,7 @@
 #include "skse64/CustomMenu.h"  // CustomMenuCreator, CustomMenu
 #include "skse64/GameReferences.h"  // TESObjectREFR
 #include "skse64/GameMenus.h"  // IMenu, UIMessage
-#include "skse64/GameTypes.h"  // SimpleLock
+#include "skse64/GameTypes.h"  // BSFixedString
 #include "skse64/Hooks_UI.h"  // UIDelegate_v1
 #include "skse64/PluginAPI.h"  // SKSETaskInterface
 #include "skse64/ScaleformValue.h"  // GFxValue
@@ -66,6 +66,7 @@ namespace QuickLootRE
 		static void ModSelectedIndex(SInt32 a_indexOffset);
 		static void Update();
 		static void TakeItem();
+		static BSFixedString GetName();
 
 		virtual UInt32 ProcessMessage(UIMessage* a_message) override;
 
