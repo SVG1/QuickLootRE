@@ -148,6 +148,7 @@
     <ClInclude Include="include\Events.h" />
     <ClInclude Include="include\ExtendDataListVisitor.h" />
     <ClInclude Include="include\Hooks.h" />
+    <ClInclude Include="include\Input.h" />
     <ClInclude Include="include\InventoryList.h" />
     <ClInclude Include="include\ItemData.h" />
     <ClInclude Include="include\Keywords.h" />
@@ -156,6 +157,8 @@
     <ClInclude Include="include\RE_BGSBipedObjectForm.h" />
     <ClInclude Include="include\RE_GameEvents.h" />
     <ClInclude Include="include\RE_ExtraContainerChanges.h" />
+    <ClInclude Include="include\RE_MenuEventHandler.h" />
+    <ClInclude Include="include\RE_TESObjectLIGH.h" />
     <ClInclude Include="include\RE_TESObjectREFR.h" />
     <ClInclude Include="include\Utility.h" />
   </ItemGroup>

@@ -13,6 +13,27 @@
     <Filter Include="include\RE">
       <UniqueIdentifier>{465c6169-39eb-4913-8a42-21fc2e4b0ef6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\RE\Skyrim">
+      <UniqueIdentifier>{cf9d4f78-0815-436b-9b35-e6b66185b006}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\RE\Skyrim\FormComponents">
+      <UniqueIdentifier>{9410f289-c830-479f-b772-32ed0af95f26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\RE\SKSE">
+      <UniqueIdentifier>{0e1c98bf-fd76-4eda-8fb3-7a50f879a87a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\RE\SKSE\API">
+      <UniqueIdentifier>{fbccb34b-23ee-4959-b08e-197b5087cd5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\RE\Skyrim\ExtraData">
+      <UniqueIdentifier>{a9418d25-6fa2-43e9-9a9b-82ab52cea883}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\RE\Skyrim\Forms">
+      <UniqueIdentifier>{f7565767-3c0c-4a3a-b730-cc75216dc2a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\RE\Skyrim\BSDevices">
+      <UniqueIdentifier>{2907cd0d-893f-426b-b3e4-2bde2fe1a730}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -59,29 +80,38 @@
     <ClInclude Include="include\InventoryList.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\RE_BGSBipedObjectForm.h">
-      <Filter>include\RE</Filter>
-    </ClInclude>
     <ClInclude Include="include\ExtendDataListVisitor.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\Keywords.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\RE_GameEvents.h">
-      <Filter>include\RE</Filter>
-    </ClInclude>
-    <ClInclude Include="include\RE_TESObjectREFR.h">
-      <Filter>include\RE</Filter>
-    </ClInclude>
     <ClInclude Include="include\Hooks.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\RE_BaseExtraList.h">
-      <Filter>include\RE</Filter>
+      <Filter>include\RE\Skyrim\FormComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE_BGSBipedObjectForm.h">
+      <Filter>include\RE\Skyrim\FormComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE_GameEvents.h">
+      <Filter>include\RE\SKSE\API</Filter>
     </ClInclude>
     <ClInclude Include="include\RE_ExtraContainerChanges.h">
-      <Filter>include\RE</Filter>
+      <Filter>include\RE\Skyrim\ExtraData</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE_TESObjectLIGH.h">
+      <Filter>include\RE\Skyrim\Forms</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE_TESObjectREFR.h">
+      <Filter>include\RE\Skyrim\Forms</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE_MenuEventHandler.h">
+      <Filter>include\RE\Skyrim\BSDevices</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Input.h">
+      <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

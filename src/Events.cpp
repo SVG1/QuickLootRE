@@ -74,57 +74,6 @@ namespace QuickLootRE
 	}
 
 
-	EventResult InputEventHandler::ReceiveEvent(InputEvent** a_event, InputEventDispatcher* a_dispatcher)
-	{
-		if (LootMenu::GetSingleton() && a_event && *a_event) {
-			ButtonEvent* buttonEvent = DYNAMIC_CAST((*a_event), InputEvent, ButtonEvent);
-			if (buttonEvent) {
-				switch (buttonEvent->deviceType) {
-				case kDeviceType_Gamepad:
-					switch (buttonEvent->keyMask) {
-					case Gamepad::kGamepad_Up:
-						LootMenu::ModSelectedIndex(-1);
-						break;
-					case Gamepad::kGamepad_Down:
-						LootMenu::ModSelectedIndex(1);
-						break;
-					case Gamepad::kGamepad_X:
-						CALL_MEMBER_FN(UIManager::GetSingleton(), AddMessage)(&LootMenu::GetName(), UIMessage::kMessage_Close, 0);
-						g_crosshairRef = 0;
-						startActivation(*g_thePlayer);
-						break;
-					}
-					break;
-				case kDeviceType_Mouse:
-					switch (buttonEvent->keyMask) {
-					case Mouse::kMouse_WheelUp:
-						LootMenu::ModSelectedIndex(-1);
-						break;
-					case Mouse::kMouse_WheelDown:
-						LootMenu::ModSelectedIndex(1);
-						break;
-					}
-					break;
-				case kDeviceType_Keyboard:
-				{
-					InputStringHolder* holder = InputStringHolder::GetSingleton();
-					if (*buttonEvent->GetControlID() == holder->zoomIn) {
-						LootMenu::ModSelectedIndex(-1);
-					} else if (*buttonEvent->GetControlID() == holder->zoomOut) {
-						LootMenu::ModSelectedIndex(1);
-					} else if (*buttonEvent->GetControlID() == holder->activate) {
-						//LootMenu::TakeItem();
-						break;
-					}
-					break;
-				}
-				}
-			}
-		}
-		return kEvent_Continue;
-	}
-
-
 	EventResult TESContainerChangedEventHandler::ReceiveEvent(TESContainerChangedEvent* a_event, EventDispatcher<TESContainerChangedEvent>* a_dispatcher)
 	{
 		if (a_event && LootMenu::GetSingleton() && (a_event->fromFormId == g_crosshairRef->baseForm->formID || a_event->toFormId == g_crosshairRef->baseForm->formID)) {

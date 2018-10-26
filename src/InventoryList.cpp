@@ -13,6 +13,8 @@
 #include "ItemData.h"  // ItemData
 #include "Utility.h"  // numToHexString
 
+#include "RE_TESObjectLIGH.h"  // RE::TESObjectLIGH
+
 
 namespace QuickLootRE
 {
@@ -28,18 +30,16 @@ namespace QuickLootRE
 
 	void InventoryList::add(InventoryEntryData* a_entryData)
 	{
-		TESFullName* fullName = 0;
-		if (fullName = getName(a_entryData)) {
-			_itemList.emplace_back(a_entryData, fullName->name);
+		if (isValidItem(a_entryData->type)) {
+			_itemList.emplace_back(a_entryData);
 		}
 	}
 
 
 	void InventoryList::add(InventoryEntryData* a_entryData, SInt32 a_count)
 	{
-		TESFullName* fullName = 0;
-		if (fullName = getName(a_entryData)) {
-			_itemList.emplace_back(a_entryData, fullName->name, a_count);
+		if (isValidItem(a_entryData->type)) {
+			_itemList.emplace_back(a_entryData, a_count);
 		}
 	}
 
@@ -62,23 +62,40 @@ namespace QuickLootRE
 	}
 
 
-	TESFullName* InventoryList::getName(InventoryEntryData* a_entryData)
+	bool InventoryList::isValidItem(TESForm* a_item)
 	{
-		static BSFixedString emptyStr = "";
-		TESFullName* fullName = 0;
+		if (!a_item) {
+			return false;
+		}
 
+		if (a_item->formType == kFormType_LeveledItem) {
+			return false;
+		}
+
+		if (a_item->formType == kFormType_Light) {
+			RE::TESObjectLIGH* light = static_cast<RE::TESObjectLIGH*>(a_item);
+			if (!light->CanBeCarried()) {
+				return false;
+			}
+		} else if (!a_item->IsPlayable()) {
+			return false;
+		}
+
+		TESFullName* fullName = 0;
 		try {
-			fullName = DYNAMIC_CAST(a_entryData->type, TESForm, TESFullName);
-			if (fullName && fullName->name != emptyStr) {
-				return fullName;
-			} else {
-				return 0;
+			static BSFixedString emptyStr = "";
+			fullName = DYNAMIC_CAST(a_item, TESForm, TESFullName);
+			if (!fullName || fullName->name == emptyStr) {
+				return false;
 			}
 		} catch (std::exception& e) {
-			std::string msg = "[DEBUG] Form (0x" + numToHexString(a_entryData->type->formID) + ") does not have TESFullName (" + std::to_string(a_entryData->type->formType) + ")";
+			std::string msg = "[DEBUG] Form (0x" + numToHexString(a_item->formID) + ") does not have TESFullName (" + std::to_string(a_item->formType) + ")";
 			_DMESSAGE(msg.c_str());
-			return 0;
+			_DMESSAGE(e.what());
+			return false;
 		}
+
+		return true;
 	}
 
 

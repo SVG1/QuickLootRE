@@ -3,6 +3,7 @@
 #include "skse64/GameAPI.h"  // g_thePlayer
 #include "skse64/GameBSExtraData.h"  // BSExtraData
 #include "skse64/GameExtraData.h"  // ExtraContainerChanges
+#include "skse64/GameInput.h"  // InputEvent, InputStringHolder
 #include "skse64/GameMenus.h"  // IMenu
 #include "skse64/GameReferences.h"  // TESObjectREFR
 #include "skse64/GameTypes.h"  // BSFixedString
@@ -13,6 +14,8 @@
 
 #include <string>  // string
 
+#include "Hooks.h"  // RegisterMenuEventHandler, RemoveMenuEventHandler
+#include "Input.h"  // InputDevice
 #include "ItemData.h"  // ItemData
 #include "InventoryList.h"  // g_invList
 
@@ -161,11 +164,77 @@ namespace QuickLootRE
 	}
 
 
+	bool LootMenu::CanProcess(InputEvent* a_event)
+	{
+		if (_singleton && a_event->eventType == InputEvent::kEventType_Button) {
+			ButtonEvent* button = static_cast<ButtonEvent*>(a_event);
+			switch (a_event->deviceType) {
+			case kInputDevice_Gamepad:
+				return (button->keyMask == kGamepad_Up || button->keyMask == kGamepad_Down);
+			case kInputDevice_Mouse:
+				return (button->keyMask == kMouse_WheelDown || button->keyMask == kMouse_WheelUp);
+			case kInputDevice_Keyboard:
+				static InputStringHolder* holder = InputStringHolder::GetSingleton();
+				return (*a_event->GetControlID() == holder->zoomIn || *a_event->GetControlID() == holder->zoomOut);
+			}
+		}
+		return false;
+	}
+
+
+	bool LootMenu::ProcessButton(ButtonEvent* a_event)
+	{
+		switch (a_event->deviceType) {
+		case kDeviceType_Gamepad:
+			switch (a_event->keyMask) {
+			case Gamepad::kGamepad_Up:
+				LootMenu::ModSelectedIndex(-1);
+				break;
+			case Gamepad::kGamepad_Down:
+				LootMenu::ModSelectedIndex(1);
+				break;
+			case Gamepad::kGamepad_X:
+				CALL_MEMBER_FN(UIManager::GetSingleton(), AddMessage)(&LootMenu::GetName(), UIMessage::kMessage_Close, 0);
+				g_crosshairRef = 0;
+				startActivation(*g_thePlayer);
+				break;
+			}
+			break;
+		case kDeviceType_Mouse:
+			switch (a_event->keyMask) {
+			case Mouse::kMouse_WheelUp:
+				LootMenu::ModSelectedIndex(-1);
+				break;
+			case Mouse::kMouse_WheelDown:
+				LootMenu::ModSelectedIndex(1);
+				break;
+			}
+			break;
+		case kDeviceType_Keyboard:
+		{
+			static InputStringHolder* holder = InputStringHolder::GetSingleton();
+			if (*a_event->GetControlID() == holder->zoomIn) {
+				LootMenu::ModSelectedIndex(-1);
+			} else if (*a_event->GetControlID() == holder->zoomOut) {
+				LootMenu::ModSelectedIndex(1);
+			} else if (*a_event->GetControlID() == holder->activate) {
+				//LootMenu::TakeItem();
+				break;
+			}
+			break;
+		}
+		}
+		return true;
+	}
+
+
 	void LootMenu::OnMenuOpen()
 	{
 		if (view) {
 			_singleton = this;
 			_selectedIndex = 0;
+			static MenuControls* mc = MenuControls::GetSingleton();
+			RegisterMenuEventHandler(mc, this);
 			Update();
 		}
 	}
@@ -175,6 +244,8 @@ namespace QuickLootRE
 	{
 		if (_singleton) {
 			_singleton = 0;
+			static MenuControls* mc = MenuControls::GetSingleton();
+			RemoveMenuEventHandler(mc, this);
 			LootMenuUIDelegate* dlgt = (LootMenuUIDelegate*)Heap_Allocate(sizeof(LootMenuUIDelegate));
 			new (dlgt)LootMenuUIDelegate(".closeContainer", 0);
 			g_task->AddUITask(dlgt);
@@ -192,15 +263,6 @@ namespace QuickLootRE
 
 			g_task->AddUITask(dlgt);
 		}
-	}
-
-
-	void LootMenu::SendChestLootedEvent()
-	{
-		typedef void FnSendChestLootedEvent_t();
-		RelocAddr<FnSendChestLootedEvent_t*> fnSendChestLootedEvent(0x008607B0);  // 1_5_50
-
-		(*fnSendChestLootedEvent)();
 	}
 
 

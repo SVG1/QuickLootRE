@@ -1,6 +1,9 @@
 #pragma once
 
-#include "skse64/GameExtraData.h"
+#include "skse64/GameExtraData.h"  // BSExtraData, EntryDataList
+#include "skse64/GameReferences.h"  // TESObjectREFR
+
+#include "Hooks.h"
 
 
 namespace RE
@@ -11,6 +14,7 @@ namespace RE
 		ExtraContainerChanges();
 		virtual ~ExtraContainerChanges();
 
+
 		class Data
 		{
 		public:
@@ -19,10 +23,12 @@ namespace RE
 				CALL_MEMBER_FN(this, ctor)(ref);
 			}
 
+
 			void InitContainer()
 			{
 				CALL_MEMBER_FN(this, InitContainer)();
 			}
+
 
 			::EntryDataList*	objList;
 			::TESObjectREFR*	owner;
@@ -31,10 +37,17 @@ namespace RE
 
 		private:
 			MEMBER_FN_PREFIX(Data);
-			DEFINE_MEMBER_FN(ctor, ExtraContainerChanges::Data*, 0x001D93F0, ::TESObjectREFR* ref);	// 1_5_50
-			DEFINE_MEMBER_FN(InitContainer, void, 0x001E9F80);	// 1_5_50
+			DEFINE_MEMBER_FN(ctor, ExtraContainerChanges::Data*, EXTRA_CONTAINER_CHANGES_DATA_CTOR, ::TESObjectREFR* ref);
+			DEFINE_MEMBER_FN(InitContainer, void, EXTRA_CONTAINER_CHANGES_DATA_INIT_CONTAINER);
 		};
+		STATIC_ASSERT(offsetof(Data, objList)		== 0x00);
+		STATIC_ASSERT(offsetof(Data, owner)			== 0x08);
+		STATIC_ASSERT(offsetof(Data, totalWeight)	== 0x10);
+		STATIC_ASSERT(offsetof(Data, armorWeight)	== 0x14);
+
 
 		Data* data;
 	};
+	STATIC_ASSERT(offsetof(ExtraContainerChanges, data)	== 0x10);
+	STATIC_ASSERT(sizeof(ExtraContainerChanges)			== 0x18);
 }

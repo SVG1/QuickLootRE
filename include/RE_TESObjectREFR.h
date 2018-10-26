@@ -13,6 +13,7 @@ namespace RE
 	public:
 		enum { kTypeID = kFormType_Reference };
 
+
 		enum RemoveType
 		{
 			kRemoveType_Remove,
@@ -22,6 +23,7 @@ namespace RE
 			kRemoveType_Take,
 			kRemoveType_Unk05
 		};
+
 
 		virtual void	Unk_39(void);
 		virtual void	Unk_3A(void);
@@ -53,6 +55,5 @@ namespace RE
 		virtual void	Unk_54(void);
 		virtual void	Unk_55(void);
 		virtual void	RemoveItem(UInt32* droppedItemHandle, TESForm* akItem, UInt32 aiCount, UInt32 mode, ::BaseExtraList* extraList, ::TESObjectREFR* moveToRef, UInt32 unk7, UInt32 unk8);
-		virtual void	PickUpItem(::TESObjectREFR* item, UInt32 count, bool arg3, bool playSound);
 	};
 };

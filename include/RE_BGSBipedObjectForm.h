@@ -12,21 +12,21 @@ namespace RE
 		// applicable to DefaultRace
 		enum PartFlag
 		{
-			kPart_Head = 1 << 0,
-			kPart_Hair = 1 << 1,
-			kPart_Body = 1 << 2,
-			kPart_Hands = 1 << 3,
-			kPart_Forearms = 1 << 4,
-			kPart_Amulet = 1 << 5,
-			kPart_Ring = 1 << 6,
-			kPart_Feet = 1 << 7,
-			kPart_Calves = 1 << 8,
-			kPart_Shield = 1 << 9,
-			kPart_Tail = 1 << 10,
-			kPart_LongHair = 1 << 11,
-			kPart_Circlet = 1 << 12,
-			kPart_Ears = 1 << 13,
-			kPart_Unnamed14 = 1 << 14,
+			kPart_Head		= 1 << 0,
+			kPart_Hair		= 1 << 1,
+			kPart_Body		= 1 << 2,
+			kPart_Hands		= 1 << 3,
+			kPart_Forearms	= 1 << 4,
+			kPart_Amulet	= 1 << 5,
+			kPart_Ring		= 1 << 6,
+			kPart_Feet		= 1 << 7,
+			kPart_Calves	= 1 << 8,
+			kPart_Shield	= 1 << 9,
+			kPart_Tail		= 1 << 10,
+			kPart_LongHair	= 1 << 11,
+			kPart_Circlet	= 1 << 12,
+			kPart_Ears		= 1 << 13,
+			kPart_Unnamed14	= 1 << 14,
 			kPart_Unnamed15 = 1 << 15,
 			kPart_Unnamed16 = 1 << 16,
 			kPart_Unnamed17 = 1 << 17,
@@ -43,8 +43,9 @@ namespace RE
 			kPart_Unnamed28 = 1 << 28,
 			kPart_Unnamed29 = 1 << 29,
 			kPart_Unnamed30 = 1 << 30,
-			kPart_FX01 = 1 << 31,
+			kPart_FX01		= 1 << 31,
 		};
+
 
 		enum
 		{
@@ -53,11 +54,16 @@ namespace RE
 			kWeight_None,
 		};
 
+
 		struct Data
 		{
-			UInt32	parts;			// 00 - init'd to 0
-			UInt32	weightClass;	// 04 - init'd to 2 (none)
+			UInt32	parts;			// 0 - init'd to 0
+			UInt32	weightClass;	// 4 - init'd to 2 (none)
 		};
+		STATIC_ASSERT(offsetof(Data, parts)			== 0x0);
+		STATIC_ASSERT(offsetof(Data, weightClass)	== 0x4);
+		STATIC_ASSERT(sizeof(Data)					== 0x8);
+
 
 		UInt32	GetSlotMask() const				{ return bipedObjectData.parts; }
 		void	SetSlotMask(UInt32 mask)		{ bipedObjectData.parts = mask; }
@@ -71,6 +77,9 @@ namespace RE
 		UInt32	RemoveSlotFromMask(UInt32 slot)	{ bipedObjectData.parts &= ~slot; return bipedObjectData.parts; }
 
 		// members
-		Data	bipedObjectData;	// 08
+		Data	bipedObjectData;	// 8
 	};
+	STATIC_ASSERT(offsetof(BGSBipedObjectForm, bipedObjectData)	== 0x8);
+	STATIC_ASSERT(sizeof(BGSBipedObjectForm)					== 0x10);
+
 }

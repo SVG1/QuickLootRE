@@ -15,9 +15,9 @@
 
 namespace QuickLootRE
 {
-	ItemData::ItemData(InventoryEntryData* a_entryData, const char* a_name) :
+	ItemData::ItemData(InventoryEntryData* a_entryData) :
 		_entryData(a_entryData),
-		_name(a_name),
+		_name(""),
 		_count(0),
 		_value(0),
 		_weight(0.0),
@@ -26,6 +26,7 @@ namespace QuickLootRE
 		_isEnchanted(false),
 		_priority(kPriority_Key)
 	{
+		_name = CALL_MEMBER_FN(_entryData, GenerateName)();
 		_count = _entryData->countDelta;
 		_value = CALL_MEMBER_FN(_entryData, GetValue)();
 		_weight = getWeight();
@@ -36,9 +37,9 @@ namespace QuickLootRE
 	}
 
 
-	ItemData::ItemData(InventoryEntryData* a_entryData, const char* a_name, SInt32 a_count) :
+	ItemData::ItemData(InventoryEntryData* a_entryData, SInt32 a_count) :
 		_entryData(a_entryData),
-		_name(a_name),
+		_name(""),
 		_count(a_count),
 		_value(0),
 		_weight(0.0),
@@ -47,6 +48,7 @@ namespace QuickLootRE
 		_isEnchanted(false),
 		_priority(kPriority_Key)
 	{
+		_name = CALL_MEMBER_FN(_entryData, GenerateName)();
 		_value = CALL_MEMBER_FN(_entryData, GetValue)();
 		_weight = getWeight();
 		_type = getType();

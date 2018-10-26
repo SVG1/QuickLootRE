@@ -345,8 +345,8 @@ namespace QuickLootRE
 		};
 
 	public:
-		explicit ItemData(InventoryEntryData* a_entryData, const char* a_name);
-		explicit ItemData(InventoryEntryData* a_entryData, const char* a_name, SInt32 a_count);
+		explicit ItemData(InventoryEntryData* a_entryData);
+		explicit ItemData(InventoryEntryData* a_entryData, SInt32 a_count);
 		~ItemData();
 
 		ItemData&			operator= (ItemData a_rhs);
