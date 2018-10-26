@@ -7,6 +7,7 @@
 #include "skse64/GameInput.h"  // InputEvent
 #include "skse64/PapyrusEvents.h"  // SKSECrosshairRefEvent
 
+#include <map>
 #include <vector>  // vector
 
 
@@ -196,8 +197,11 @@ namespace QuickLootRE
 	};
 
 
-	void getInventoryList(BSExtraData* a_xData, TESContainer* a_container);
+	void getInventoryList(BaseExtraList* a_xList, TESContainer* a_container);
 
+
+	typedef SInt32 Count;
+	static std::map<TESForm*, Count> defaultMap;
 
 	extern CrosshairRefEventHandler g_crosshairRefEventHandler;
 	extern MenuOpenCloseEventHandler g_menuOpenCloseEventHandler;

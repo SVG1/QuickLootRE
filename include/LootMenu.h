@@ -75,6 +75,8 @@ namespace QuickLootRE
 		void SetSelectedIndex();
 
 	private:
+		void SendChestLootedEvent();
+
 		static LootMenu* _singleton;
 		static SInt32 _selectedIndex;
 	};

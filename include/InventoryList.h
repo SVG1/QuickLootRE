@@ -2,6 +2,7 @@
 
 #include "common/ITypes.h"  // UInt32
 #include "skse64/GameExtraData.h"  // InventoryEntryData
+#include "skse64/GameFormComponents.h"  // TESFullName
 #include "skse64/GameForms.h"  // TESForm
 
 #include <vector>  // vector
@@ -17,7 +18,8 @@ namespace QuickLootRE
 		~InventoryList();
 
 		void add(InventoryEntryData* a_entryData);
-		void add(TESForm* a_form, UInt32 a_count);
+		void add(InventoryEntryData* a_entryData, SInt32 a_count);
+		void add(TESForm* a_form, SInt32 a_count);
 
 		ItemData& operator[](UInt32 a_pos) { return _itemList[a_pos]; }
 
@@ -31,6 +33,8 @@ namespace QuickLootRE
 		std::vector<ItemData>::iterator erase(std::vector<ItemData>::iterator a_pos) { return _itemList.erase(a_pos); }
 
 	private:
+		TESFullName* getName(InventoryEntryData* a_entryData);
+
 		std::vector<ItemData> _itemList;
 		std::vector<InventoryEntryData*> _heapList;
 	};

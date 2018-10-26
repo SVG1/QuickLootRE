@@ -2,7 +2,10 @@
 
 #include "common/ITypes.h"  // UInt32
 #include "skse64/GameExtraData.h"  // InventoryEntryData
+#include "skse64/GameForms.h"  // TESForm
 #include "skse64/GameObjects.h"  // TESObjectARMO, TESObjectBOOK, TESObjectMISC, TESObjectWEAP, AlchemyItem, TESSoulGem
+
+#include <utility>  // swap
 
 
 namespace QuickLootRE
@@ -342,9 +345,17 @@ namespace QuickLootRE
 		};
 
 	public:
-		explicit ItemData(InventoryEntryData* a_entryData);
 		explicit ItemData(InventoryEntryData* a_entryData, const char* a_name);
+		explicit ItemData(InventoryEntryData* a_entryData, const char* a_name, SInt32 a_count);
 		~ItemData();
+
+		ItemData&			operator= (ItemData a_rhs);
+		friend bool			operator==(const ItemData& a_lhs, const ItemData& a_rhs);
+		friend bool			operator!=(const ItemData& a_lhs, const ItemData& a_rhs);
+		friend bool			operator< (const ItemData& a_lhs, const ItemData& a_rhs);
+		friend bool			operator> (const ItemData& a_lhs, const ItemData& a_rhs);
+		friend bool			operator<=(const ItemData& a_lhs, const ItemData& a_rhs);
+		friend bool			operator>=(const ItemData& a_lhs, const ItemData& a_rhs);
 
 		InventoryEntryData*	entryData()	const;
 		const char*			name()		const;
@@ -353,6 +364,7 @@ namespace QuickLootRE
 		float				weight()	const;
 		const char*			icon()		const;
 		bool				isStolen()	const;
+		TESForm*			form()		const;
 
 	private:
 		float				getWeight();
@@ -366,6 +378,12 @@ namespace QuickLootRE
 		bool				getEnchanted();
 		Priority			getPriority();
 
+		friend int			CompareByStolen	(const ItemData& a_lhs, const ItemData& a_rhs);
+		friend int			CompareByType	(const ItemData& a_lhs, const ItemData& a_rhs);
+		friend int			CompareByName	(const ItemData& a_lhs, const ItemData& a_rhs);
+		friend int			CompareByValue	(const ItemData& a_lhs, const ItemData& a_rhs);
+		friend int			CompareByCount	(const ItemData& a_lhs, const ItemData& a_rhs);
+
 		InventoryEntryData*	_entryData;
 		const char*			_name;
 		SInt32				_count;
@@ -378,4 +396,79 @@ namespace QuickLootRE
 
 		static const char*	_strIcons[];
 	};
+
+
+	inline ItemData& ItemData::operator=(ItemData a_rhs)
+	{
+		std::swap(this->_entryData, a_rhs._entryData);
+		std::swap(this->_name, a_rhs._name);
+		std::swap(this->_count, a_rhs._count);
+		std::swap(this->_value, a_rhs._value);
+		std::swap(this->_weight, a_rhs._weight);
+		std::swap(this->_type, a_rhs._type);
+		std::swap(this->_isStolen, a_rhs._isStolen);
+		std::swap(this->_isEnchanted, a_rhs._isEnchanted);
+		std::swap(this->_priority, a_rhs._priority);
+		return *this;
+	}
+
+
+	inline bool operator==(const ItemData& a_lhs, const ItemData& a_rhs)
+	{
+		return (a_lhs._entryData == a_rhs._entryData &&
+				a_lhs._name == a_rhs._name &&
+				a_lhs._count == a_rhs._count &&
+				a_lhs._value == a_rhs._value &&
+				a_lhs._weight == a_rhs._weight &&
+				a_lhs._type == a_rhs._type &&
+				a_lhs._isStolen == a_rhs._isStolen &&
+				a_lhs._isEnchanted == a_rhs._isEnchanted &&
+				a_lhs._priority == a_rhs._priority);
+	}
+
+
+	inline bool operator!=(const ItemData& a_lhs, const ItemData& a_rhs)
+	{
+		return !operator==(a_lhs, a_rhs);
+	}
+
+
+	inline bool operator<(const ItemData& a_lhs, const ItemData& a_rhs)
+	{
+		typedef int(*FnCompare)(const ItemData& a_lhs, const ItemData& a_rhs);
+		static FnCompare compares[] = {
+			&CompareByStolen,
+			&CompareByType,
+			&CompareByName,
+			&CompareByValue,
+			&CompareByCount
+		};
+
+		for (FnCompare compare : compares) {
+			int cmp = compare(a_lhs, a_rhs);
+			if (cmp) {
+				return cmp < 0;
+			}
+		}
+
+		return a_lhs._entryData < a_rhs._entryData;
+	}
+
+
+	inline bool operator>(const ItemData& a_lhs, const ItemData& a_rhs)
+	{
+		return operator<(a_rhs, a_lhs);
+	}
+
+
+	inline bool operator<=(const ItemData& a_lhs, const ItemData& a_rhs)
+	{
+		return !operator>(a_lhs, a_rhs);
+	}
+
+
+	inline bool operator>=(const ItemData& a_lhs, const ItemData& a_rhs)
+	{
+		return !operator<(a_lhs, a_rhs);
+	}
 }

@@ -152,8 +152,10 @@
     <ClInclude Include="include\ItemData.h" />
     <ClInclude Include="include\Keywords.h" />
     <ClInclude Include="include\LootMenu.h" />
+    <ClInclude Include="include\RE_BaseExtraList.h" />
     <ClInclude Include="include\RE_BGSBipedObjectForm.h" />
     <ClInclude Include="include\RE_GameEvents.h" />
+    <ClInclude Include="include\RE_ExtraContainerChanges.h" />
     <ClInclude Include="include\RE_TESObjectREFR.h" />
     <ClInclude Include="include\Utility.h" />
   </ItemGroup>

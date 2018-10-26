@@ -15,28 +15,6 @@
 
 namespace QuickLootRE
 {
-	ItemData::ItemData(InventoryEntryData* a_entryData) :
-		_entryData(a_entryData),
-		_name('\0'),
-		_count(0),
-		_value(0),
-		_weight(0.0),
-		_type(kType_None),
-		_isStolen(false),
-		_isEnchanted(false),
-		_priority(kPriority_Key)
-	{
-		_name = CALL_MEMBER_FN(_entryData, GenerateName)();
-		_count = _entryData->countDelta;
-		_value = CALL_MEMBER_FN(_entryData, GetValue)();
-		_weight = getWeight();
-		_type = getType();
-		_isStolen = CALL_MEMBER_FN(_entryData, IsOwnedBy)((*g_thePlayer), false);
-		_isEnchanted = getEnchanted();
-		_priority = getPriority();
-	}
-
-
 	ItemData::ItemData(InventoryEntryData* a_entryData, const char* a_name) :
 		_entryData(a_entryData),
 		_name(a_name),
@@ -49,6 +27,26 @@ namespace QuickLootRE
 		_priority(kPriority_Key)
 	{
 		_count = _entryData->countDelta;
+		_value = CALL_MEMBER_FN(_entryData, GetValue)();
+		_weight = getWeight();
+		_type = getType();
+		_isStolen = CALL_MEMBER_FN(_entryData, IsOwnedBy)((*g_thePlayer), false);
+		_isEnchanted = getEnchanted();
+		_priority = getPriority();
+	}
+
+
+	ItemData::ItemData(InventoryEntryData* a_entryData, const char* a_name, SInt32 a_count) :
+		_entryData(a_entryData),
+		_name(a_name),
+		_count(a_count),
+		_value(0),
+		_weight(0.0),
+		_type(kType_None),
+		_isStolen(false),
+		_isEnchanted(false),
+		_priority(kPriority_Key)
+	{
 		_value = CALL_MEMBER_FN(_entryData, GetValue)();
 		_weight = getWeight();
 		_type = getType();
@@ -101,6 +99,12 @@ namespace QuickLootRE
 	bool ItemData::isStolen() const
 	{
 		return _isStolen;
+	}
+
+
+	TESForm* ItemData::form() const
+	{
+		return _entryData->type;
 	}
 
 
@@ -442,6 +446,43 @@ namespace QuickLootRE
 		default:
 			return kPriority_Other;
 		}
+	}
+
+
+	int CompareByStolen(const ItemData& a_lhs, const ItemData& a_rhs)
+	{
+		SInt32 valueLHS = a_lhs._isStolen ? 1 : 0;
+		SInt32 valueRHS = a_rhs._isStolen ? 1 : 0;
+
+		return valueLHS - valueRHS;
+	}
+
+
+	static int CompareByType(const ItemData& a_lhs, const ItemData& a_rhs)
+	{
+		return a_lhs._priority - a_rhs._priority;
+	}
+
+
+	static int CompareByName(const ItemData& a_lhs, const ItemData& a_rhs)
+	{
+		return strcmp(a_lhs._name, a_rhs._name);
+	}
+
+
+	static int CompareByValue(const ItemData& a_lhs, const ItemData& a_rhs)
+	{
+		SInt32 valueLHS = a_lhs._value;
+		SInt32 valueRHS = a_rhs._value;
+		return valueLHS - valueRHS;
+	}
+
+
+	static int CompareByCount(const ItemData& a_lhs, const ItemData& a_rhs)
+	{
+		SInt32 valueLHS = a_lhs._count;
+		SInt32 valueRHS = a_rhs._count;
+		return valueLHS - valueRHS;
 	}
 
 

@@ -16,6 +16,8 @@
 #include "ItemData.h"  // ItemData
 #include "InventoryList.h"  // g_invList
 
+#include "RE_BaseExtraList.h"  // RE::BaseExtraList
+#include "RE_ExtraContainerChanges.h"  // RE::ExtraContainerChanges::RE
 #include "RE_TESObjectREFR.h"  // RE::TESObjectREFR
 
 
@@ -106,6 +108,42 @@ namespace QuickLootRE
 	}
 
 
+	void LootMenu::TakeItem()
+	{
+		if (_singleton) {
+			RE::TESObjectREFR* containerRef = reinterpret_cast<RE::TESObjectREFR*>(g_crosshairRef);
+			if (containerRef && !g_invList.empty()) {
+				ItemData item = g_invList[_selectedIndex];
+				g_invList.erase(g_invList.begin() + _selectedIndex);
+
+				UInt32 handle = 0;
+				BaseExtraList* xList = 0;
+				if (item.entryData()->extendDataList && item.entryData()->extendDataList->Count() > 0) {
+					xList = item.entryData()->extendDataList->GetNthItem(0);
+				}
+
+				ExtraContainerChanges* xContainerChanges = static_cast<ExtraContainerChanges*>(g_crosshairRef->extraData.GetByType(kExtraData_ContainerChanges));
+				if (!xContainerChanges) {
+					RE::BaseExtraList* xList = reinterpret_cast<RE::BaseExtraList*>(&g_crosshairRef->extraData);
+					RE::ExtraContainerChanges::Data* changes = new RE::ExtraContainerChanges::Data(g_crosshairRef);
+					xList->SetInventoryChanges(changes);
+					changes->InitContainer();
+				}
+
+				containerRef->RemoveItem(&handle, item.form(), item.count(), RE::TESObjectREFR::RemoveType::kRemoveType_Take, xList, *g_thePlayer, 0, 0);
+
+				Update();
+			}
+		}
+	}
+
+
+	BSFixedString LootMenu::GetName()
+	{
+		return "LootMenu";
+	}
+
+
 	UInt32 LootMenu::ProcessMessage(UIMessage* a_message)
 	{
 		if (a_message->message == 6) {
@@ -157,45 +195,12 @@ namespace QuickLootRE
 	}
 
 
-	void LootMenu::TakeItem()
+	void LootMenu::SendChestLootedEvent()
 	{
-		if (_singleton) {
-			RE::TESObjectREFR* containerRef = reinterpret_cast<RE::TESObjectREFR*>(g_crosshairRef);
-			if (containerRef && !g_invList.empty()) {
-				ItemData item = g_invList[_selectedIndex];
-				g_invList.erase(g_invList.begin() + _selectedIndex);
-				UInt32 handle = 0;
-				BaseExtraList* xList = 0;
-				if (item.entryData()->extendDataList && item.entryData()->extendDataList->Count() > 0) {
-					xList = item.entryData()->extendDataList->GetNthItem(0);
-				}
+		typedef void FnSendChestLootedEvent_t();
+		RelocAddr<FnSendChestLootedEvent_t*> fnSendChestLootedEvent(0x008607B0);  // 1_5_50
 
-#if 0
-				ExtraContainerChanges* xContainerChanges = static_cast<ExtraContainerChanges*>(g_crosshairRef->extraData.GetByType(kExtraData_ContainerChanges));
-				if (!xContainerChanges) {
-					uintptr_t vtbl = *(uintptr_t*)item.entryData()->type;
-					xContainerChanges = static_cast<ExtraContainerChanges*>(BSExtraData::Create(kExtraData_ContainerChanges, vtbl));
-					xContainerChanges->data = (ExtraContainerChanges::Data*)Heap_Allocate(sizeof(ExtraContainerChanges::Data));
-					xContainerChanges->data->objList = EntryDataList::Create();
-				}
-
-				item.entryData()->countDelta = 0 - item.entryData()->countDelta;
-				xContainerChanges->data->objList->Push(item.entryData());
-				xContainerChanges->data->owner = g_crosshairRef;
-				xContainerChanges->data->totalWeight = item.weight();
-				xContainerChanges->data->armorWeight = 0;
-				g_crosshairRef->extraData.Add(kExtraData_ContainerChanges, xContainerChanges);
-#endif
-				containerRef->RemoveItem(&handle, item.entryData()->type, item.count(), RE::TESObjectREFR::RemoveType::kRemoveType_Take, xList, *g_thePlayer, 0, 0);
-				Update();
-			}
-		}
-	}
-
-
-	BSFixedString LootMenu::GetName()
-	{
-		return "LootMenu";
+		(*fnSendChestLootedEvent)();
 	}
 
 

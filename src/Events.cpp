@@ -10,7 +10,7 @@
 #include "skse64/GameMenus.h"  // UIManager
 #include "skse64/PapyrusEvents.h"  // SKSECrosshairRefEvent
 
-#include <string>  // string
+#include <map>  // map
 
 #include "Hooks.h"  // startActivation()
 #include "InventoryList.h"  // g_invList
@@ -22,7 +22,7 @@ namespace QuickLootRE
 	bool TESContainerVisitor::Accept(TESContainer::Entry* a_entry)
 	{
 		if (a_entry->form->formType != kFormType_LeveledItem) {
-			g_invList.add(a_entry->form, a_entry->count);
+			defaultMap[a_entry->form] = a_entry->count;
 		}
 		return true;
 	}
@@ -30,7 +30,19 @@ namespace QuickLootRE
 
 	bool EntryDataListVisitor::Accept(InventoryEntryData* a_entryData)
 	{
-		g_invList.add(a_entryData);
+		if (a_entryData) {
+			auto it = defaultMap.find(a_entryData->type);
+			if (it != defaultMap.end()) {
+				SInt32 count = it->second + a_entryData->countDelta;
+				if (count > 0) {
+					g_invList.add(a_entryData, count);
+				} else {
+					defaultMap.erase(a_entryData->type);
+				}
+			} else if (a_entryData->countDelta > 0) {
+				g_invList.add(a_entryData);
+			}
+		}
 		return true;
 	}
 
@@ -42,7 +54,8 @@ namespace QuickLootRE
 			if (container) {
 				g_crosshairRef = a_event->crosshairRef;
 				g_invList.clear();
-				getInventoryList(a_event->crosshairRef->extraData.m_data, container);
+				defaultMap.clear();
+				getInventoryList(&a_event->crosshairRef->extraData, container);
 				CALL_MEMBER_FN(UIManager::GetSingleton(), AddMessage)(&LootMenu::GetName(), UIMessage::kMessage_Close, 0);
 				CALL_MEMBER_FN(UIManager::GetSingleton(), AddMessage)(&LootMenu::GetName(), UIMessage::kMessage_Open, 0);
 			}
@@ -118,7 +131,7 @@ namespace QuickLootRE
 			TESContainer* container = DYNAMIC_CAST(g_crosshairRef->baseForm, TESForm, TESContainer);
 			if (container) {
 				g_invList.clear();
-				getInventoryList(g_crosshairRef->extraData.m_data, container);
+				getInventoryList(&g_crosshairRef->extraData, container);
 				LootMenu::Update();
 			}
 		}
@@ -126,21 +139,22 @@ namespace QuickLootRE
 	}
 
 
-	void getInventoryList(BSExtraData* a_xData, TESContainer* a_container)
+	void getInventoryList(BaseExtraList* a_xList, TESContainer* a_container)
 	{
+		// Default container
 		TESContainerVisitor containerOp;
 		a_container->Visit(containerOp);
 
-		ExtraContainerChanges* xContainerChanges = 0;
+		// Extra container changes
+		ExtraContainerChanges* xContainerChanges = static_cast<ExtraContainerChanges*>(a_xList->GetByType(kExtraData_ContainerChanges));
 		EntryDataListVisitor entryDataListOp;
-		while (a_xData) {
-			if (a_xData->GetType() == kExtraData_ContainerChanges) {
-				xContainerChanges = static_cast<ExtraContainerChanges*>(a_xData);
-				if (xContainerChanges->data && xContainerChanges->data->objList) {
-					xContainerChanges->data->objList->Find(entryDataListOp);
-				}
-			}
-			a_xData = a_xData->next;
+		if (xContainerChanges && xContainerChanges->data && xContainerChanges->data->objList) {
+			xContainerChanges->data->objList->Visit(entryDataListOp);
+		}
+
+		// Add remaining default items
+		for (auto& it : defaultMap) {
+			g_invList.add(it.first, it.second);
 		}
 	}
 
