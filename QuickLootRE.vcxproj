@@ -158,6 +158,7 @@
     <ClInclude Include="include\RE_GameEvents.h" />
     <ClInclude Include="include\RE_ExtraContainerChanges.h" />
     <ClInclude Include="include\RE_MenuEventHandler.h" />
+    <ClInclude Include="include\RE_MenuManager.h" />
     <ClInclude Include="include\RE_TESObjectLIGH.h" />
     <ClInclude Include="include\RE_TESObjectREFR.h" />
     <ClInclude Include="include\Utility.h" />

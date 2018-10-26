@@ -34,6 +34,9 @@
     <Filter Include="include\RE\Skyrim\BSDevices">
       <UniqueIdentifier>{2907cd0d-893f-426b-b3e4-2bde2fe1a730}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\RE\Skyrim\Menus">
+      <UniqueIdentifier>{70b8132a-3f5c-42c1-bd53-cb660cf26a26}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -112,6 +115,9 @@
     </ClInclude>
     <ClInclude Include="include\Input.h">
       <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE_MenuManager.h">
+      <Filter>include\RE\Skyrim\Menus</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

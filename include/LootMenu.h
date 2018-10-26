@@ -5,7 +5,7 @@
 #include "skse64/GameInput.h"  // InputEvent
 #include "skse64/GameReferences.h"  // TESObjectREFR
 #include "skse64/GameMenus.h"  // IMenu, UIMessage
-#include "skse64/GameTypes.h"  // BSFixedString
+#include "skse64/GameTypes.h"  // BSFixedString, SimpleLock
 #include "skse64/Hooks_UI.h"  // UIDelegate_v1
 #include "skse64/PluginAPI.h"  // SKSETaskInterface
 #include "skse64/ScaleformValue.h"  // GFxValue
@@ -70,6 +70,7 @@ namespace QuickLootRE
 		static LootMenu* GetSingleton();
 		static void ModSelectedIndex(SInt32 a_indexOffset);
 		static void Update();
+		static bool CanOpen(TESObjectREFR* a_ref);
 		static void TakeItem();
 		static BSFixedString GetName();
 
@@ -87,6 +88,7 @@ namespace QuickLootRE
 	private:
 
 		static LootMenu* _singleton;
+		static SimpleLock _lock;
 		static SInt32 _selectedIndex;
 	};
 

@@ -6,7 +6,7 @@
 #include "skse64/GameInput.h"  // InputEvent, InputStringHolder
 #include "skse64/GameMenus.h"  // IMenu
 #include "skse64/GameReferences.h"  // TESObjectREFR
-#include "skse64/GameTypes.h"  // BSFixedString
+#include "skse64/GameTypes.h"  // BSFixedString, SimpleLock, SimpleLocker
 #include "skse64/PluginAPI.h"  // SKSETaskInterface
 #include "skse64/ScaleformExtendedData.h"
 #include "skse64/ScaleformLoader.h"  // GFxLoader
@@ -21,6 +21,7 @@
 
 #include "RE_BaseExtraList.h"  // RE::BaseExtraList
 #include "RE_ExtraContainerChanges.h"  // RE::ExtraContainerChanges::RE
+#include "RE_MenuManager.h"  // RE::MenuManager
 #include "RE_TESObjectREFR.h"  // RE::TESObjectREFR
 
 
@@ -111,6 +112,26 @@ namespace QuickLootRE
 	}
 
 
+	bool LootMenu::CanOpen(TESObjectREFR* a_ref)
+	{
+		if (!_singleton) {
+			return false;
+		}
+
+		if (!a_ref || !a_ref->baseForm) {
+			return false;
+		}
+
+		static RE::MenuManager* mm = reinterpret_cast<RE::MenuManager*>(MenuManager::GetSingleton());
+		if (mm && mm->numPauseGame && mm->numStopCrosshairUpdate > 0) {
+			return false;
+		}
+
+		static InputManager* mapping = InputManager::GetSingleton();
+		if (!mapping || !mapping->)
+	}
+
+
 	void LootMenu::TakeItem()
 	{
 		if (_singleton) {
@@ -149,9 +170,6 @@ namespace QuickLootRE
 
 	UInt32 LootMenu::ProcessMessage(UIMessage* a_message)
 	{
-		if (a_message->message == 6) {
-			return 2;
-		}
 		switch (a_message->message) {
 		case UIMessage::kMessage_Open:
 			OnMenuOpen();
@@ -231,6 +249,8 @@ namespace QuickLootRE
 	void LootMenu::OnMenuOpen()
 	{
 		if (view) {
+			SimpleLocker lock(&_lock);
+
 			_singleton = this;
 			_selectedIndex = 0;
 			static MenuControls* mc = MenuControls::GetSingleton();
@@ -243,6 +263,8 @@ namespace QuickLootRE
 	void LootMenu::OnMenuClose()
 	{
 		if (_singleton) {
+			SimpleLocker lock(&_lock);
+
 			_singleton = 0;
 			static MenuControls* mc = MenuControls::GetSingleton();
 			RemoveMenuEventHandler(mc, this);
@@ -256,6 +278,8 @@ namespace QuickLootRE
 	void LootMenu::SetSelectedIndex()
 	{
 		if (view) {
+			SimpleLocker lock(&_lock);
+
 			LootMenuUIDelegate* dlgt = (LootMenuUIDelegate*)Heap_Allocate(sizeof(LootMenuUIDelegate));
 			new (dlgt)LootMenuUIDelegate(".setSelectedIndex", 1);
 
@@ -303,6 +327,7 @@ namespace QuickLootRE
 
 
 	LootMenu* LootMenu::_singleton = 0;
+	SimpleLock LootMenu::_lock;
 	SInt32 LootMenu::_selectedIndex = 0;
 
 
