@@ -89,9 +89,9 @@ namespace QuickLootRE
 				return false;
 			}
 		} catch (std::exception& e) {
-			std::string msg = "[DEBUG] Form (0x" + numToHexString(a_item->formID) + ") does not have TESFullName (" + std::to_string(a_item->formType) + ")";
-			_DMESSAGE(msg.c_str());
-			_DMESSAGE(e.what());
+			std::string msg = "[ERROR] Form (0x" + numToHexString(a_item->formID) + ") does not have TESFullName (" + std::to_string(a_item->formType) + ")";
+			_ERROR(msg.c_str());
+			_ERROR(e.what());
 			return false;
 		}
 

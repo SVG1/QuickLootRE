@@ -149,6 +149,7 @@
     <ClInclude Include="include\ExtendDataListVisitor.h" />
     <ClInclude Include="include\Hooks.h" />
     <ClInclude Include="include\Input.h" />
+    <ClInclude Include="include\RE_InputManager.h" />
     <ClInclude Include="include\InventoryList.h" />
     <ClInclude Include="include\ItemData.h" />
     <ClInclude Include="include\Keywords.h" />

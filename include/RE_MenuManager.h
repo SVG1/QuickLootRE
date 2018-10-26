@@ -1,6 +1,9 @@
 #pragma once
 
-#include "skse64/GameMenus.h"
+#include "common/ITypes.h"  // UInt8, UInt32, UInt64
+#include "skse64/GameEvents.h"  // EventDispatcher, MenuOpenCloseEvent, MenuModeChangeEvent
+#include "skse64/GameMenus.h"  // MenuTableItem
+#include "skse64/GameTypes.h"  // BSFixedString
 
 
 namespace RE

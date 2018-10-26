@@ -21,6 +21,7 @@
 
 #include "RE_BaseExtraList.h"  // RE::BaseExtraList
 #include "RE_ExtraContainerChanges.h"  // RE::ExtraContainerChanges::RE
+#include "RE_InputManager.h"  // RE::InputManager
 #include "RE_MenuManager.h"  // RE::MenuManager
 #include "RE_TESObjectREFR.h"  // RE::TESObjectREFR
 
@@ -127,8 +128,12 @@ namespace QuickLootRE
 			return false;
 		}
 
-		static InputManager* mapping = InputManager::GetSingleton();
-		if (!mapping || !mapping->)
+		static RE::InputManager* mapping = reinterpret_cast<RE::InputManager*>(InputManager::GetSingleton());
+		if (!mapping || !mapping->IsMovementControlsEnabled()) {
+			return false;
+		}
+
+
 	}
 
 
