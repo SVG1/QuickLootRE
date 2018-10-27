@@ -51,7 +51,7 @@ namespace QuickLootRE
 	{
 		if (a_event && a_event->crosshairRef && a_event->crosshairRef->baseForm) {
 			TESContainer* container = DYNAMIC_CAST(a_event->crosshairRef->baseForm, TESForm, TESContainer);
-			if (container) {
+			if (container && LootMenu::CanOpen(a_event->crosshairRef)) {
 				g_crosshairRef = a_event->crosshairRef;
 				g_invList.clear();
 				defaultMap.clear();

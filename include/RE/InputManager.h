@@ -2,6 +2,7 @@
 
 #include "common/ITypes.h"  // UInt8, UInt32, SInt32
 #include "skse64/GameEvents.h"  // BSTEventSource
+#include "skse64/GameInput.h"  // InputManager
 #include "skse64/GameTypes.h"  // BSFixedString, tArray
 
 
@@ -49,7 +50,7 @@ namespace RE
 		{
 			struct Mapping
 			{
-				::BSFixedString	name;		// 00 - User Event Name
+				BSFixedString	name;		// 00 - User Event Name
 				UInt16			buttonID;	// 08
 				UInt16			modifier;	// 0A
 				UInt32			sortIndex;	// 0C
@@ -64,23 +65,10 @@ namespace RE
 			STATIC_ASSERT(sizeof(Mapping) == 0x18);
 
 
-			::tArray<Mapping>	keyboardMap;
-			::tArray<Mapping>	mouseMap;
-			::tArray<Mapping>	gamepadMap;
+			tArray<Mapping>	keyboardMap;
+			tArray<Mapping>	mouseMap;
+			tArray<Mapping>	gamepadMap;
 		};
-
-
-		void*					unkPtr000;					// 000
-		::BSTEventSource<void*>	unk008;						// 008 - TODO: template type
-		InputContext*			context[kContext_Count];	// 060
-		::tArray<void*>			unk0E8;						// 0E8
-		::tArray<void*>			unk100;						// 100
-		SInt32					controlState;				// 118 - init'd to -1
-		UInt32					unk11C;						// 11C - init'd to 0x80000000
-		UInt8					allowTextInput;				// 120 - init'd to 0
-		UInt8					unk121;						// 121 - init'd to 0
-		UInt8					unk122;						// 122 - init'd to 0
-		UInt8					pad[5];						// 123
 
 
 		enum
@@ -96,49 +84,39 @@ namespace RE
 			kInputDevice_Gamepad
 		};
 
+		static InputManager*	GetSingleton() { return reinterpret_cast<InputManager*>(::InputManager::GetSingleton()); }
+		UInt8					AllowTextInput(bool allow) { return reinterpret_cast<::InputManager*>(this)->AllowTextInput(allow); }
 
-		UInt8					AllowTextInput(bool allow);
-		UInt32					GetMappedKey(const ::BSFixedString& name, InputDevice deviceType, Context contextIdx = kContext_Gameplay) const;
-		const ::BSFixedString&	GetUserEventName(UInt32 buttonID, InputDevice deviceType, Context contextIdx = kContext_Gameplay) const;
+		UInt32					GetMappedKey(const BSFixedString& name, InputDevice deviceType, Context contextIdx = kContext_Gameplay) const;
+		const BSFixedString&	GetUserEventName(UInt32 buttonID, InputDevice deviceType, Context contextIdx = kContext_Gameplay) const;
 
-		inline bool IsLookingControlsEnabled() const { return (controlState & kControlState_Looking) == kControlState_Looking; }
-		inline bool IsFlyingControlsEnabled() const { return (controlState & kControlState_Flying) == kControlState_Flying; }
-		inline bool IsSneakingControlsEnabled() const { return (controlState & kControlState_Sneaking) == kControlState_Sneaking; }
-		inline bool IsMenuControlsEnabled() const { return (controlState & kControlState_Menu) == kControlState_Menu; }
-		inline bool IsMovementControlsEnabled() const { return (controlState & kControlState_Movement) == kControlState_Movement; }
+		bool					IsLookingControlsEnabled() const	{ return (controlState & kControlState_Looking) == kControlState_Looking; }
+		bool					IsFlyingControlsEnabled() const		{ return (controlState & kControlState_Flying) == kControlState_Flying; }
+		bool					IsSneakingControlsEnabled() const	{ return (controlState & kControlState_Sneaking) == kControlState_Sneaking; }
+		bool					IsMenuControlsEnabled() const		{ return (controlState & kControlState_Menu) == kControlState_Menu; }
+		bool					IsMovementControlsEnabled() const	{ return (controlState & kControlState_Movement) == kControlState_Movement; }
+
+
+		void*					unkPtr000;					// 000
+		BSTEventSource<void*>	unk008;						// 008 - TODO: template type
+		InputContext*			context[kContext_Count];	// 060
+		tArray<void*>			unk0E8;						// 0E8
+		tArray<void*>			unk100;						// 100
+		SInt32					controlState;				// 118 - init'd to -1
+		UInt32					unk11C;						// 11C - init'd to 0x80000000
+		UInt8					allowTextInput;				// 120 - init'd to 0
+		UInt8					unk121;						// 121 - init'd to 0
+		UInt8					unk122;						// 122 - init'd to 0
+		UInt8					pad[5];						// 123
 	};
 	STATIC_ASSERT(offsetof(InputManager, context) == 0x060);
 	STATIC_ASSERT(offsetof(InputManager, allowTextInput) == 0x120);
 	STATIC_ASSERT(sizeof(InputManager) == 0x128);
 
 
-	UInt8 InputManager::AllowTextInput(bool allow)
+	UInt32 InputManager::GetMappedKey(const BSFixedString& name, InputDevice deviceType, Context contextIdx) const
 	{
-		if (allow) {
-			if (allowTextInput == 0xFF) {
-				_WARNING("InputManager::AllowTextInput: counter overflow");
-			} else {
-				allowTextInput++;
-			}
-		} else {
-			if (allowTextInput == 0) {
-				_WARNING("InputManager::AllowTextInput: counter underflow");
-			} else {
-				allowTextInput--;
-			}
-		}
-
-		if (IsConsoleMode()) {
-			Console_Print("%s text input, count = %d", allow ? "allowed" : "disallowed", allowTextInput);
-		}
-
-		return allowTextInput;
-	}
-
-
-	UInt32 InputManager::GetMappedKey(const ::BSFixedString& name, InputDevice deviceType, Context contextIdx) const
-	{
-		::tArray<InputContext::Mapping>* maps = 0;
+		tArray<InputContext::Mapping>* maps = 0;
 
 		switch (deviceType) {
 		case kInputDevice_Mouse:
@@ -155,8 +133,7 @@ namespace RE
 		if (maps) {
 			InputContext::Mapping mapping;
 			for (int i = 0; i < maps->count; ++i) {
-				maps->GetNthItem(i, mapping);
-				if (mapping.name == name) {
+				if (maps->GetNthItem(i, mapping) && mapping.name == name) {
 					return mapping.buttonID;
 				}
 			}
@@ -166,9 +143,9 @@ namespace RE
 	}
 
 
-	const ::BSFixedString& InputManager::GetUserEventName(UInt32 buttonID, InputDevice deviceType, Context contextIdx = kContext_Gameplay) const
+	const BSFixedString& InputManager::GetUserEventName(UInt32 buttonID, InputDevice deviceType, Context contextIdx) const
 	{
-		::tArray<InputContext::Mapping>* maps = 0;
+		tArray<InputContext::Mapping>* maps = 0;
 
 		switch (deviceType) {
 		case kInputDevice_Mouse:
@@ -182,13 +159,12 @@ namespace RE
 			break;
 		}
 
-		static ::BSFixedString none = "";
+		static BSFixedString none = "";
 
 		if (maps) {
 			InputContext::Mapping mapping;
 			for (int i = 0; i < maps->count; ++i) {
-				maps->GetNthItem(i, mapping);
-				if (mapping.buttonID == buttonID) {
+				if (maps->GetNthItem(i, mapping) && mapping.buttonID == buttonID) {
 					return mapping.name;
 				}
 			}

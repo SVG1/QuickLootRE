@@ -149,6 +149,11 @@
     <ClInclude Include="include\ExtendDataListVisitor.h" />
     <ClInclude Include="include\Hooks.h" />
     <ClInclude Include="include\Input.h" />
+    <ClInclude Include="include\Offsets.h" />
+    <ClInclude Include="include\RE_Actor.h" />
+    <ClInclude Include="include\RE_ActorState.h" />
+    <ClInclude Include="include\RE_Character.h" />
+    <ClInclude Include="include\RE_IAnimationGraphManagerHolder.h" />
     <ClInclude Include="include\RE_InputManager.h" />
     <ClInclude Include="include\InventoryList.h" />
     <ClInclude Include="include\ItemData.h" />
@@ -156,10 +161,11 @@
     <ClInclude Include="include\LootMenu.h" />
     <ClInclude Include="include\RE_BaseExtraList.h" />
     <ClInclude Include="include\RE_BGSBipedObjectForm.h" />
-    <ClInclude Include="include\RE_GameEvents.h" />
+    <ClInclude Include="include\RE_EventDispatcherList.h" />
     <ClInclude Include="include\RE_ExtraContainerChanges.h" />
     <ClInclude Include="include\RE_MenuEventHandler.h" />
     <ClInclude Include="include\RE_MenuManager.h" />
+    <ClInclude Include="include\RE_PlayerCharacter.h" />
     <ClInclude Include="include\RE_TESObjectLIGH.h" />
     <ClInclude Include="include\RE_TESObjectREFR.h" />
     <ClInclude Include="include\Utility.h" />

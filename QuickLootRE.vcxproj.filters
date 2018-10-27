@@ -34,6 +34,15 @@
     <Filter Include="include\RE\Skyrim\BSDevices">
       <UniqueIdentifier>{2907cd0d-893f-426b-b3e4-2bde2fe1a730}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\RE\Skyrim\Forms\Character">
+      <UniqueIdentifier>{9203b7b9-a92b-44b8-984b-6678a52fc120}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\RE\Skyrim\Forms\Character\Components">
+      <UniqueIdentifier>{5fccb3da-e204-4705-9f25-8c15c4bfa7a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\RE\Skyrim\Animation">
+      <UniqueIdentifier>{d77b0bb8-aa8c-46d5-abc6-93716c2b0c9a}</UniqueIdentifier>
+    </Filter>
     <Filter Include="include\RE\Skyrim\Menus">
       <UniqueIdentifier>{70b8132a-3f5c-42c1-bd53-cb660cf26a26}</UniqueIdentifier>
     </Filter>
@@ -98,9 +107,6 @@
     <ClInclude Include="include\RE_BGSBipedObjectForm.h">
       <Filter>include\RE\Skyrim\FormComponents</Filter>
     </ClInclude>
-    <ClInclude Include="include\RE_GameEvents.h">
-      <Filter>include\RE\SKSE\API</Filter>
-    </ClInclude>
     <ClInclude Include="include\RE_ExtraContainerChanges.h">
       <Filter>include\RE\Skyrim\ExtraData</Filter>
     </ClInclude>
@@ -121,6 +127,27 @@
     </ClInclude>
     <ClInclude Include="include\RE_InputManager.h">
       <Filter>include\RE\Skyrim\BSDevices</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Offsets.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE_EventDispatcherList.h">
+      <Filter>include\RE\SKSE\API</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE_PlayerCharacter.h">
+      <Filter>include\RE\Skyrim\Forms</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE_Actor.h">
+      <Filter>include\RE\Skyrim\Forms</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE_ActorState.h">
+      <Filter>include\RE\Skyrim\Forms\Character\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE_Character.h">
+      <Filter>include\RE\Skyrim\Forms</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE_IAnimationGraphManagerHolder.h">
+      <Filter>include\RE\Skyrim\Animation</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

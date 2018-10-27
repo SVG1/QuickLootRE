@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/ITypes.h"
+#include "common/ITypes.h"  // UInt32
 #include "skse64/GameFormComponents.h"  // BaseFormComponent
 
 
@@ -10,7 +10,7 @@ namespace RE
 	{
 	public:
 		// applicable to DefaultRace
-		enum PartFlag
+		enum PartFlag : UInt32
 		{
 			kPart_Head		= 1 << 0,
 			kPart_Hair		= 1 << 1,
@@ -47,7 +47,7 @@ namespace RE
 		};
 
 
-		enum
+		enum Weight : UInt32
 		{
 			kWeight_Light = 0,
 			kWeight_Heavy,
@@ -58,11 +58,8 @@ namespace RE
 		struct Data
 		{
 			UInt32	parts;			// 0 - init'd to 0
-			UInt32	weightClass;	// 4 - init'd to 2 (none)
+			Weight	weightClass;	// 4 - init'd to 2 (none)
 		};
-		STATIC_ASSERT(offsetof(Data, parts)			== 0x0);
-		STATIC_ASSERT(offsetof(Data, weightClass)	== 0x4);
-		STATIC_ASSERT(sizeof(Data)					== 0x8);
 
 
 		UInt32	GetSlotMask() const				{ return bipedObjectData.parts; }
@@ -76,10 +73,7 @@ namespace RE
 		UInt32	AddSlotToMask(UInt32 slot)		{ bipedObjectData.parts |= slot; return bipedObjectData.parts; }
 		UInt32	RemoveSlotFromMask(UInt32 slot)	{ bipedObjectData.parts &= ~slot; return bipedObjectData.parts; }
 
-		// members
+
 		Data	bipedObjectData;	// 8
 	};
-	STATIC_ASSERT(offsetof(BGSBipedObjectForm, bipedObjectData)	== 0x8);
-	STATIC_ASSERT(sizeof(BGSBipedObjectForm)					== 0x10);
-
 }

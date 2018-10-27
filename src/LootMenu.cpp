@@ -23,6 +23,7 @@
 #include "RE_ExtraContainerChanges.h"  // RE::ExtraContainerChanges::RE
 #include "RE_InputManager.h"  // RE::InputManager
 #include "RE_MenuManager.h"  // RE::MenuManager
+#include "RE_PlayerCharacter.h"  // RE::PlayerCharacter
 #include "RE_TESObjectREFR.h"  // RE::TESObjectREFR
 
 
@@ -115,25 +116,44 @@ namespace QuickLootRE
 
 	bool LootMenu::CanOpen(TESObjectREFR* a_ref)
 	{
-		if (!_singleton) {
+		RE::TESObjectREFR* ref = reinterpret_cast<RE::TESObjectREFR*>(a_ref);
+
+		if (!ref || !ref->baseForm) {
 			return false;
 		}
 
-		if (!a_ref || !a_ref->baseForm) {
-			return false;
-		}
-
-		static RE::MenuManager* mm = reinterpret_cast<RE::MenuManager*>(MenuManager::GetSingleton());
+		static RE::MenuManager* mm = RE::MenuManager::GetSingleton();
 		if (mm && mm->numPauseGame && mm->numStopCrosshairUpdate > 0) {
 			return false;
 		}
 
-		static RE::InputManager* mapping = reinterpret_cast<RE::InputManager*>(InputManager::GetSingleton());
+		static RE::InputManager* mapping = RE::InputManager::GetSingleton();
 		if (!mapping || !mapping->IsMovementControlsEnabled()) {
 			return false;
 		}
 
+		static RE::PlayerCharacter* player = reinterpret_cast<RE::PlayerCharacter*>(*g_thePlayer);
+		if (/*player->GetGrabbedRef() ||*/ player->GetActorInFavorState() || player->IsInKillMove()) {
+			return false;
+		}
 
+		bool bAnimationDriven;
+		static BSFixedString strAnimationDriven = "bAnimationDriven";
+		if (player->animGraphHolder.GetAnimationVariableBool(strAnimationDriven, bAnimationDriven) && bAnimationDriven) {
+			return false;
+		}
+
+		if (player->IsInCombat()) {
+			return false;
+		}
+
+#if 0
+		if (ref->IsOffLimits()) {
+			return false;
+		}
+#endif
+
+		return true;
 	}
 
 
@@ -216,11 +236,6 @@ namespace QuickLootRE
 			case Gamepad::kGamepad_Down:
 				LootMenu::ModSelectedIndex(1);
 				break;
-			case Gamepad::kGamepad_X:
-				CALL_MEMBER_FN(UIManager::GetSingleton(), AddMessage)(&LootMenu::GetName(), UIMessage::kMessage_Close, 0);
-				g_crosshairRef = 0;
-				startActivation(*g_thePlayer);
-				break;
 			}
 			break;
 		case kDeviceType_Mouse:
@@ -240,9 +255,6 @@ namespace QuickLootRE
 				LootMenu::ModSelectedIndex(-1);
 			} else if (*a_event->GetControlID() == holder->zoomOut) {
 				LootMenu::ModSelectedIndex(1);
-			} else if (*a_event->GetControlID() == holder->activate) {
-				//LootMenu::TakeItem();
-				break;
 			}
 			break;
 		}
@@ -259,7 +271,7 @@ namespace QuickLootRE
 			_singleton = this;
 			_selectedIndex = 0;
 			static MenuControls* mc = MenuControls::GetSingleton();
-			RegisterMenuEventHandler(mc, this);
+			Hooks::RegisterMenuEventHandler(mc, this);
 			Update();
 		}
 	}
@@ -272,7 +284,7 @@ namespace QuickLootRE
 
 			_singleton = 0;
 			static MenuControls* mc = MenuControls::GetSingleton();
-			RemoveMenuEventHandler(mc, this);
+			Hooks::RemoveMenuEventHandler(mc, this);
 			LootMenuUIDelegate* dlgt = (LootMenuUIDelegate*)Heap_Allocate(sizeof(LootMenuUIDelegate));
 			new (dlgt)LootMenuUIDelegate(".closeContainer", 0);
 			g_task->AddUITask(dlgt);
@@ -328,6 +340,26 @@ namespace QuickLootRE
 		if (this) {
 			Heap_Free(this);
 		}
+	}
+
+
+	void DelayedUpdater::Run()
+	{
+		LootMenu* lootMenu = LootMenu::GetSingleton();
+		if (lootMenu) {
+			lootMenu->Update();
+		}
+	}
+
+
+	void DelayedUpdater::Dispose()
+	{}
+
+
+	void DelayedUpdater::Register()
+	{
+		static DelayedUpdater singleton;
+		g_task->AddTask(&singleton);
 	}
 
 

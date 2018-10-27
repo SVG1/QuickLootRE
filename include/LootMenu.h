@@ -5,6 +5,7 @@
 #include "skse64/GameInput.h"  // InputEvent
 #include "skse64/GameReferences.h"  // TESObjectREFR
 #include "skse64/GameMenus.h"  // IMenu, UIMessage
+#include "skse64/gamethreads.h"  // TaskDelegate
 #include "skse64/GameTypes.h"  // BSFixedString, SimpleLock
 #include "skse64/Hooks_UI.h"  // UIDelegate_v1
 #include "skse64/PluginAPI.h"  // SKSETaskInterface
@@ -103,6 +104,16 @@ namespace QuickLootRE
 
 		std::vector<GFxValue> args;
 		std::string target;
+	};
+
+
+	class DelayedUpdater : public TaskDelegate
+	{
+	public:
+		virtual void Run() override;
+		virtual void Dispose() override;
+
+		static void	Register();
 	};
 
 
