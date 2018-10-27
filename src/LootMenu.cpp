@@ -19,12 +19,13 @@
 #include "ItemData.h"  // ItemData
 #include "InventoryList.h"  // g_invList
 
-#include "RE_BaseExtraList.h"  // RE::BaseExtraList
-#include "RE_ExtraContainerChanges.h"  // RE::ExtraContainerChanges::RE
-#include "RE_InputManager.h"  // RE::InputManager
-#include "RE_MenuManager.h"  // RE::MenuManager
-#include "RE_PlayerCharacter.h"  // RE::PlayerCharacter
-#include "RE_TESObjectREFR.h"  // RE::TESObjectREFR
+#include "RE/BaseExtraList.h"  // RE::BaseExtraList
+#include "RE/ExtraContainerChanges.h"  // RE::ExtraContainerChanges::RE
+#include "RE/InputManager.h"  // RE::InputManager
+#include "RE/MenuControls.h"  // RE::MenuControls
+#include "RE/MenuManager.h"  // RE::MenuManager
+#include "RE/PlayerCharacter.h"  // RE::PlayerCharacter
+#include "RE/TESObjectREFR.h"  // RE::TESObjectREFR
 
 
 namespace QuickLootRE
@@ -270,8 +271,8 @@ namespace QuickLootRE
 
 			_singleton = this;
 			_selectedIndex = 0;
-			static MenuControls* mc = MenuControls::GetSingleton();
-			Hooks::RegisterMenuEventHandler(mc, this);
+			static RE::MenuControls* mc = RE::MenuControls::GetSingleton();
+			mc->RegisterHandler(this);
 			Update();
 		}
 	}
@@ -283,8 +284,8 @@ namespace QuickLootRE
 			SimpleLocker lock(&_lock);
 
 			_singleton = 0;
-			static MenuControls* mc = MenuControls::GetSingleton();
-			Hooks::RemoveMenuEventHandler(mc, this);
+			static RE::MenuControls* mc = RE::MenuControls::GetSingleton();
+			mc->RemoveHandler(this);
 			LootMenuUIDelegate* dlgt = (LootMenuUIDelegate*)Heap_Allocate(sizeof(LootMenuUIDelegate));
 			new (dlgt)LootMenuUIDelegate(".closeContainer", 0);
 			g_task->AddUITask(dlgt);

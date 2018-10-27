@@ -14,7 +14,7 @@
 #include <vector>  // vector
 #include <string>  // string
 
-#include "RE_MenuEventHandler.h"  // RE::MenuEventHandler
+#include "RE/MenuEventHandler.h"  // RE::MenuEventHandler
 
 
 namespace QuickLootRE

@@ -13,7 +13,7 @@
 #include "ItemData.h"  // ItemData
 #include "Utility.h"  // numToHexString
 
-#include "RE_TESObjectLIGH.h"  // RE::TESObjectLIGH
+#include "RE/TESObjectLIGH.h"  // RE::TESObjectLIGH
 
 
 namespace QuickLootRE

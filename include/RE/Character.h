@@ -1,6 +1,6 @@
 #pragma once
 
-#include "RE_Actor.h"
+#include "RE/Actor.h"
 
 
 namespace RE

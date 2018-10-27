@@ -8,9 +8,6 @@ namespace RE
 	class TESObjectLIGH : public TESBoundAnimObject
 	{
 	public:
-		enum { kTypeID = kFormType_Light };
-
-
 		// Parents
 		TESFullName					fullName;		// 030
 		TESModelTextureSwap			texSwap;		// 040
@@ -20,6 +17,9 @@ namespace RE
 		TESValueForm				value;			// 0B0
 		BGSDestructibleObjectForm	destructible;	// 0C0
 		BGSEquipType				equipType;		// 0D0
+
+
+		enum { kTypeID = kFormType_Light };
 
 
 		enum Flag

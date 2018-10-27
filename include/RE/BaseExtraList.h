@@ -7,7 +7,7 @@
 
 #include "Offsets.h"
 
-#include "RE_ExtraContainerChanges.h"  // RE::ExtraContainerChanges::Data
+#include "RE/ExtraContainerChanges.h"  // RE::ExtraContainerChanges::Data
 
 
 namespace RE

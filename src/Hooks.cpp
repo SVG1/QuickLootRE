@@ -2,6 +2,7 @@
 
 #include "skse64/GameReferences.h"  // PlayerCharacter
 #include "skse64_common/BranchTrampoline.h"  // g_branchTrampoline
+#include "skse64_common/SafeWrite.h"  // SafeWrite64
 
 #include "LootMenu.h"  // LootMenu
 #include "Offsets.h"
@@ -9,24 +10,34 @@
 
 namespace Hooks
 {
-	RelocPtr<uintptr_t> StartActivationOldCall(START_ACTIVATION_ADDR);
-	RelocAddr<FnStartActivation_t*> fnStartActivationOld(START_ACTIVATION_FUNC);
-	RelocAddr<RegisterMenuEventHandler_t*> RegisterMenuEventHandler(REGISTER_MENU_EVENT_HANDLER);
-	RelocAddr<RemoveMenuEventHandler_t*> RemoveMenuEventHandler(REMOVE_MENU_EVENT_HANDLER);
+	RelocAddr<_StartActivation_Fn*> StartActivation_Fn(START_ACTIVATION_FN);
+	RelocPtr<uintptr_t> StartActivation_Call(START_ACTIVATION_CALL);
+
+	RelocPtr<_ReadyWeaponHandler_ProcessButton> vtbl_ReadyWeaponHandler_ProcessButton(MOVEMENT_HANDLER_VTBL_META + 0x17 * 8);
+	_ReadyWeaponHandler_ProcessButton orig_ReadyWeaponHandler_ProcessButton;
 
 
-	void StartActivation_Hook(PlayerCharacter* a_player)
+	void hook_StartActivation_Call(PlayerCharacter* a_player)
 	{
 		if (QuickLootRE::LootMenu::GetSingleton()) {
 			QuickLootRE::LootMenu::TakeItem();
 		} else {
-			fnStartActivationOld(a_player);
+			StartActivation_Fn(a_player);
 		}
 	}
 
 
-	void InstallHooks()
+	void hook_ReadyWeaponHandler_ProcessButton(RE::PlayerControls* a_handler, ButtonEvent* a_event, RE::PlayerControls::Data024* a_data)
 	{
-		g_branchTrampoline.Write5Call(StartActivationOldCall.GetUIntPtr(), GetFnAddr(StartActivation_Hook));
+		return orig_ReadyWeaponHandler_ProcessButton(a_handler, a_event, a_data);
+	}
+
+
+	void installHooks()
+	{
+		g_branchTrampoline.Write5Call(StartActivation_Call.GetUIntPtr(), GetFnAddr(hook_StartActivation_Call));
+
+		orig_ReadyWeaponHandler_ProcessButton = *vtbl_ReadyWeaponHandler_ProcessButton;
+		SafeWrite64(vtbl_ReadyWeaponHandler_ProcessButton.GetUIntPtr(), GetFnAddr(hook_ReadyWeaponHandler_ProcessButton));
 	}
 }

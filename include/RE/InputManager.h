@@ -46,6 +46,20 @@ namespace RE
 		};
 
 
+		enum InputDevice : UInt32
+		{
+			kInputDevice_Keyboard = 0,
+			kInputDevice_Mouse,
+			kInputDevice_Gamepad
+		};
+
+
+		enum
+		{
+			kInvalid = 0xFFFFFFFF
+		};
+
+
 		struct InputContext
 		{
 			struct Mapping
@@ -57,12 +71,6 @@ namespace RE
 				UInt32			flags;		// 10 - User Event Binary Flag
 				UInt32			pad14;		// 14
 			};
-			STATIC_ASSERT(offsetof(Mapping, name) == 0x00);
-			STATIC_ASSERT(offsetof(Mapping, buttonID) == 0x08);
-			STATIC_ASSERT(offsetof(Mapping, modifier) == 0x0A);
-			STATIC_ASSERT(offsetof(Mapping, sortIndex) == 0x0C);
-			STATIC_ASSERT(offsetof(Mapping, flags) == 0x10);
-			STATIC_ASSERT(sizeof(Mapping) == 0x18);
 
 
 			tArray<Mapping>	keyboardMap;
@@ -70,19 +78,6 @@ namespace RE
 			tArray<Mapping>	gamepadMap;
 		};
 
-
-		enum
-		{
-			kInvalid = 0xFFFFFFFF
-		};
-
-
-		enum InputDevice : UInt32
-		{
-			kInputDevice_Keyboard = 0,
-			kInputDevice_Mouse,
-			kInputDevice_Gamepad
-		};
 
 		static InputManager*	GetSingleton() { return reinterpret_cast<InputManager*>(::InputManager::GetSingleton()); }
 		UInt8					AllowTextInput(bool allow) { return reinterpret_cast<::InputManager*>(this)->AllowTextInput(allow); }
@@ -109,9 +104,6 @@ namespace RE
 		UInt8					unk122;						// 122 - init'd to 0
 		UInt8					pad[5];						// 123
 	};
-	STATIC_ASSERT(offsetof(InputManager, context) == 0x060);
-	STATIC_ASSERT(offsetof(InputManager, allowTextInput) == 0x120);
-	STATIC_ASSERT(sizeof(InputManager) == 0x128);
 
 
 	UInt32 InputManager::GetMappedKey(const BSFixedString& name, InputDevice deviceType, Context contextIdx) const

@@ -8,6 +8,9 @@ namespace RE
 	class EventDispatcherList
 	{
 	public:
+		static EventDispatcherList* GetEventDispatcherList() { return reinterpret_cast<EventDispatcherList*>(::GetEventDispatcherList()); }
+
+
 		EventDispatcher<void>								unk0000;					//	00
 		EventDispatcher<void>								unk0058;					//  58  - sink offset 010
 		EventDispatcher<TESActiveEffectApplyRemoveEvent>	unk00B0;					//  B0  - sink offset 018
@@ -62,8 +65,5 @@ namespace RE
 		EventDispatcher<void>								unk11E0;					// 11E0 - sink offset 208
 		EventDispatcher<void>								unk1238;					// 1238 - sink offset 210
 		EventDispatcher<TESUniqueIDChangeEvent>				uniqueIdChangeDispatcher;	// 1290 - sink offset 218
-
-
-		static EventDispatcherList* GetEventDispatcherList() { return reinterpret_cast<EventDispatcherList*>(::GetEventDispatcherList()); }
 	};
 }

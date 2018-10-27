@@ -110,7 +110,7 @@ extern "C" {
 			return false;
 		}
 
-		Hooks::InstallHooks();
+		Hooks::installHooks();
 
 		return true;
 	}

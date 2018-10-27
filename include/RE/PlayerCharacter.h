@@ -12,8 +12,8 @@
 
 #include "Offsets.h"
 
-#include "RE_Actor.h"  // RE::Actor
-#include "RE_Character.h"  // RE::Character
+#include "RE/Actor.h"  // RE::Actor
+#include "RE/Character.h"  // RE::Character
 
 
 namespace RE
@@ -21,9 +21,6 @@ namespace RE
 	class PlayerCharacter : public Character
 	{
 	public:
-		virtual ~PlayerCharacter();
-
-
 		// parents
 		BSTEventSink<MenuOpenCloseEvent>	menuOpenCloseEvent;			// 2B0
 		BSTEventSink<MenuModeChangeEvent>	menuModeChangeEvent;		// 2B8
@@ -49,6 +46,8 @@ namespace RE
 			UInt32 pad;	// C
 		};
 
+
+		virtual ~PlayerCharacter();
 
 		TintMask*			GetOverlayTintMask(TintMask* original)		{ return reinterpret_cast<::PlayerCharacter*>(this)->GetOverlayTintMask(original); }
 		tArray<TintMask*>*	GetTintList()								{ return reinterpret_cast<::PlayerCharacter*>(this)->GetTintList(); }

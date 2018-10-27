@@ -41,16 +41,16 @@ namespace RE
 
 		virtual ~ActorState();
 
-		UInt32 GetSitState() const;
-		UInt32 GetSleepState() const;
-		UInt32 GetFlyingState() const	{ return (flags04 >> 0x12) & 0x07; }
-		bool IsBleedingOut() const		{ UInt32 state = (flags04 >> 0x15) & 0x0F; return (state == 7 || state == 8); }
-		bool IsWeaponDrawn() const		{ return (flags08 >> 5 & 7) >= 3; }
-		bool IsSneaking() const			{ return (flags04 & kState_Sneaking) != 0; }
-		bool IsSwimming() const			{ return (flags04 & kState_Swimming) != 0; }
-		bool IsSprinting() const		{ return (flags04 & kState_Sprinting) != 0; }
-		bool IsFlying() const			{ UInt32 flyingState = GetFlyingState(); return (flyingState != 0) && (flyingState != 5); }
-		bool IsUnconscious() const		{ return (flags04 & 0x01E00000) == 0x00600000; }
+		UInt32	GetSitState() const;
+		UInt32	GetSleepState() const;
+		UInt32	GetFlyingState() const	{ return (flags04 >> 0x12) & 0x07; }
+		bool	IsBleedingOut() const	{ UInt32 state = (flags04 >> 0x15) & 0x0F; return (state == 7 || state == 8); }
+		bool	IsWeaponDrawn() const	{ return (flags08 >> 5 & 7) >= 3; }
+		bool	IsSneaking() const		{ return (flags04 & kState_Sneaking) != 0; }
+		bool	IsSwimming() const		{ return (flags04 & kState_Swimming) != 0; }
+		bool	IsSprinting() const		{ return (flags04 & kState_Sprinting) != 0; }
+		bool	IsFlying() const		{ UInt32 flyingState = GetFlyingState(); return (flyingState != 0) && (flyingState != 5); }
+		bool	IsUnconscious() const	{ return (flags04 & 0x01E00000) == 0x00600000; }
 
 
 		UInt32	flags04;	// 08

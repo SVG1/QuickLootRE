@@ -101,53 +101,59 @@
     <ClInclude Include="include\Hooks.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\RE_BaseExtraList.h">
-      <Filter>include\RE\Skyrim\FormComponents</Filter>
-    </ClInclude>
-    <ClInclude Include="include\RE_BGSBipedObjectForm.h">
-      <Filter>include\RE\Skyrim\FormComponents</Filter>
-    </ClInclude>
-    <ClInclude Include="include\RE_ExtraContainerChanges.h">
-      <Filter>include\RE\Skyrim\ExtraData</Filter>
-    </ClInclude>
-    <ClInclude Include="include\RE_TESObjectLIGH.h">
-      <Filter>include\RE\Skyrim\Forms</Filter>
-    </ClInclude>
-    <ClInclude Include="include\RE_TESObjectREFR.h">
-      <Filter>include\RE\Skyrim\Forms</Filter>
-    </ClInclude>
-    <ClInclude Include="include\RE_MenuEventHandler.h">
-      <Filter>include\RE\Skyrim\BSDevices</Filter>
-    </ClInclude>
     <ClInclude Include="include\Input.h">
       <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\RE_MenuManager.h">
-      <Filter>include\RE\Skyrim\Menus</Filter>
-    </ClInclude>
-    <ClInclude Include="include\RE_InputManager.h">
-      <Filter>include\RE\Skyrim\BSDevices</Filter>
     </ClInclude>
     <ClInclude Include="include\Offsets.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\RE_EventDispatcherList.h">
+    <ClInclude Include="include\RE\EventDispatcherList.h">
       <Filter>include\RE\SKSE\API</Filter>
     </ClInclude>
-    <ClInclude Include="include\RE_PlayerCharacter.h">
-      <Filter>include\RE\Skyrim\Forms</Filter>
+    <ClInclude Include="include\RE\IAnimationGraphManagerHolder.h">
+      <Filter>include\RE\Skyrim\Animation</Filter>
     </ClInclude>
-    <ClInclude Include="include\RE_Actor.h">
-      <Filter>include\RE\Skyrim\Forms</Filter>
+    <ClInclude Include="include\RE\InputManager.h">
+      <Filter>include\RE\Skyrim\BSDevices</Filter>
     </ClInclude>
-    <ClInclude Include="include\RE_ActorState.h">
+    <ClInclude Include="include\RE\MenuEventHandler.h">
+      <Filter>include\RE\Skyrim\BSDevices</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\PlayerControls.h">
+      <Filter>include\RE\Skyrim\BSDevices</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\ExtraContainerChanges.h">
+      <Filter>include\RE\Skyrim\ExtraData</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\BaseExtraList.h">
+      <Filter>include\RE\Skyrim\FormComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\BGSBipedObjectForm.h">
+      <Filter>include\RE\Skyrim\FormComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\ActorState.h">
       <Filter>include\RE\Skyrim\Forms\Character\Components</Filter>
     </ClInclude>
-    <ClInclude Include="include\RE_Character.h">
+    <ClInclude Include="include\RE\Actor.h">
       <Filter>include\RE\Skyrim\Forms</Filter>
     </ClInclude>
-    <ClInclude Include="include\RE_IAnimationGraphManagerHolder.h">
-      <Filter>include\RE\Skyrim\Animation</Filter>
+    <ClInclude Include="include\RE\Character.h">
+      <Filter>include\RE\Skyrim\Forms</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\PlayerCharacter.h">
+      <Filter>include\RE\Skyrim\Forms</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\TESObjectLIGH.h">
+      <Filter>include\RE\Skyrim\Forms</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\TESObjectREFR.h">
+      <Filter>include\RE\Skyrim\Forms</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\MenuManager.h">
+      <Filter>include\RE\Skyrim\Menus</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\MenuControls.h">
+      <Filter>include\RE\Skyrim\BSDevices</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

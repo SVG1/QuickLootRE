@@ -2,9 +2,9 @@
 
 #include "skse64/GameReferences.h"
 
-#include "RE_ActorState.h"  // RE::ActorState
-#include "RE_PlayerCharacter.h"  // RE::PlayerCharacter
-#include "RE_TESObjectREFR.h"  // RE::TESObjectREFR
+#include "RE/ActorState.h"  // RE::ActorState
+#include "RE/PlayerCharacter.h"  // RE::PlayerCharacter
+#include "RE/TESObjectREFR.h"  // RE::TESObjectREFR
 
 
 namespace RE
@@ -63,7 +63,8 @@ namespace RE
 		IPostAnimationChannelUpdateFunctor	unk0D8;						// 0D8 IPostAnimationChannelUpdateFunctor
 
 
-		virtual			~Actor();
+		virtual	~Actor();
+
 		virtual void	Unk_9C(void);
 		virtual void	Unk_9D(void);
 		virtual void	Unk_9E(void);

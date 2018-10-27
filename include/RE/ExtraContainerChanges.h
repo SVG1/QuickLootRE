@@ -14,10 +14,6 @@ namespace RE
 	class ExtraContainerChanges : public BSExtraData
 	{
 	public:
-		ExtraContainerChanges();
-		virtual ~ExtraContainerChanges();
-
-
 		class Data
 		{
 		public:
@@ -44,6 +40,9 @@ namespace RE
 			DEFINE_MEMBER_FN(InitContainer, void, EXTRA_CONTAINER_CHANGES_DATA_INIT_CONTAINER);
 		};
 
+
+		ExtraContainerChanges();
+		virtual	~ExtraContainerChanges();
 
 		::ExtraContainerChanges::FoundEquipData		FindEquipped(FormMatcher& matcher, bool isWorn = true, bool isWornLeft = true)	{ return reinterpret_cast<::ExtraContainerChanges*>(this)->FindEquipped(matcher, isWorn, isWornLeft); }
 		::ExtraContainerChanges::FoundHotkeyData	FindHotkey(SInt32 hotkey)														{ return reinterpret_cast<::ExtraContainerChanges*>(this)->FindHotkey(hotkey); }

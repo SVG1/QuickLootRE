@@ -17,7 +17,7 @@
 #include "Hooks.h"  // TESObjectREFR_LookupRefByHandle
 #include "Offsets.h"
 
-#include "RE_IAnimationGraphManagerHolder.h"  // RE::IAnimationGraphManagerHolder
+#include "RE/IAnimationGraphManagerHolder.h"  // RE::IAnimationGraphManagerHolder
 
 
 namespace RE
@@ -25,6 +25,12 @@ namespace RE
 	class TESObjectREFR : public TESForm
 	{
 	public:
+		// parents
+		BSHandleRefObject						handleRefObject;	// 20
+		BSTEventSink <BSAnimationGraphEvent>	animGraphEventSink;	// 30
+		IAnimationGraphManagerHolder			animGraphHolder;	// 38
+
+
 		enum { kTypeID = kFormType_Reference };
 
 
@@ -53,10 +59,12 @@ namespace RE
 		};
 
 
-		// parents
-		BSHandleRefObject						handleRefObject;	// 20
-		BSTEventSink <BSAnimationGraphEvent>	animGraphEventSink;	// 30
-		IAnimationGraphManagerHolder			animGraphHolder;	// 38
+		struct LoadedState
+		{
+			UInt8	todo[0x68];	// 00
+			NiNode*	node;		// 68
+			// ... probably more
+		};
 
 
 		virtual void					Unk_39(void);
@@ -158,14 +166,6 @@ namespace RE
 		virtual bool					IsDead(UInt8 unk1);  // unk1 = 1 for Actors
 		virtual void					Unk_9A(void);
 		virtual void					Unk_9B(void);
-
-
-		struct LoadedState
-		{
-			UInt8	todo[0x68];	// 00
-			NiNode*	node;		// 68
-			// ... probably more
-		};
 
 
 		float			GetBaseScale()											{ return CALL_MEMBER_FN(reinterpret_cast<::TESObjectREFR*>(this), GetBaseScale)(); }
