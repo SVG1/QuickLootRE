@@ -42,7 +42,7 @@ namespace RE
 			kPart_Unnamed28 = 1 << 28,
 			kPart_Unnamed29 = 1 << 29,
 			kPart_Unnamed30 = 1 << 30,
-			kPart_FX01		= 1 << 31,
+			kPart_FX01		= (UInt32)(1 << 31)
 		};
 
 

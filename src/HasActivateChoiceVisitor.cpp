@@ -29,18 +29,19 @@ namespace QuickLootRE
 			RE::BGSEntryPointPerkEntry* entryPoint = static_cast<RE::BGSEntryPointPerkEntry*>(perkEntry);
 			if (entryPoint->functionData) {
 				RE::BGSEntryPointFunctionDataActivateChoice* activateChoice = static_cast<RE::BGSEntryPointFunctionDataActivateChoice*>(entryPoint->functionData);
-				if ((activateChoice->flags & RE::BGSEntryPointFunctionDataActivateChoice::kFlag_RunImmediately) == 0) {
-
-					switch (entryPoint->perk->formID) {
-					case kPerkFormID_VampireFeed:
-					case kPerkFormID_Cannibalism:
-						break;
-					default:
+				if (entryPoint->perk && activateChoice) {
+					if ((activateChoice->flags & RE::BGSEntryPointFunctionDataActivateChoice::kFlag_RunImmediately) == 0) {
+						switch (entryPoint->perk->formID) {
+						case kPerkFormID_VampireFeed:
+						case kPerkFormID_Cannibalism:
+							break;
+						default:
+							_result = true;
+						}
+					}
+					if ((activateChoice->flags & RE::BGSEntryPointFunctionDataActivateChoice::kFlag_ReplaceDefault) != 0) {
 						_result = true;
 					}
-				}
-				if ((activateChoice->flags & RE::BGSEntryPointFunctionDataActivateChoice::kFlag_ReplaceDefault) != 0) {
-					_result = true;
 				}
 			}
 		}

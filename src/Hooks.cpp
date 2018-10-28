@@ -36,12 +36,14 @@ namespace Hooks
 
 	void hook_ReadyWeaponHandler_ProcessButton(RE::PlayerControls* a_handler, ButtonEvent* a_event, RE::PlayerControls::Data024* a_data)
 	{
-		CALL_MEMBER_FN(UIManager::GetSingleton(), AddMessage)(&QuickLootRE::LootMenu::GetName(), UIMessage::kMessage_Close, 0);
-		QuickLootRE::LootMenu::ClearContainerRef();
-		StartActivation_Fn((*g_thePlayer));
-#if 0
-		orig_ReadyWeaponHandler_ProcessButton(a_handler, a_event, a_data);
-#endif
+		using QuickLootRE::LootMenu;
+		if (LootMenu::GetSingleton()) {
+			CALL_MEMBER_FN(UIManager::GetSingleton(), AddMessage)(&LootMenu::GetName(), UIMessage::kMessage_Close, 0);
+			LootMenu::ClearContainerRef();
+			StartActivation_Fn((*g_thePlayer));
+		} else {
+			orig_ReadyWeaponHandler_ProcessButton(a_handler, a_event, a_data);
+		}
 	}
 
 

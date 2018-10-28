@@ -1,6 +1,6 @@
 #include "ExtendDataListVisitor.h"
 
-#include "RE/BaseExtraList.h"  // RE::BaseExtraList
+#include "skse64/GameBSExtraData.h"  // BaseExtraList
 
 
 namespace QuickLootRE
@@ -15,7 +15,7 @@ namespace QuickLootRE
 	{}
 
 
-	bool ExtendDataListVisitor::Accept(RE::BaseExtraList* a_xList)
+	bool ExtendDataListVisitor::Accept(BaseExtraList* a_xList)
 	{
 		if (a_xList && checkWhiteList(a_xList) && checkBlackList(a_xList)) {
 			_found = true;
@@ -32,7 +32,7 @@ namespace QuickLootRE
 	}
 
 
-	bool ExtendDataListVisitor::checkWhiteList(RE::BaseExtraList* a_xList)
+	bool ExtendDataListVisitor::checkWhiteList(BaseExtraList* a_xList)
 	{
 		for (auto& xType : _whiteList) {
 			if (!a_xList->HasType(xType)) {
@@ -43,7 +43,7 @@ namespace QuickLootRE
 	}
 
 
-	bool ExtendDataListVisitor::checkBlackList(RE::BaseExtraList* a_xList)
+	bool ExtendDataListVisitor::checkBlackList(BaseExtraList* a_xList)
 	{
 		for (auto& xType : _blackList) {
 			if (a_xList->HasType(xType)) {

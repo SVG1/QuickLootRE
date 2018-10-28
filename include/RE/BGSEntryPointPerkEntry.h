@@ -116,10 +116,7 @@ namespace RE
 
 		virtual ~BGSEntryPointPerkEntry();	// 03
 
-		static void	Calculate(EntryPointType type, TESObjectREFR* source, ...);
-
-
-		// members - THESE NEED ANALYZING
+		// members
 		UInt8						type;				// 10 - EntryPointType
 		UInt8						unk09;				// 11
 		UInt8						numArgs;			// 12

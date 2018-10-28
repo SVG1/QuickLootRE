@@ -160,6 +160,9 @@ namespace QuickLootRE
 			return false;
 		}
 
+
+#if 0
+		// Disabled until I can understand this better
 		if (player->CanProcessEntryPointPerkEntry(RE::BGSEntryPointPerkEntry::kEntryPoint_Activate)) {
 			HasActivateChoiceVisitor visitor(player, a_ref);
 			player->VisitEntryPointPerkEntries(RE::BGSEntryPointPerkEntry::kEntryPoint_Activate, visitor);
@@ -167,6 +170,7 @@ namespace QuickLootRE
 				return false;
 			}
 		}
+#endif
 
 		return true;
 	}
@@ -284,7 +288,7 @@ namespace QuickLootRE
 
 				RE::ExtraContainerChanges* xContainerChanges = static_cast<RE::ExtraContainerChanges*>(_containerRef->extraData.GetByType(kExtraData_ContainerChanges));
 				if (!xContainerChanges) {
-					RE::BaseExtraList* xList = reinterpret_cast<RE::BaseExtraList*>(&_containerRef->extraData);
+					RE::BaseExtraList* xList = &_containerRef->extraData;
 					RE::ExtraContainerChanges::Data* changes = new RE::ExtraContainerChanges::Data(_containerRef);
 					xList->SetInventoryChanges(changes);
 					changes->InitContainer();

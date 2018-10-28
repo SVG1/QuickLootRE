@@ -19,7 +19,7 @@ class TESRace;
 
 namespace RE
 {
-	class PerkRankVisitor;
+	class PerkEntryVisitor;
 
 
 	class Actor : public TESObjectREFR

@@ -5,9 +5,9 @@
 #include "skse64/GameTypes.h"  // tArray
 
 class InputEvent;
-class MenuOpenCloseEvent;
-class MenuModeChangeEvent;
-class TESFurnitureEvent;
+struct MenuOpenCloseEvent;
+struct MenuModeChangeEvent;
+struct TESFurnitureEvent;
 class PlayerInputHandler;
 
 

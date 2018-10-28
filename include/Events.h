@@ -1,6 +1,7 @@
 #pragma once
 
 #include "skse64/GameEvents.h"  // EventResult, EventDispatcher, MenuOpenCloseEvent
+#include "skse64/GameFormComponents.h"  // TESContainer::Entry
 #include "skse64/PapyrusEvents.h"  // SKSECrosshairRefEvent
 
 #include <map>  // map
@@ -8,7 +9,6 @@
 
 class InventoryEntryData;
 class TESContainer;
-class TESContainer::Entry;
 class TESForm;
 
 
