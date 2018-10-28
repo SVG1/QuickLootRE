@@ -1,12 +1,13 @@
 #pragma once
 
-#include "common/ITypes.h"  // UInt32
-
-#include "RE/Actor.h"
-#include "RE/BGSEntryPointFunctionDataActivateChoice.h"  // RE::BGSEntryPointFunctionDataActivateChoice
-#include "RE/BGSPerkEntry.h"  // RE::BGSPerkEntry
 #include "RE/PerkEntryVisitor.h"  // RE::PerkEntryVisitor
-#include "RE/TESObjectREFR.h"  // RE::TESObjectREFR
+
+namespace RE
+{
+	class Actor;
+	class BGSPerkEntry;
+	class TESObjectREFR;
+}
 
 
 namespace QuickLootRE

@@ -1,10 +1,11 @@
 #pragma once
 
-#include "common/ITypes.h"  // UInt8, UInt32, UInt64
 #include "skse64/GameEvents.h"  // EventDispatcher, MenuOpenCloseEvent, MenuModeChangeEvent
-#include "skse64/GameMenus.h"  // MenuTableItem, MenuManager, IMenu
+#include "skse64/GameMenus.h"  // MenuTableItem, MenuManager
 #include "skse64/GameTypes.h"  // BSFixedString
-#include "skse64/ScaleformMovie.h"  // GFxMovieView
+
+class GFxMovieView;
+class IMenu;
 
 
 namespace RE

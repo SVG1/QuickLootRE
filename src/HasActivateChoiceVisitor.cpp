@@ -1,13 +1,17 @@
 #include "HasActivateChoiceVisitor.h"
 
-#include "common/ITypes.h"  // UInt32
 #include "skse64/GameForms.h"  // BGSPerk
 
-#include "RE/Actor.h"  // RE::Actor
 #include "RE/BGSEntryPointFunctionDataActivateChoice.h"  // RE::BGSEntryPointFunctionDataActivateChoice
 #include "RE/BGSEntryPointPerkEntry.h"  // RE::BGSEntryPointPerkEntry
 #include "RE/BGSPerkEntry.h"  // RE::BGSPerkEntry
-#include "RE/TESObjectREFR.h"  // RE::TESObjectREFR
+
+namespace RE
+{
+	class Actor;
+	class TESObjectREFR;
+}
+
 
 
 namespace QuickLootRE
@@ -25,10 +29,9 @@ namespace QuickLootRE
 			RE::BGSEntryPointPerkEntry* entryPoint = static_cast<RE::BGSEntryPointPerkEntry*>(perkEntry);
 			if (entryPoint->functionData) {
 				RE::BGSEntryPointFunctionDataActivateChoice* activateChoice = static_cast<RE::BGSEntryPointFunctionDataActivateChoice*>(entryPoint->functionData);
-				BGSPerk* perk = entryPoint->perk;
 				if ((activateChoice->flags & RE::BGSEntryPointFunctionDataActivateChoice::kFlag_RunImmediately) == 0) {
 
-					switch (perk->formID) {
+					switch (entryPoint->perk->formID) {
 					case kPerkFormID_VampireFeed:
 					case kPerkFormID_Cannibalism:
 						break;

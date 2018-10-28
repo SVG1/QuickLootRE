@@ -1,11 +1,12 @@
 #pragma once
 
-#include "skse64/GameReferences.h"  // PlayerCharacter
 #include "skse64_common/Relocation.h"  // RelocPtr, RelocAddr
 
 #include "Offsets.h"
 
-#include "RE/PlayerControls.h"
+#include "RE/PlayerControls.h"  // PlayerControls
+
+class PlayerCharacter;
 
 
 namespace Hooks
@@ -19,7 +20,5 @@ namespace Hooks
 	extern _ReadyWeaponHandler_ProcessButton orig_ReadyWeaponHandler_ProcessButton;
 
 
-	void hook_StartActivation_Call(PlayerCharacter* a_player);
-	void hook_ReadyWeaponHandler_ProcessButton(RE::PlayerControls* a_handler, ButtonEvent* a_event, RE::PlayerControls::Data024* a_data);
 	void installHooks();
 }

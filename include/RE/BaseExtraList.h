@@ -1,13 +1,13 @@
 #pragma once
 
-#include "common/ITypes.h"  // UInt8, UInt32
-#include "skse64/GameBSExtraData.h"  // BaseExtraList, BSExtraData
-#include "skse64/GameExtraData.h"  // ExtraContainerChanges
-#include "skse64/GameForms.h"  // TESForm
+#include "skse64/GameBSExtraData.h"  // BaseExtraList
 
 #include "Offsets.h"
 
-#include "RE/ExtraContainerChanges.h"  // RE::ExtraContainerChanges::Data
+#include "RE/ExtraContainerChanges.h"  // ExtraContainerChanges::Data
+
+class BSExtraData;
+class TESForm;
 
 
 namespace RE

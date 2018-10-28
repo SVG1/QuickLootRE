@@ -1,16 +1,20 @@
 #pragma once
 
-#include "common/ITypes.h"  // UInt32, SInt32
-#include "skse64/GameBSExtraData.h"  // BaseExtraList
-#include "skse64/GameExtraData.h"  // BSExtraData, InventoryEntryData, ExtraContainerChanges, EntryDataList
-#include "skse64/GameForms.h"  // TESForm
-#include "skse64/GameReferences.h"  // TESObjectREFR
+#include "skse64/GameExtraData.h"  // BSExtraData, ExtraContainerChanges
 
 #include "Offsets.h"
+
+class BaseExtraList;
+class EntryDataList;
+class TESForm;
 
 
 namespace RE
 {
+	class InventoryEntryData::EquipData;
+	class TESObjectREFR;
+
+
 	class ExtraContainerChanges : public BSExtraData
 	{
 	public:

@@ -1,16 +1,13 @@
 #include "InventoryList.h"
 
-#include "common/ITypes.h"  // UInt32
 #include "skse64/GameExtraData.h"  // InventoryEntryData
 #include "skse64/GameFormComponents.h"  // TESFullName
 #include "skse64/GameForms.h"  // TESForm
 #include "skse64/GameRTTI.h"  // DYNAMIC_CAST
 
 #include <exception>  // exception
-#include <vector>  // vector
 #include <string>  // string
 
-#include "ItemData.h"  // ItemData
 #include "Utility.h"  // numToHexString
 
 #include "RE/TESObjectLIGH.h"  // RE::TESObjectLIGH

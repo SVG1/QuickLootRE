@@ -1,13 +1,21 @@
 #pragma once
 
-#include "common/ITypes.h"  // UInt32
 #include "skse64/GameEvents.h"  // EventResult, EventDispatcher, MenuOpenCloseEvent
-#include "skse64/GameExtraData.h"  // InventoryEntryData
-#include "skse64/GameFormComponents.h"  // TESContainer
 #include "skse64/PapyrusEvents.h"  // SKSECrosshairRefEvent
 
 #include <map>  // map
 #include <vector>  // vector
+
+class InventoryEntryData;
+class TESContainer;
+class TESContainer::Entry;
+class TESForm;
+
+
+namespace RE
+{
+	class BaseExtraList;
+}
 
 
 namespace QuickLootRE
@@ -47,7 +55,7 @@ namespace QuickLootRE
 	};
 
 
-	void getInventoryList(BaseExtraList* a_xList, TESContainer* a_container);
+	void getInventoryList(RE::BaseExtraList* a_xList, TESContainer* a_container);
 
 
 	typedef SInt32 Count;

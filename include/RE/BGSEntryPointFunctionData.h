@@ -1,7 +1,5 @@
 #pragma once
 
-#include "common/ITypes.h"  // UInt32
-
 
 namespace RE
 {

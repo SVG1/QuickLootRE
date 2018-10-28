@@ -1,12 +1,13 @@
 #pragma once
 
-#include "common/ITypes.h"  // UInt8
 #include "skse64/GameEvents.h"  // BSTEventSink, MenuModeChangeEvent
-#include "skse64/GameInput.h"  // InputEvent, MenuControls
+#include "skse64/GameInput.h"  // MenuControls
 #include "skse64/GameTypes.h"  // tArray
 #include "skse64/PapyrusEvents.h"  // MenuModeChangeEvent
 
 #include "Offsets.h"
+
+class InputEvent;
 
 
 namespace RE

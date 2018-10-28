@@ -1,11 +1,16 @@
 #include "Hooks.h"
 
-#include "skse64/GameReferences.h"  // PlayerCharacter
+#include "skse64/GameReferences.h"  // g_thePlayer
 #include "skse64_common/BranchTrampoline.h"  // g_branchTrampoline
 #include "skse64_common/SafeWrite.h"  // SafeWrite64
 
 #include "LootMenu.h"  // LootMenu
 #include "Offsets.h"
+
+#include "RE/PlayerControls.h"  // PlayerControls, PlayerControls::Data024
+
+
+class PlayerCharacter;
 
 
 namespace Hooks

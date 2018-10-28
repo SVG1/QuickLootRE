@@ -1,10 +1,11 @@
 #pragma once
 
-#include "BGSPerkEntry.h"  // RE::BGSPerkEntry
-
 
 namespace RE
 {
+	class BGSPerkEntry;
+
+
 	class PerkEntryVisitor
 	{
 	public:

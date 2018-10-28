@@ -1,36 +1,30 @@
 #include "LootMenu.h"
 
 #include "skse64/GameAPI.h"  // g_thePlayer
-#include "skse64/GameBSExtraData.h"  // BSExtraData
-#include "skse64/GameExtraData.h"  // ExtraContainerChanges
 #include "skse64/GameInput.h"  // InputEvent, InputStringHolder
 #include "skse64/GameMenus.h"  // IMenu
-#include "skse64/GameReferences.h"  // TESObjectREFR
 #include "skse64/GameTypes.h"  // BSFixedString, SimpleLock, SimpleLocker
 #include "skse64/PluginAPI.h"  // SKSETaskInterface
-#include "skse64/ScaleformExtendedData.h"
 #include "skse64/ScaleformLoader.h"  // GFxLoader
 #include "skse64/ScaleformValue.h"  // GFxValue
 
 #include <string>  // string
 
 #include "HasActivateChoiceVisitor.h"  // HasActivateChoiceVisitor
-#include "Hooks.h"  // RegisterMenuEventHandler, RemoveMenuEventHandler
 #include "Input.h"  // InputDevice
 #include "ItemData.h"  // ItemData
 #include "InventoryList.h"  // g_invList
 
-#include "RE/Actor.h"  // RE::Actor
-#include "RE/Character.h"
-
 #include "RE/BaseExtraList.h"  // RE::BaseExtraList
 #include "RE/BGSEntryPointPerkEntry.h"  // RE::BGSEntryPointPerkEntry
-#include "RE/ExtraContainerChanges.h"  // RE::ExtraContainerChanges::RE
+#include "RE/ExtraContainerChanges.h"  // RE::ExtraContainerChanges, RE::ExtraContainerChanges::Data
 #include "RE/InputManager.h"  // RE::InputManager
 #include "RE/MenuControls.h"  // RE::MenuControls
 #include "RE/MenuManager.h"  // RE::MenuManager
 #include "RE/PlayerCharacter.h"  // RE::PlayerCharacter
 #include "RE/TESObjectREFR.h"  // RE::TESObjectREFR
+
+class TESObjectREFR;
 
 
 namespace QuickLootRE
@@ -80,9 +74,9 @@ namespace QuickLootRE
 	}
 
 
-	TESObjectREFR* LootMenu::GetContainerRef()
+	RE::TESObjectREFR* LootMenu::GetContainerRef()
 	{
-		return reinterpret_cast<TESObjectREFR*>(_containerRef);
+		return _containerRef;
 	}
 
 
@@ -288,10 +282,10 @@ namespace QuickLootRE
 					xList = item.entryData()->extendDataList->GetNthItem(0);
 				}
 
-				ExtraContainerChanges* xContainerChanges = static_cast<ExtraContainerChanges*>(_containerRef->extraData.GetByType(kExtraData_ContainerChanges));
+				RE::ExtraContainerChanges* xContainerChanges = static_cast<RE::ExtraContainerChanges*>(_containerRef->extraData.GetByType(kExtraData_ContainerChanges));
 				if (!xContainerChanges) {
 					RE::BaseExtraList* xList = reinterpret_cast<RE::BaseExtraList*>(&_containerRef->extraData);
-					RE::ExtraContainerChanges::Data* changes = new RE::ExtraContainerChanges::Data(reinterpret_cast<::TESObjectREFR*>(_containerRef));
+					RE::ExtraContainerChanges::Data* changes = new RE::ExtraContainerChanges::Data(_containerRef);
 					xList->SetInventoryChanges(changes);
 					changes->InitContainer();
 				}

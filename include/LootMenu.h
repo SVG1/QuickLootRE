@@ -74,7 +74,7 @@ namespace QuickLootRE
 		static BSFixedString		GetName();
 		static void					SetContainerRef(TESObjectREFR* a_ref);
 		static void					SetContainerRef(RE::TESObjectREFR* a_ref);
-		static TESObjectREFR*		GetContainerRef();
+		static RE::TESObjectREFR*	GetContainerRef();
 		static void					ClearContainerRef();
 		static bool					CanOpen(RE::TESObjectREFR*& a_ref);
 

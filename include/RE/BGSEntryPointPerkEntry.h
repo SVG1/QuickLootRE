@@ -1,16 +1,17 @@
 #pragma once
 
-#include "common/ITypes.h"  // UInt8, UInt32
-#include "skse64/GameFormComponents.h"  // Condition
-#include "skse64/GameForms.h"  // BGSPerk
-
-#include "RE/BGSEntryPointFunctionData.h"  // RE::BGSEntryPointFunctionData
 #include "RE/BGSPerkEntry.h"  // RE::BGSPerkEntry
-#include "RE/TESObjectREFR.h"  // RE::TESObjectREFR
+
+class BGSPerk;
+class Condition;
 
 
 namespace RE
 {
+	class BGSEntryPointFunctionData;
+	class TESObjectREFR;
+
+
 	class BGSEntryPointPerkEntry : public BGSPerkEntry
 	{
 	public:

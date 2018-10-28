@@ -1,8 +1,12 @@
 #pragma once
 
-#include "common/ITypes.h"  // UInt8
-#include "skse64/GameInput.h"  // InputEvent, KinectEvent, ThumbstickEvent, MouseMoveEvent, ButtonEvent
 #include "skse64/GameTypes.h"  // BSIntrusiveRefCounted
+
+class ButtonEvent;
+class InputEvent;
+class KinectEvent;
+class MouseMoveEvent;
+class ThumbstickEvent;
 
 
 namespace RE

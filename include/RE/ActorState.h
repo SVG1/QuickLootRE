@@ -1,6 +1,5 @@
 #pragma once
 
-#include "common/ITypes.h"  // UInt32
 #include "skse64/GameReferences.h"  // IMovementState
 
 

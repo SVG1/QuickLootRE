@@ -1,12 +1,11 @@
 #pragma once
 
-#include "common/ITypes.h"  // UInt8, UInt16, UInt32
-
-#include "RE/BGSEntryPointFunctionData.h"  // RE::BGSEntryPointFunctionData
-
 
 namespace RE
 {
+	class BGSEntryPointFunctionData;
+
+
 	class BGSPerkEntry
 	{
 	public:

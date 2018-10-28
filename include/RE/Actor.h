@@ -1,36 +1,47 @@
 #pragma once
 
-#include "skse64/GameReferences.h"
+#include "skse64/GameEvents.h"  // BSTEventSink
+#include "skse64/GameFormComponents.h"  // MagicTarget, ActorValueOwner
+#include "skse64/GameReferences.h"  // IPostAnimationChannelUpdateFunctor, SpellArray, Actor
 
 #include "RE/ActorState.h"  // RE::ActorState
 #include "RE/BGSEntryPointPerkEntry.h"  // RE::BGSEntryPointPerkEntry
-#include "RE/PerkEntryVisitor.h"  // RE::PerkRankVisitor
-#include "RE/PlayerCharacter.h"  // RE::PlayerCharacter
 #include "RE/TESObjectREFR.h"  // RE::TESObjectREFR
+
+class ActorProcessManager;
+class BaseExtraList;
+class BGSPerk;
+class SpellItem;
+class TESForm;
+class TESNPC;
+class TESRace;
 
 
 namespace RE
 {
+	class PerkRankVisitor;
+
+
 	class Actor : public TESObjectREFR
 	{
 	private:
 		enum Flags1 : UInt32
 		{
-			kFlags1_AIEnabled = 1 << 1,
-			kFlags1_PlayerTeammate = 1 << 26,
-			kFlags1_Guard = 1 << 30
+			kFlags1_AIEnabled		= 1 << 1,
+			kFlags1_PlayerTeammate	= 1 << 26,
+			kFlags1_Guard			= 1 << 30
 		};
 
 
 		enum Flags2 : UInt32
 		{
-			kFlags2_HasInteraction = 1 << 1,
-			kFlags2_CanDoFavor = 1 << 7,
-			kFlags2_Trespassing = 1 << 12,
-			kFlags2_KillMove = 1 << 14,
-			kFlags2_AttackedByAllActors = 1 << 15,
-			kFlags2_CommandedActor = 1 << 16,
-			kFlags2_Essential = 1 << 18,
+			kFlags2_HasInteraction		= 1 << 1,
+			kFlags2_CanDoFavor			= 1 << 7,
+			kFlags2_Trespassing			= 1 << 12,
+			kFlags2_KillMove			= 1 << 14,
+			kFlags2_AttackedByAllActors	= 1 << 15,
+			kFlags2_CommandedActor		= 1 << 16,
+			kFlags2_Essential			= 1 << 18,
 		};
 
 	public:

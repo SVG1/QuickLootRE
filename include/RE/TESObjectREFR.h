@@ -1,25 +1,24 @@
 #pragma once
 
-#include "common/ITypes.h"  // UInt8, UInt32, UInt64
-#include "skse64/GameBSExtraData.h"  // BaseExtraList
-#include "skse64/GameExtraData.h"  // ExtraOwnership
-#include "skse64/GameFormComponents.h"  // ActorWeightModel
-#include "skse64/GameForms.h"  // TESForm, TESWorldSpace, TESFaction, TESObjectCELL, BGSVoiceType
-#include "skse64/GameObjects.h"  // TESNPC
-#include "skse64/GameReferences.h"  // TESObjectREFR
-#include "skse64/NiExtraData.h"  // BSFaceGenAnimationData
-#include "skse64/NiNodes.h"  // BSFaceGenNiNode, NiNode
+#include "skse64/GameForms.h"  // TESForm
 #include "skse64/NiTypes.h"  // NiPoint3
 #include "skse64/GameRTTI.h"  // DYNAMIC_CAST
 
-#include <exception>  // exception
-
-#include "Hooks.h"  // TESObjectREFR_LookupRefByHandle
 #include "Offsets.h"
 
 #include "RE/BaseExtraList.h"  // RE::BaseExtraList
-#include "RE/ExtraLock.h"  // RE::ExtraLock
+#include "RE/ExtraLock.h"  // RE::LockState
 #include "RE/IAnimationGraphManagerHolder.h"  // RE::IAnimationGraphManagerHolder
+
+class ActorWeightModel;
+class BaseExtraList;
+class BSFaceGenAnimationData;
+class BSFaceGenNiNode;
+class NiNode;
+class TESFaction;
+class TESNPC;
+class TESObjectCELL;
+class TESObjectREFR;
 
 
 namespace RE
@@ -98,7 +97,7 @@ namespace RE
 		virtual void					Unk_53(void);
 		virtual void					Unk_54(void);
 		virtual void					Unk_55(void);
-		virtual void					RemoveItem(UInt32* droppedItemHandle, ::TESForm* akItem, UInt32 aiCount, RemoveType mode, ::BaseExtraList* extraList, ::TESObjectREFR* moveToRef, UInt32 unk7, UInt32 unk8);
+		virtual void					RemoveItem(UInt32* droppedItemHandle, TESForm* akItem, UInt32 aiCount, RemoveType mode, ::BaseExtraList* extraList, ::TESObjectREFR* moveToRef, UInt32 unk7, UInt32 unk8);
 		virtual void					Unk_57(void);
 		virtual void					Unk_58(void);
 		virtual void					Unk_59(void);
@@ -121,7 +120,7 @@ namespace RE
 		virtual void					Unk_6A(void);
 		virtual void					Unk_6B(void);
 		virtual void					Unk_6C(void);
-		virtual void					SetNiNode(::NiNode * root, UInt32 unk1);  // NULL, 1?
+		virtual void					SetNiNode(NiNode * root, UInt32 unk1);  // NULL, 1?
 		virtual void					Unk_6E(void);
 		virtual NiNode*					GetNiRootNode(UInt32 firstPerson);
 		virtual NiNode*					GetNiNode(void);  // Root of the skeleton (Get3D)

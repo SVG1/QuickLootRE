@@ -1,7 +1,6 @@
 #pragma once
 
-#include "common/ITypes.h"  // UInt32, SInt32
-#include "skse64/GameTypes.h"  // BSFixedString
+#include "skse64/GameTypes.h"
 
 
 namespace RE

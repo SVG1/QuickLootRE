@@ -1,23 +1,32 @@
 #pragma once
 
-#include "common/ITypes.h"  // UInt8, UInt32, UInt64
 #include "skse64/GameEvents.h"  // BSTEventSink, MenuOpenCloseEvent, MenuModeChangeEvent, BSTEventSource
-#include "skse64/GameFormComponents.h"  // TintMask, BGSPerkRanks
-#include "skse64/GameForms.h"  // BGSPerk, TESWorldSpace, TESForm, BGSLocation, TESRace
-#include "skse64/GameObjects.h"  // BGSTextureSet
-#include "skse64/GameReferences.h"  // Character, ObjectListItem, ImageSpaceModifierInstanceDOF, TESObjectREFR
+#include "skse64/GameFormComponents.h"  // BGSPerkRanks
 #include "skse64/GameTypes.h"  // tArray, UnkArray
-#include "skse64/NiNodes.h"  // BSFadeNode
 #include "skse64/NiTypes.h"  // NiTMap
 
 #include "Offsets.h"
 
-#include "RE/Actor.h"  // RE::Actor
 #include "RE/Character.h"  // RE::Character
+
+class BGSLocation;
+class BGSPerk;
+class BGSTextureSet;
+class BSFadeNode;
+class ImageSpaceModifierInstanceDOF;
+class ObjectListItem;
+class TESForm;
+class TESRace;
+class TESWorldSpace;
+class TintMask;
 
 
 namespace RE
 {
+	class Actor;
+	class TESObjectREFR;
+
+
 	class PlayerCharacter : public Character
 	{
 	public:

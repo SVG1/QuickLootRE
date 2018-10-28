@@ -1,10 +1,8 @@
 #include "Events.h"
 
-#include "skse64/GameBSExtraData.h"  // BSExtraData
 #include "skse64/GameEvents.h"  // EventResult, EventDispatcher
 #include "skse64/GameExtraData.h"  // InventoryEntryData, ExtraContainerChanges
 #include "skse64/GameFormComponents.h"  // TESContainer
-#include "skse64/GameInput.h"  // InputEvent, InputStringHolder
 #include "skse64/GameReferences.h"  // TESObjectREFR
 #include "skse64/GameRTTI.h"  // DYNAMIC_CAST
 #include "skse64/GameMenus.h"  // UIManager
@@ -15,6 +13,9 @@
 #include "Hooks.h"  // startActivation()
 #include "InventoryList.h"  // g_invList
 #include "LootMenu.h"  // LootMenu
+
+#include "RE/BaseExtraList.h"  // RE::BaseExtraList
+#include "RE/TESObjectREFR.h"  // RE::TESObjectREFR
 
 
 namespace QuickLootRE
@@ -54,7 +55,7 @@ namespace QuickLootRE
 				TESContainer* container = ref->GetContainer();
 				g_invList.clear();
 				defaultMap.clear();
-				getInventoryList(&a_event->crosshairRef->extraData, container);
+				getInventoryList(&ref->extraData, container);
 				CALL_MEMBER_FN(UIManager::GetSingleton(), AddMessage)(&LootMenu::GetName(), UIMessage::kMessage_Close, 0);
 				CALL_MEMBER_FN(UIManager::GetSingleton(), AddMessage)(&LootMenu::GetName(), UIMessage::kMessage_Open, 0);
 			}
@@ -77,9 +78,9 @@ namespace QuickLootRE
 	{
 		LootMenu* singleton = LootMenu::GetSingleton();
 		if (singleton && a_event) {
-			TESObjectREFR* ref = singleton->GetContainerRef();
+			RE::TESObjectREFR* ref = singleton->GetContainerRef();
 			if (a_event->fromFormId == ref->baseForm->formID || a_event->toFormId == ref->baseForm->formID) {
-				TESContainer* container = DYNAMIC_CAST(ref->baseForm, TESForm, TESContainer);
+				TESContainer* container = ref->GetContainer();
 				if (container) {
 					g_invList.clear();
 					getInventoryList(&ref->extraData, container);
@@ -91,7 +92,7 @@ namespace QuickLootRE
 	}
 
 
-	void getInventoryList(BaseExtraList* a_xList, TESContainer* a_container)
+	void getInventoryList(RE::BaseExtraList* a_xList, TESContainer* a_container)
 	{
 		// Default container
 		TESContainerVisitor containerOp;

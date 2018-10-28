@@ -1,7 +1,5 @@
 #include "Utility.h"
 
-#include "common/ITypes.h"  // UInt64
-
 #include <cctype>  // toupper
 #include <ios>  // hex
 #include <sstream>  // stringstream

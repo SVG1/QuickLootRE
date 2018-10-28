@@ -1,6 +1,7 @@
 #pragma once
 
-#include "skse64/GameObjects.h"
+#include "skse64/GameFormComponents.h"  // TESFullName, TESModelTextureSwap, TESIcon, BGSMessageIcon, TESWeightForm, TESValueForm, BGSDestructibleObjectForm, BGSEquipType
+#include "skse64/GameObjects.h"  // TESBoundAnimObject
 
 
 namespace RE
@@ -22,7 +23,7 @@ namespace RE
 		enum { kTypeID = kFormType_Light };
 
 
-		enum Flag
+		enum Flag : UInt32
 		{
 			kFlag_Dynamic				= 1 << 0,
 			kFlag_CanBeCarried			= 1 << 1,

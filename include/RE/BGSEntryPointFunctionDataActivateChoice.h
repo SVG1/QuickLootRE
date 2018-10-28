@@ -1,11 +1,11 @@
 #pragma once
 
-#include "common/ITypes.h"  // UInt32
-#include "skse64/GameForms.h"  // BGSPerk
-#include "skse64/GameObjects.h"  // SpellItem
 #include "skse64/GameTypes.h"  // BSFixedString
 
 #include "RE/BGSEntryPointFunctionData.h"  // RE::BGSEntryPointFunctionData
+
+class BGSPerk;
+class SpellItem;
 
 
 namespace RE
