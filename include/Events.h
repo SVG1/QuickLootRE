@@ -6,10 +6,8 @@
 #include "skse64/GameFormComponents.h"  // TESContainer
 #include "skse64/PapyrusEvents.h"  // SKSECrosshairRefEvent
 
-#include <map>
+#include <map>  // map
 #include <vector>  // vector
-
-#include "Input.h"
 
 
 namespace QuickLootRE

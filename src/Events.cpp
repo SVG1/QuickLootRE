@@ -14,16 +14,14 @@
 
 #include "Hooks.h"  // startActivation()
 #include "InventoryList.h"  // g_invList
-#include "LootMenu.h"  // LootMenu, g_crosshairRef
+#include "LootMenu.h"  // LootMenu
 
 
 namespace QuickLootRE
 {
 	bool TESContainerVisitor::Accept(TESContainer::Entry* a_entry)
 	{
-		if (a_entry->form->formType != kFormType_LeveledItem) {
-			defaultMap[a_entry->form] = a_entry->count;
-		}
+		defaultMap[a_entry->form] = a_entry->count;
 		return true;
 	}
 
@@ -49,10 +47,11 @@ namespace QuickLootRE
 
 	EventResult CrosshairRefEventHandler::ReceiveEvent(SKSECrosshairRefEvent* a_event, EventDispatcher<SKSECrosshairRefEvent>* a_dispatcher)
 	{
-		if (a_event && a_event->crosshairRef && a_event->crosshairRef->baseForm) {
-			TESContainer* container = DYNAMIC_CAST(a_event->crosshairRef->baseForm, TESForm, TESContainer);
-			if (container && LootMenu::CanOpen(a_event->crosshairRef)) {
-				g_crosshairRef = a_event->crosshairRef;
+		if (a_event && a_event->crosshairRef) {
+			RE::TESObjectREFR* ref = reinterpret_cast<RE::TESObjectREFR*>(a_event->crosshairRef);
+			if (LootMenu::CanOpen(ref)) {
+				LootMenu::SetContainerRef(ref);
+				TESContainer* container = ref->GetContainer();
 				g_invList.clear();
 				defaultMap.clear();
 				getInventoryList(&a_event->crosshairRef->extraData, container);
@@ -61,7 +60,7 @@ namespace QuickLootRE
 			}
 		} else if (LootMenu::GetSingleton()) {
 			CALL_MEMBER_FN(UIManager::GetSingleton(), AddMessage)(&LootMenu::GetName(), UIMessage::kMessage_Close, 0);
-			g_crosshairRef = 0;
+			LootMenu::ClearContainerRef();
 		}
 		return kEvent_Continue;
 	}
@@ -76,12 +75,16 @@ namespace QuickLootRE
 
 	EventResult TESContainerChangedEventHandler::ReceiveEvent(TESContainerChangedEvent* a_event, EventDispatcher<TESContainerChangedEvent>* a_dispatcher)
 	{
-		if (a_event && LootMenu::GetSingleton() && (a_event->fromFormId == g_crosshairRef->baseForm->formID || a_event->toFormId == g_crosshairRef->baseForm->formID)) {
-			TESContainer* container = DYNAMIC_CAST(g_crosshairRef->baseForm, TESForm, TESContainer);
-			if (container) {
-				g_invList.clear();
-				getInventoryList(&g_crosshairRef->extraData, container);
-				LootMenu::Update();
+		LootMenu* singleton = LootMenu::GetSingleton();
+		if (singleton && a_event) {
+			TESObjectREFR* ref = singleton->GetContainerRef();
+			if (a_event->fromFormId == ref->baseForm->formID || a_event->toFormId == ref->baseForm->formID) {
+				TESContainer* container = DYNAMIC_CAST(ref->baseForm, TESForm, TESContainer);
+				if (container) {
+					g_invList.clear();
+					getInventoryList(&ref->extraData, container);
+					LootMenu::GetSingleton()->OpenContainer();
+				}
 			}
 		}
 		return kEvent_Continue;

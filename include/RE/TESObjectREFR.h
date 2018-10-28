@@ -17,6 +17,8 @@
 #include "Hooks.h"  // TESObjectREFR_LookupRefByHandle
 #include "Offsets.h"
 
+#include "RE/BaseExtraList.h"  // RE::BaseExtraList
+#include "RE/ExtraLock.h"  // RE::ExtraLock
 #include "RE/IAnimationGraphManagerHolder.h"  // RE::IAnimationGraphManagerHolder
 
 
@@ -53,9 +55,9 @@ namespace RE
 
 		enum TESFormFlag : UInt32
 		{
-			kTESFormFlag_Deleted			= 1 << 5,
-			kTESFormFlag_Disabled			= 1 << 11,
-			kTESFormFlag_IgnoreFriendlyHits	= 1 << 20
+			kTESFormFlag_Deleted = 1 << 5,
+			kTESFormFlag_Disabled = 1 << 11,
+			kTESFormFlag_IgnoreFriendlyHits = 1 << 20
 		};
 
 
@@ -168,28 +170,32 @@ namespace RE
 		virtual void					Unk_9B(void);
 
 
-		float			GetBaseScale()											{ return CALL_MEMBER_FN(reinterpret_cast<::TESObjectREFR*>(this), GetBaseScale)(); }
-		bool			IsOffLimits()											{ return CALL_MEMBER_FN(reinterpret_cast<::TESObjectREFR*>(this), IsOffLimits)(); }
-		float			GetWeight()												{ return CALL_MEMBER_FN(reinterpret_cast<::TESObjectREFR*>(this), GetWeight)(); }
-		const char*		GetReferenceName()										{ return CALL_MEMBER_FN(reinterpret_cast<::TESObjectREFR*>(this), GetReferenceName)(); }
-		TESWorldSpace*	GetWorldspace()											{ return CALL_MEMBER_FN(reinterpret_cast<::TESObjectREFR*>(this), GetWorldspace)(); }
-		UInt32			CreateRefHandle()										{ return reinterpret_cast<::TESObjectREFR*>(this)->CreateRefHandle(); }
+		inline float			GetBaseScale()													{ return CALL_MEMBER_FN(reinterpret_cast<::TESObjectREFR*>(this), GetBaseScale)(); }
+		inline bool				IsOffLimits()													{ return CALL_MEMBER_FN(reinterpret_cast<::TESObjectREFR*>(this), IsOffLimits)(); }
+		inline float			GetWeight()														{ return CALL_MEMBER_FN(reinterpret_cast<::TESObjectREFR*>(this), GetWeight)(); }
+		inline const char*		GetReferenceName()												{ return CALL_MEMBER_FN(reinterpret_cast<::TESObjectREFR*>(this), GetReferenceName)(); }
+		inline TESWorldSpace*	GetWorldspace()													{ return CALL_MEMBER_FN(reinterpret_cast<::TESObjectREFR*>(this), GetWorldspace)(); }
+		inline UInt32			CreateRefHandle()												{ return reinterpret_cast<::TESObjectREFR*>(this)->CreateRefHandle(); }
 
-		TESNPC*			GetActorOwner();
-		TESForm*		GetBaseObject()											{ return baseForm; }
-		TESContainer*	GetContainer();
-		const char*		GetFullName();
-		TESFaction*		GetFactionOwner();
-		TESForm*		GetOwner()												{ return CALL_MEMBER_FN(this, GetOwner_Impl)(); }
-		TESObjectCELL*	GetParentCell()											{ return parentCell; }
-		float			GetPositionX()											{ return pos.x; }
-		float			GetPositionY()											{ return pos.y; }
-		float			GetPositionZ()											{ return pos.z; }
-		bool			Is3DLoaded()											{ return GetNiNode() != 0; }
-		bool			IsDeleted()												{ return (flags & kTESFormFlag_Deleted) != 0; }
-		bool			IsDisabled()											{ return (flags & kTESFormFlag_Disabled) != 0; }
-		bool			IsIgnoringFriendlyHits()								{ return (flags & kTESFormFlag_IgnoreFriendlyHits) != 0; }
-		bool			SetDisplayName(const BSFixedString& name, bool force);
+		TESNPC*					GetActorOwner();
+		inline TESForm*			GetBaseObject()													{ return baseForm; }
+		TESContainer*			GetContainer();
+		const char*				GetFullName();
+		TESFaction*				GetFactionOwner();
+		inline TESForm*			GetOwner()														{ return CALL_MEMBER_FN(this, GetOwner_Impl)(); }
+		inline TESObjectCELL*	GetParentCell()													{ return parentCell; }
+		inline float			GetPositionX()													{ return pos.x; }
+		inline float			GetPositionY()													{ return pos.y; }
+		inline float			GetPositionZ()													{ return pos.z; }
+		inline bool				Is3DLoaded()													{ return GetNiNode() != 0; }
+		inline bool				IsDeleted()														{ return (flags & kTESFormFlag_Deleted) != 0; }
+		inline bool				IsDisabled()													{ return (flags & kTESFormFlag_Disabled) != 0; }
+		inline bool				IsIgnoringFriendlyHits()										{ return (flags & kTESFormFlag_IgnoreFriendlyHits) != 0; }
+		bool					SetDisplayName(const BSFixedString& name, bool force);
+		inline static bool		LookupByHandle(UInt32& refHandle, TESObjectREFR*& refrOut)		{ ::TESObjectREFR* ref = reinterpret_cast<::TESObjectREFR*>(refrOut); return (*LookupREFRByHandle)(&refHandle, &ref); }
+		inline static bool		LookupByHandle(UInt32& refHandle, ::TESObjectREFR*& refrOut)	{ return (*LookupREFRByHandle)(&refHandle, &refrOut); }
+		inline bool				IsLocked()														{ LockState* state = CALL_MEMBER_FN(this, GetLockState_Impl)(); return (state && state->isLocked); }
+		inline UInt32			GetNumItems(bool unk1, bool unk2)								{ return CALL_MEMBER_FN(this, GetNumItems)(unk1, unk2); }
 
 
 		// members
@@ -209,92 +215,7 @@ namespace RE
 	private:
 		MEMBER_FN_PREFIX(TESObjectREFR);
 		DEFINE_MEMBER_FN(GetOwner_Impl, TESForm*, TES_OBJECT_REFR_GET_OWNER_IMPL);
+		DEFINE_MEMBER_FN(GetLockState_Impl, LockState*, TES_OBJECT_REFR_GET_LOCK_STATE_IMPL);
+		DEFINE_MEMBER_FN(GetNumItems, UInt32, TES_OBJECT_REFR_GET_NUM_ITEMS, bool unk1, bool unk2);
 	};
-
-
-	TESNPC* TESObjectREFR::GetActorOwner()
-	{
-		ExtraOwnership* exOwnership = static_cast<ExtraOwnership*>(extraData.GetByType(kExtraData_Ownership));
-		if (exOwnership && exOwnership->owner && exOwnership->owner->formType == kFormType_Character) {
-			return static_cast<TESNPC*>(exOwnership->owner);
-		} else {
-			return 0;
-		}
-	}
-
-
-	TESContainer * TESObjectREFR::GetContainer()
-	{
-		TESContainer* container = 0;
-		if (baseForm) {
-			switch (baseForm->formType) {
-			case kFormType_Container:
-			{
-				TESObjectCONT* cont = static_cast<TESObjectCONT*>(baseForm);
-				container = cont ? &cont->container : 0;
-				break;
-			}
-			case kFormType_NPC:
-			{
-				TESActorBase* actorBase = static_cast<TESActorBase*>(baseForm);
-				container = actorBase ? &actorBase->container : 0;
-				break;
-			}
-			}
-		}
-		return container;
-	}
-
-
-	const char* TESObjectREFR::GetFullName()
-	{
-		const char* result = 0;
-		if (baseForm) {
-			TESFullName* fullName = 0;
-			try {
-				fullName = DYNAMIC_CAST(baseForm, TESForm, TESFullName);
-				if (fullName) {
-					result = fullName->GetName();
-				}
-			} catch(std::exception& e) {
-				_ERROR(e.what());
-			}
-		}
-		return result;
-	}
-
-
-	TESFaction* TESObjectREFR::GetFactionOwner()
-	{
-		ExtraOwnership* exOwnership = static_cast<ExtraOwnership*>(extraData.GetByType(kExtraData_Ownership));
-		if (exOwnership && exOwnership->owner && exOwnership->owner->formType == kFormType_Faction) {
-			return static_cast<TESFaction*>(exOwnership->owner);
-		} else {
-			return 0;
-		}
-	}
-
-
-	bool TESObjectREFR::SetDisplayName(const BSFixedString& name, bool force)
-	{
-		bool renamed = false;
-
-		ExtraTextDisplayData* xTextData = reinterpret_cast<ExtraTextDisplayData*>(extraData.GetByType(kExtraData_TextDisplayData));
-		if (xTextData) {
-			bool inUse = (xTextData->message || xTextData->owner);
-			if (inUse && force) {
-				xTextData->message = nullptr;
-				xTextData->owner = nullptr;
-			}
-			renamed = (!inUse || force);
-			CALL_MEMBER_FN(xTextData, SetName_Internal)(name.c_str());
-		} else {
-			ExtraTextDisplayData* newTextData = ExtraTextDisplayData::Create();
-			CALL_MEMBER_FN(newTextData, SetName_Internal)(name.c_str());
-			extraData.Add(kExtraData_TextDisplayData, newTextData);
-			renamed = true;
-		}
-
-		return renamed;
-	}
 };

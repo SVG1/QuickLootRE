@@ -12,24 +12,24 @@ namespace QuickLootRE
 		std::vector<BGSKeyword*> vec;
 
 		// Armor
-		vec.push_back(VendorItemClothing = static_cast<BGSKeyword*>(LookupFormByID(0x0008F95B)));
-		vec.push_back(VendorItemJewelry = static_cast<BGSKeyword*>(LookupFormByID(0x0008F95A)));
+		vec.push_back(VendorItemClothing = static_cast<BGSKeyword*>(LookupFormByID(kKeywordFormID_VendorItemClothing)));
+		vec.push_back(VendorItemJewelry = static_cast<BGSKeyword*>(LookupFormByID(kKeywordFormID_VendorItemJewelry)));
 
 		// Books
-		vec.push_back(VendorItemRecipe = static_cast<BGSKeyword*>(LookupFormByID(0x000F5CB0)));
-		vec.push_back(VendorItemSpellTome = static_cast<BGSKeyword*>(LookupFormByID(0x000937A5)));
+		vec.push_back(VendorItemRecipe = static_cast<BGSKeyword*>(LookupFormByID(kKeywordFormID_VendorItemRecipe)));
+		vec.push_back(VendorItemSpellTome = static_cast<BGSKeyword*>(LookupFormByID(kKeywordFormID_VendorItemSpellTome)));
 
 		// Misc
-		vec.push_back(VendorItemAnimalHide = static_cast<BGSKeyword*>(LookupFormByID(0x000914EA)));
-		vec.push_back(VendorItemDaedricArtifact = static_cast<BGSKeyword*>(LookupFormByID(0x000917E8)));
-		vec.push_back(VendorItemGem = static_cast<BGSKeyword*>(LookupFormByID(0x000914ED)));
-		vec.push_back(VendorItemAnimalPart = static_cast<BGSKeyword*>(LookupFormByID(0x000914EB)));
-		vec.push_back(VendorItemOreIngot = static_cast<BGSKeyword*>(LookupFormByID(0x000914EC)));
-		vec.push_back(VendorItemClutter = static_cast<BGSKeyword*>(LookupFormByID(0x000914E9)));
-		vec.push_back(VendorItemFireword = static_cast<BGSKeyword*>(LookupFormByID(0x000BECD7)));
+		vec.push_back(VendorItemAnimalHide = static_cast<BGSKeyword*>(LookupFormByID(kKeywordFormID_VendorItemAnimalHide)));
+		vec.push_back(VendorItemDaedricArtifact = static_cast<BGSKeyword*>(LookupFormByID(kKeywordFormID_VendorItemDaedricArtifact)));
+		vec.push_back(VendorItemGem = static_cast<BGSKeyword*>(LookupFormByID(kKeywordFormID_VendorItemGem)));
+		vec.push_back(VendorItemAnimalPart = static_cast<BGSKeyword*>(LookupFormByID(kKeywordFormID_VendorItemAnimalPart)));
+		vec.push_back(VendorItemOreIngot = static_cast<BGSKeyword*>(LookupFormByID(kKeywordFormID_VendorItemOreIngot)));
+		vec.push_back(VendorItemClutter = static_cast<BGSKeyword*>(LookupFormByID(kKeywordFormID_VendorItemClutter)));
+		vec.push_back(VendorItemFireword = static_cast<BGSKeyword*>(LookupFormByID(kKeywordFormID_VendorItemFireword)));
 
 		// Weapons
-		vec.push_back(WeapTypeWarhammer = static_cast<BGSKeyword*>(LookupFormByID(0x0006D930)));
+		vec.push_back(WeapTypeWarhammer = static_cast<BGSKeyword*>(LookupFormByID(kKeywordFormID_WeapTypeWarhammer)));
 
 		for (auto& keyword : vec) {
 			if (!keyword) {

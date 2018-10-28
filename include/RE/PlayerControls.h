@@ -46,9 +46,9 @@ namespace RE
 
 		virtual UInt32			Unk_01();
 
-		static PlayerControls*	GetSingleton()	{ return reinterpret_cast<PlayerControls*>(::PlayerControls::GetSingleton()); }
-		PlayerControls*			ctor_Hook()		{ return reinterpret_cast<PlayerControls*>(reinterpret_cast<::PlayerControls*>(this)->ctor_Hook()); }
-		PlayerControls*			ctor()			{ return reinterpret_cast<PlayerControls*>(CALL_MEMBER_FN(reinterpret_cast<::PlayerControls*>(this), ctor)()); }
+		inline static PlayerControls*	GetSingleton()	{ return reinterpret_cast<PlayerControls*>(::PlayerControls::GetSingleton()); }
+		inline PlayerControls*			ctor_Hook()		{ return reinterpret_cast<PlayerControls*>(reinterpret_cast<::PlayerControls*>(this)->ctor_Hook()); }
+		inline PlayerControls*			ctor()			{ return reinterpret_cast<PlayerControls*>(CALL_MEMBER_FN(reinterpret_cast<::PlayerControls*>(this), ctor)()); }
 
 
 		// members
@@ -79,5 +79,4 @@ namespace RE
 		PlayerInputHandler*			sneakHandler;		// 1C8
 		PlayerInputHandler*			togglePOVHandler;	// 1D0
 	};
-	STATIC_ASSERT(offsetof(PlayerControls, data024) == 0x24);
 }

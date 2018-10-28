@@ -76,7 +76,7 @@ namespace RE
 
 		virtual ~TESObjectLIGH();
 
-		bool CanBeCarried() const { return (unkE0.flags & kFlag_CanBeCarried) != 0; }
+		inline bool CanBeCarried() const { return (unkE0.flags & kFlag_CanBeCarried) != 0; }
 
 
 		DataE0	unkE0;		// 0E0 - DATA

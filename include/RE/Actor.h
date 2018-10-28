@@ -3,6 +3,8 @@
 #include "skse64/GameReferences.h"
 
 #include "RE/ActorState.h"  // RE::ActorState
+#include "RE/BGSEntryPointPerkEntry.h"  // RE::BGSEntryPointPerkEntry
+#include "RE/PerkEntryVisitor.h"  // RE::PerkRankVisitor
 #include "RE/PlayerCharacter.h"  // RE::PlayerCharacter
 #include "RE/TESObjectREFR.h"  // RE::TESObjectREFR
 
@@ -11,28 +13,28 @@ namespace RE
 {
 	class Actor : public TESObjectREFR
 	{
-	public:
-		enum { kTypeID = kFormType_Character };
-
-
+	private:
 		enum Flags1 : UInt32
 		{
-			kFlags1_AIEnabled		= 1 << 1,
-			kFlags1_PlayerTeammate	= 1 << 26,
-			kFlags1_Guard			= 1 << 30
+			kFlags1_AIEnabled = 1 << 1,
+			kFlags1_PlayerTeammate = 1 << 26,
+			kFlags1_Guard = 1 << 30
 		};
 
 
 		enum Flags2 : UInt32
 		{
-			kFlags2_HasInteraction		= 1 << 1,
-			kFlags2_CanDoFavor			= 1 << 7,
-			kFlags2_Trespassing			= 1 << 12,
-			kFlags2_KillMove				= 1 << 14,
-			kFlags2_AttackedByAllActors	= 1 << 15,
-			kFlags2_CommandedActor		= 1 << 16,
-			kFlags2_Essential			= 1 << 18,
+			kFlags2_HasInteraction = 1 << 1,
+			kFlags2_CanDoFavor = 1 << 7,
+			kFlags2_Trespassing = 1 << 12,
+			kFlags2_KillMove = 1 << 14,
+			kFlags2_AttackedByAllActors = 1 << 15,
+			kFlags2_CommandedActor = 1 << 16,
+			kFlags2_Essential = 1 << 18,
 		};
+
+	public:
+		enum { kTypeID = kFormType_Character };
 
 
 		enum SlotType : UInt32
@@ -159,36 +161,40 @@ namespace RE
 		virtual void	AdvanceSkill(UInt32 skillId, float points, UInt32 unk1, UInt32 unk2);
 		virtual void	Unk_F8(void);
 		virtual void	Unk_F9(void);
-		virtual void	VisitPerks(void); // BGSPerk::FindPerkInRanksVisitor
-		virtual void	AddPerk(BGSPerk * perk, UInt32 unk1);
-		virtual void	RemovePerk(BGSPerk * perk);
+		virtual void	VisitPerks(void);
+		virtual void	AddPerk(BGSPerk* perk, UInt32 unk1);
+		virtual void	RemovePerk(BGSPerk* perk);
+		virtual void	Unk_FC(void);
+		virtual void	Unk_FD(void);
+		virtual bool	CanProcessEntryPointPerkEntry(BGSEntryPointPerkEntry::EntryPointType entryType);
+		virtual void	VisitEntryPointPerkEntries(BGSEntryPointPerkEntry::EntryPointType entryType, PerkEntryVisitor& visitor);
 
 
-		bool			VisitFactions(::Actor::FactionVisitor& visitor)									{ return reinterpret_cast<::Actor*>(this)->VisitFactions(visitor); }
-		TESForm*		GetEquippedObject(bool abLeftHand)												{ return reinterpret_cast<::Actor*>(this)->GetEquippedObject(abLeftHand); }
-		void			UpdateSkinColor()																{ reinterpret_cast<::Actor*>(this)->UpdateSkinColor(); }
-		void			UpdateHairColor()																{ reinterpret_cast<::Actor*>(this)->UpdateHairColor(); }
-		void			QueueNiNodeUpdate(bool updateWeight)											{ CALL_MEMBER_FN(reinterpret_cast<::Actor*>(this), QueueNiNodeUpdate)(updateWeight); }
-		bool			HasPerk(BGSPerk* perk)															{ return CALL_MEMBER_FN(reinterpret_cast<::Actor*>(this), HasPerk)(perk); }
-		UInt16			GetLevel(BGSPerk* perk)															{ return CALL_MEMBER_FN(reinterpret_cast<::Actor*>(this), GetLevel)(); }
-		void			SetRace(TESRace* race, bool isPlayer)											{ CALL_MEMBER_FN(reinterpret_cast<::Actor*>(this), SetRace)(race, isPlayer); }
-		void			UpdateWeaponAbility(TESForm* weapon, ::BaseExtraList* extraData, bool bLeftHand)	{ CALL_MEMBER_FN(reinterpret_cast<::Actor*>(this), UpdateWeaponAbility)(weapon, extraData, bLeftHand); }
-		void			UpdateArmorAbility(TESForm* armor, ::BaseExtraList* extraData)					{ CALL_MEMBER_FN(reinterpret_cast<::Actor*>(this), UpdateArmorAbility)(armor, extraData); }
-		bool			IsHostileToActor(::Actor* actor)												{ return CALL_MEMBER_FN(reinterpret_cast<::Actor*>(this), IsHostileToActor)(actor); }
-		void			ResetAI(UInt32 unk1, UInt32 unk2)												{ CALL_MEMBER_FN(reinterpret_cast<::Actor*>(this), ResetAI)(unk1, unk2); }
+		inline bool		VisitFactions(::Actor::FactionVisitor& visitor)										{ return reinterpret_cast<::Actor*>(this)->VisitFactions(visitor); }
+		inline TESForm*	GetEquippedObject(bool abLeftHand)													{ return reinterpret_cast<::Actor*>(this)->GetEquippedObject(abLeftHand); }
+		inline void		UpdateSkinColor()																	{ reinterpret_cast<::Actor*>(this)->UpdateSkinColor(); }
+		inline void		UpdateHairColor()																	{ reinterpret_cast<::Actor*>(this)->UpdateHairColor(); }
+		inline void		QueueNiNodeUpdate(bool updateWeight)												{ CALL_MEMBER_FN(reinterpret_cast<::Actor*>(this), QueueNiNodeUpdate)(updateWeight); }
+		inline bool		HasPerk(BGSPerk* perk)																{ return CALL_MEMBER_FN(reinterpret_cast<::Actor*>(this), HasPerk)(perk); }
+		inline UInt16	GetLevel(BGSPerk* perk)																{ return CALL_MEMBER_FN(reinterpret_cast<::Actor*>(this), GetLevel)(); }
+		inline void		SetRace(TESRace* race, bool isPlayer)												{ CALL_MEMBER_FN(reinterpret_cast<::Actor*>(this), SetRace)(race, isPlayer); }
+		inline void		UpdateWeaponAbility(TESForm* weapon, ::BaseExtraList* extraData, bool bLeftHand)	{ CALL_MEMBER_FN(reinterpret_cast<::Actor*>(this), UpdateWeaponAbility)(weapon, extraData, bLeftHand); }
+		inline void		UpdateArmorAbility(TESForm* armor, ::BaseExtraList* extraData)						{ CALL_MEMBER_FN(reinterpret_cast<::Actor*>(this), UpdateArmorAbility)(armor, extraData); }
+		inline bool		IsHostileToActor(::Actor* actor)													{ return CALL_MEMBER_FN(reinterpret_cast<::Actor*>(this), IsHostileToActor)(actor); }
+		inline void		ResetAI(UInt32 unk1, UInt32 unk2)													{ CALL_MEMBER_FN(reinterpret_cast<::Actor*>(this), ResetAI)(unk1, unk2); }
 
-		TESNPC*			GetActorBase()																	{ return static_cast<TESNPC*>(baseForm); }
+		inline TESNPC*	GetActorBase()																		{ return static_cast<TESNPC*>(baseForm); }
 		TESRace*		GetRace();
-		bool			IsBeingRidden()																	{ return ((flags2 & kFlags2_HasInteraction) != 0) && extraData.HasType(kExtraData_Interaction); }
-		bool			IsCommandedActor() const														{ return (flags2 & kFlags2_CommandedActor) != 0; }
-		bool			IsEssential() const																{ return (flags2 & kFlags2_Essential) != 0; }
-		bool			IsGuard() const																	{ return (flags1 & kFlags1_Guard) != 0; }
-		bool			IsInKillMove() const															{ return (flags2 & kFlags2_KillMove) != 0; }
-		bool			IsAIEnabled() const																{ return (flags1 & kFlags1_AIEnabled) != 0; }
-		bool			IsOnMount()																		{ return ((flags2 & kFlags2_HasInteraction) != 0) && extraData.HasType(kExtraData_Interaction); }
-		bool			IsPlayerTeammate() const														{ return (flags1 & kFlags1_PlayerTeammate) != 0; }
+		inline bool		IsBeingRidden()																		{ return ((flags2 & kFlags2_HasInteraction) != 0) && extraData.HasType(kExtraData_Interaction); }
+		inline bool		IsCommandedActor() const															{ return (flags2 & kFlags2_CommandedActor) != 0; }
+		inline bool		IsEssential() const																	{ return (flags2 & kFlags2_Essential) != 0; }
+		inline bool		IsGuard() const																		{ return (flags1 & kFlags1_Guard) != 0; }
+		inline bool		IsInKillMove() const																{ return (flags2 & kFlags2_KillMove) != 0; }
+		inline bool		IsAIEnabled() const																	{ return (flags1 & kFlags1_AIEnabled) != 0; }
+		inline bool		IsOnMount()																			{ return ((flags2 & kFlags2_HasInteraction) != 0) && extraData.HasType(kExtraData_Interaction); }
+		inline bool		IsPlayerTeammate() const															{ return (flags1 & kFlags1_PlayerTeammate) != 0; }
 		bool			IsSneaking();
-		bool			IsTrespassing() const															{ return (flags2 & kFlags2_Trespassing) != 0; }
+		inline bool		IsTrespassing() const																{ return (flags2 & kFlags2_Trespassing) != 0; }
 
 
 		// members
@@ -268,35 +274,4 @@ namespace RE
 	STATIC_ASSERT(offsetof(Actor, unk0D8) == 0xD8);
 	STATIC_ASSERT(offsetof(Actor, addedSpells) == 0x188);
 	STATIC_ASSERT(sizeof(Actor) == 0x2B0);
-
-
-	TESRace * Actor::GetRace()
-	{
-		TESRace* race = 0;
-
-		TESNPC* actorBase = GetActorBase();
-		if (actorBase) {
-			race = actorBase->race.race;
-		}
-
-		return race;
-	}
-
-
-	bool Actor::IsSneaking()
-	{
-		if (!actorState.IsSneaking()) {
-			return false;
-		}
-
-		if (actorState.IsSwimming()) {
-			return false;
-		}
-
-		if (IsOnMount()) {
-			return false;
-		}
-
-		return true;
-	}
 }

@@ -2,6 +2,7 @@
 
 #include "common/ITypes.h"  // UInt32
 #include "skse64/CustomMenu.h"  // CustomMenuCreator, CustomMenu
+#include "skse64/GameEvents.h"  // BSTEventSink, TESContainerChangedEvent
 #include "skse64/GameInput.h"  // InputEvent
 #include "skse64/GameReferences.h"  // TESObjectREFR
 #include "skse64/GameMenus.h"  // IMenu, UIMessage
@@ -15,6 +16,7 @@
 #include <string>  // string
 
 #include "RE/MenuEventHandler.h"  // RE::MenuEventHandler
+#include "RE/TESObjectREFR.h"  // RE::TESObjectREFR
 
 
 namespace QuickLootRE
@@ -68,29 +70,37 @@ namespace QuickLootRE
 	public:
 		LootMenu(const char* a_swfPath);
 
-		static LootMenu* GetSingleton();
-		static void ModSelectedIndex(SInt32 a_indexOffset);
-		static void Update();
-		static bool CanOpen(TESObjectREFR* a_ref);
-		static void TakeItem();
-		static BSFixedString GetName();
+		static LootMenu*			GetSingleton();
+		static BSFixedString		GetName();
+		static void					SetContainerRef(TESObjectREFR* a_ref);
+		static void					SetContainerRef(RE::TESObjectREFR* a_ref);
+		static TESObjectREFR*		GetContainerRef();
+		static void					ClearContainerRef();
+		static bool					CanOpen(RE::TESObjectREFR*& a_ref);
 
 		// IMenu
-		virtual UInt32 ProcessMessage(UIMessage* a_message) override;
+		virtual UInt32				ProcessMessage(UIMessage* a_message) override;
 
 		// MenuEventHandler
-		virtual bool CanProcess(InputEvent* a_event) override;
-		virtual bool ProcessButton(ButtonEvent* a_event) override;
+		virtual bool				CanProcess(InputEvent* a_event) override;
+		virtual bool				ProcessButton(ButtonEvent* a_event) override;
 
-		void OnMenuOpen();
-		void OnMenuClose();
-		void SetSelectedIndex();
+		void						OnMenuOpen();
+		void						OnMenuClose();
+		void						TakeItem();
+		void						ModSelectedIndex(SInt32 a_indexOffset);
+
+		// Scaleform
+		void						OpenContainer();
+		void						CloseContainer();
+		void						SetSelectedIndex();
 
 	private:
 
-		static LootMenu* _singleton;
-		static SimpleLock _lock;
-		static SInt32 _selectedIndex;
+		static LootMenu*			_singleton;
+		static SimpleLock			_lock;
+		static SInt32				_selectedIndex;
+		static RE::TESObjectREFR*	_containerRef;
 	};
 
 
@@ -117,6 +127,5 @@ namespace QuickLootRE
 	};
 
 
-	extern TESObjectREFR* g_crosshairRef;
 	extern SKSETaskInterface* g_task;
 }

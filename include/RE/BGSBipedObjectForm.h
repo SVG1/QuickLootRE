@@ -62,18 +62,18 @@ namespace RE
 		};
 
 
-		UInt32	GetSlotMask() const				{ return bipedObjectData.parts; }
-		void	SetSlotMask(UInt32 mask)		{ bipedObjectData.parts = mask; }
-		bool	HasPartOf(UInt32 flag) const	{ return (bipedObjectData.parts & flag) != 0; }
+		inline UInt32	GetSlotMask() const				{ return bipedObjectData.parts; }
+		inline void		SetSlotMask(UInt32 mask)		{ bipedObjectData.parts = mask; }
+		inline bool		HasPartOf(UInt32 flag) const	{ return (bipedObjectData.parts & flag) != 0; }
 
-		UInt32	GetWeightClass() const			{ return bipedObjectData.weightClass; }
-		bool	IsLightArmor() const			{ return bipedObjectData.weightClass == kWeight_Light; }
-		bool	IsHeavyArmor() const			{ return bipedObjectData.weightClass == kWeight_Heavy; }
+		inline UInt32	GetWeightClass() const			{ return bipedObjectData.weightClass; }
+		inline bool		IsLightArmor() const			{ return bipedObjectData.weightClass == kWeight_Light; }
+		inline bool		IsHeavyArmor() const			{ return bipedObjectData.weightClass == kWeight_Heavy; }
 
-		UInt32	AddSlotToMask(UInt32 slot)		{ bipedObjectData.parts |= slot; return bipedObjectData.parts; }
-		UInt32	RemoveSlotFromMask(UInt32 slot)	{ bipedObjectData.parts &= ~slot; return bipedObjectData.parts; }
+		inline UInt32	AddSlotToMask(UInt32 slot)		{ bipedObjectData.parts |= slot; return bipedObjectData.parts; }
+		inline UInt32	RemoveSlotFromMask(UInt32 slot)	{ bipedObjectData.parts &= ~slot; return bipedObjectData.parts; }
 
 
-		Data	bipedObjectData;	// 8
+		Data			bipedObjectData;	// 8
 	};
 }

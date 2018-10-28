@@ -10,5 +10,4 @@ namespace RE
 	public:
 		enum { kTypeID = kFormType_Character };
 	};
-	STATIC_ASSERT(sizeof(Character) == 0x2B0);
 }

@@ -5,8 +5,7 @@
 
 #include "Offsets.h"
 
-#include "RE/MenuEventHandler.h"  // RE::MenuEventHandler
-#include "RE/PlayerControls.h"  // RE::PlayerControls
+#include "RE/PlayerControls.h"
 
 
 namespace Hooks

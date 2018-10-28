@@ -28,23 +28,47 @@
     <Filter Include="include\RE\Skyrim\ExtraData">
       <UniqueIdentifier>{a9418d25-6fa2-43e9-9a9b-82ab52cea883}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\RE\Skyrim\Forms">
-      <UniqueIdentifier>{f7565767-3c0c-4a3a-b730-cc75216dc2a9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="include\RE\Skyrim\BSDevices">
       <UniqueIdentifier>{2907cd0d-893f-426b-b3e4-2bde2fe1a730}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\RE\Skyrim\Forms\Character">
-      <UniqueIdentifier>{9203b7b9-a92b-44b8-984b-6678a52fc120}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\RE\Skyrim\Forms\Character\Components">
-      <UniqueIdentifier>{5fccb3da-e204-4705-9f25-8c15c4bfa7a2}</UniqueIdentifier>
     </Filter>
     <Filter Include="include\RE\Skyrim\Animation">
       <UniqueIdentifier>{d77b0bb8-aa8c-46d5-abc6-93716c2b0c9a}</UniqueIdentifier>
     </Filter>
     <Filter Include="include\RE\Skyrim\Menus">
       <UniqueIdentifier>{70b8132a-3f5c-42c1-bd53-cb660cf26a26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\RE">
+      <UniqueIdentifier>{a8a5ec3a-f484-4e8d-b8d1-f2198c6ccff7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\RE\Skyrim">
+      <UniqueIdentifier>{14024b14-8235-42d1-8c54-e6e8740c6852}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\RE\Skyrim\BSDevices">
+      <UniqueIdentifier>{70b8f39b-eb73-4984-9340-39fccbb3fe42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\RE\Skyrim\TESForms">
+      <UniqueIdentifier>{bdd31fbf-8dd7-40f6-bb15-e5dc251bf5f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\RE\Skyrim\TESForms\World">
+      <UniqueIdentifier>{4f543887-cc65-4ce5-845f-01f2377ddf86}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\RE\Skyrim\TESForms\World\Components">
+      <UniqueIdentifier>{29a1fe8c-10e4-4020-9fb3-0cf7919e1544}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\RE\Skyrim\TESForms\Objects">
+      <UniqueIdentifier>{b299a0f7-f05a-44da-a1dd-913d2f4aedd0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\RE\Skyrim\TESForms">
+      <UniqueIdentifier>{ae428fd3-8d0d-4b50-bc50-7ae47ba44515}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\RE\Skyrim\TESForms\World">
+      <UniqueIdentifier>{f9355b9c-1d53-4ef5-8940-a232a06e3d53}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\RE\Skyrim\TESForms\World\Components">
+      <UniqueIdentifier>{dace98c7-fe0d-4868-a748-332583e67e8a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\RE\Skyrim\TESForms\Character">
+      <UniqueIdentifier>{d7f094f4-06d5-4040-9339-310dfbb93cb8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -73,6 +97,24 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\Hooks.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RE\InputManager.cpp">
+      <Filter>src\RE\Skyrim\BSDevices</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RE\ActorState.cpp">
+      <Filter>src\RE\Skyrim\TESForms\World\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RE\Actor.cpp">
+      <Filter>src\RE\Skyrim\TESForms</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RE\TESObjectREFR.cpp">
+      <Filter>src\RE\Skyrim\TESForms</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RE\PlayerCharacter.cpp">
+      <Filter>src\RE\Skyrim\TESForms</Filter>
+    </ClCompile>
+    <ClCompile Include="src\HasActivateChoiceVisitor.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
@@ -131,29 +173,50 @@
     <ClInclude Include="include\RE\BGSBipedObjectForm.h">
       <Filter>include\RE\Skyrim\FormComponents</Filter>
     </ClInclude>
-    <ClInclude Include="include\RE\ActorState.h">
-      <Filter>include\RE\Skyrim\Forms\Character\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="include\RE\Actor.h">
-      <Filter>include\RE\Skyrim\Forms</Filter>
-    </ClInclude>
-    <ClInclude Include="include\RE\Character.h">
-      <Filter>include\RE\Skyrim\Forms</Filter>
-    </ClInclude>
-    <ClInclude Include="include\RE\PlayerCharacter.h">
-      <Filter>include\RE\Skyrim\Forms</Filter>
-    </ClInclude>
-    <ClInclude Include="include\RE\TESObjectLIGH.h">
-      <Filter>include\RE\Skyrim\Forms</Filter>
-    </ClInclude>
-    <ClInclude Include="include\RE\TESObjectREFR.h">
-      <Filter>include\RE\Skyrim\Forms</Filter>
-    </ClInclude>
     <ClInclude Include="include\RE\MenuManager.h">
       <Filter>include\RE\Skyrim\Menus</Filter>
     </ClInclude>
     <ClInclude Include="include\RE\MenuControls.h">
       <Filter>include\RE\Skyrim\BSDevices</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\ExtraLock.h">
+      <Filter>include\RE\Skyrim\ExtraData</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\ActorState.h">
+      <Filter>include\RE\Skyrim\TESForms\World\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\Actor.h">
+      <Filter>include\RE\Skyrim\TESForms\World</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\Character.h">
+      <Filter>include\RE\Skyrim\TESForms\World</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\PlayerCharacter.h">
+      <Filter>include\RE\Skyrim\TESForms\World</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\TESObjectLIGH.h">
+      <Filter>include\RE\Skyrim\TESForms\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\TESObjectREFR.h">
+      <Filter>include\RE\Skyrim\TESForms\World</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\PerkEntryVisitor.h">
+      <Filter>include\RE\Skyrim\FormComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\BGSPerkEntry.h">
+      <Filter>include\RE\Skyrim\TESForms\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\BGSEntryPointPerkEntry.h">
+      <Filter>include\RE\Skyrim\TESForms\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\BGSEntryPointFunctionData.h">
+      <Filter>include\RE\Skyrim\TESForms\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HasActivateChoiceVisitor.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\BGSEntryPointFunctionDataActivateChoice.h">
+      <Filter>include\RE\Skyrim\TESForms\Character</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

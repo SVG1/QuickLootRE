@@ -22,10 +22,10 @@ namespace RE
 
 		virtual ~MenuControls();
 
-		static MenuControls*	GetSingleton()								{ return reinterpret_cast<MenuControls*>(::MenuControls::GetSingleton()); }
+		inline static MenuControls*	GetSingleton()								{ return reinterpret_cast<MenuControls*>(::MenuControls::GetSingleton()); }
 
-		void					RegisterHandler(MenuEventHandler* handler)	{ CALL_MEMBER_FN(this, RegisterHandler_Impl)(handler); }
-		void					RemoveHandler(MenuEventHandler* handler)	{ CALL_MEMBER_FN(this, RemoveHandler_Impl)(handler); }
+		inline void					RegisterHandler(MenuEventHandler* handler)	{ CALL_MEMBER_FN(this, RegisterHandler_Impl)(handler); }
+		inline void					RemoveHandler(MenuEventHandler* handler)	{ CALL_MEMBER_FN(this, RemoveHandler_Impl)(handler); }
 
 
 		// members

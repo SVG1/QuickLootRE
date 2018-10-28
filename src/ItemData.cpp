@@ -10,7 +10,7 @@
 #include "ExtendDataListVisitor.h"  // ExtendDataListVisitor
 #include "Keywords.h"  // keywords
 
-#include "RE_BGSBipedObjectForm.h"  // RE::BGSBipedObjectForm
+#include "RE/BGSBipedObjectForm.h"  // RE::BGSBipedObjectForm
 
 
 namespace QuickLootRE

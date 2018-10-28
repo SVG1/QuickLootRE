@@ -134,14 +134,20 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\HasActivateChoiceVisitor.cpp" />
+    <ClCompile Include="src\RE\Actor.cpp" />
+    <ClCompile Include="src\RE\ActorState.cpp" />
     <ClCompile Include="src\ExtendDataListVisitor.cpp" />
     <ClCompile Include="src\Hooks.cpp" />
+    <ClCompile Include="src\RE\InputManager.cpp" />
     <ClCompile Include="src\InventoryList.cpp" />
     <ClCompile Include="src\ItemData.cpp" />
     <ClCompile Include="src\Keywords.cpp" />
     <ClCompile Include="src\LootMenu.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Events.cpp" />
+    <ClCompile Include="src\RE\PlayerCharacter.cpp" />
+    <ClCompile Include="src\RE\TESObjectREFR.cpp" />
     <ClCompile Include="src\Utility.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -152,7 +158,13 @@
     <ClInclude Include="include\Offsets.h" />
     <ClInclude Include="include\RE\Actor.h" />
     <ClInclude Include="include\RE\ActorState.h" />
+    <ClInclude Include="include\RE\BGSEntryPointFunctionData.h" />
+    <ClInclude Include="include\RE\BGSEntryPointFunctionDataActivateChoice.h" />
+    <ClInclude Include="include\RE\BGSEntryPointPerkEntry.h" />
+    <ClInclude Include="include\RE\BGSPerkEntry.h" />
     <ClInclude Include="include\RE\Character.h" />
+    <ClInclude Include="include\RE\ExtraLock.h" />
+    <ClInclude Include="include\HasActivateChoiceVisitor.h" />
     <ClInclude Include="include\RE\IAnimationGraphManagerHolder.h" />
     <ClInclude Include="include\RE\InputManager.h" />
     <ClInclude Include="include\InventoryList.h" />
@@ -166,6 +178,7 @@
     <ClInclude Include="include\RE\MenuControls.h" />
     <ClInclude Include="include\RE\MenuEventHandler.h" />
     <ClInclude Include="include\RE\MenuManager.h" />
+    <ClInclude Include="include\RE\PerkEntryVisitor.h" />
     <ClInclude Include="include\RE\PlayerCharacter.h" />
     <ClInclude Include="include\RE\PlayerControls.h" />
     <ClInclude Include="include\RE\TESObjectLIGH.h" />

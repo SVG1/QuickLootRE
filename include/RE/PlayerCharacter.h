@@ -5,7 +5,7 @@
 #include "skse64/GameFormComponents.h"  // TintMask, BGSPerkRanks
 #include "skse64/GameForms.h"  // BGSPerk, TESWorldSpace, TESForm, BGSLocation, TESRace
 #include "skse64/GameObjects.h"  // BGSTextureSet
-#include "skse64/GameReferences.h"  // Character, ObjectListItem, ImageSpaceModifierInstanceDOF
+#include "skse64/GameReferences.h"  // Character, ObjectListItem, ImageSpaceModifierInstanceDOF, TESObjectREFR
 #include "skse64/GameTypes.h"  // tArray, UnkArray
 #include "skse64/NiNodes.h"  // BSFadeNode
 #include "skse64/NiTypes.h"  // NiTMap
@@ -49,13 +49,15 @@ namespace RE
 
 		virtual ~PlayerCharacter();
 
-		TintMask*			GetOverlayTintMask(TintMask* original)		{ return reinterpret_cast<::PlayerCharacter*>(this)->GetOverlayTintMask(original); }
-		tArray<TintMask*>*	GetTintList()								{ return reinterpret_cast<::PlayerCharacter*>(this)->GetTintList(); }
-		UInt32				GetNumTints(UInt32 tintType)				{ return CALL_MEMBER_FN(reinterpret_cast<::PlayerCharacter*>(this), GetNumTints)(tintType); }
-		TintMask*			GetTintMask(UInt32 tintType, UInt32 index)	{ return CALL_MEMBER_FN(reinterpret_cast<::PlayerCharacter*>(this), GetTintMask)(tintType, index); }
-		float				GetDamage(InventoryEntryData* pForm)		{ return CALL_MEMBER_FN(reinterpret_cast<::PlayerCharacter*>(this), GetDamage)(pForm); }
-		float				GetArmorValue(InventoryEntryData* pForm)	{ return CALL_MEMBER_FN(reinterpret_cast<::PlayerCharacter*>(this), GetArmorValue)(pForm); }
-		Actor*				GetActorInFavorState()						{ return CALL_MEMBER_FN(this, GetActorInFavorState)(); }
+		inline TintMask*				GetOverlayTintMask(TintMask* original)		{ return reinterpret_cast<::PlayerCharacter*>(this)->GetOverlayTintMask(original); }
+		inline tArray<TintMask*>*		GetTintList()								{ return reinterpret_cast<::PlayerCharacter*>(this)->GetTintList(); }
+		inline UInt32					GetNumTints(UInt32 tintType)				{ return CALL_MEMBER_FN(reinterpret_cast<::PlayerCharacter*>(this), GetNumTints)(tintType); }
+		inline TintMask*				GetTintMask(UInt32 tintType, UInt32 index)	{ return CALL_MEMBER_FN(reinterpret_cast<::PlayerCharacter*>(this), GetTintMask)(tintType, index); }
+		inline float					GetDamage(InventoryEntryData* pForm)		{ return CALL_MEMBER_FN(reinterpret_cast<::PlayerCharacter*>(this), GetDamage)(pForm); }
+		inline float					GetArmorValue(InventoryEntryData* pForm)	{ return CALL_MEMBER_FN(reinterpret_cast<::PlayerCharacter*>(this), GetArmorValue)(pForm); }
+
+		inline Actor*					GetActorInFavorState()						{ return CALL_MEMBER_FN(this, GetActorInFavorState)(); }
+		TESObjectREFR*					GetGrabbedRef();
 
 
 		// members
@@ -201,8 +203,8 @@ namespace RE
 		UInt32							unk898;					// 898
 		UInt32							unk89C;					// 89C
 		UInt64							unk8A0[5];				// 8A0
-		UInt32							unk8C8;					// 8C8
-		UInt32							unk8CC;					// 8CC
+		UInt32							playerGrabbedHandle;	// 8C8
+		float							unk8CC;					// 8CC - related to grabbed item
 		UInt32							unk8D0;					// 8D0
 		float							unk8D4;					// 8D4 - init'd to -5
 		UInt64							unk8D8;					// 8D8
@@ -311,18 +313,6 @@ namespace RE
 		DEFINE_MEMBER_FN(GetActorInFavorState, Actor*, PLAYER_CHARACTER_GET_ACTOR_IN_FAVOR_STATE);
 	};
 
-	STATIC_ASSERT(offsetof(PlayerCharacter, userEventEnabledEvent) == 0x2C0);
-	STATIC_ASSERT(offsetof(PlayerCharacter, numPerkPoints) == 0xB01);
-	STATIC_ASSERT(offsetof(PlayerCharacter, tintMasks) == 0xB10);
-	STATIC_ASSERT(offsetof(PlayerCharacter, overlayTintMasks) == 0xB28);
-	STATIC_ASSERT(offsetof(PlayerCharacter, unk3D8) == 0x3D8);
-	STATIC_ASSERT(offsetof(PlayerCharacter, lastRiddenHorseHandle) == 0x914);
-	STATIC_ASSERT(offsetof(PlayerCharacter, skills) == 0x9B0);
-	STATIC_ASSERT(offsetof(PlayerCharacter, tempPoison) == 0xA00);
-	STATIC_ASSERT(offsetof(PlayerCharacter, hostileHandles) == 0x9D8);
-	STATIC_ASSERT(offsetof(PlayerCharacter, currentWorldSpace) == 0x628);
-	STATIC_ASSERT(offsetof(PlayerCharacter, addedPerks) == 0x4B0);
-	STATIC_ASSERT(offsetof(PlayerCharacter, sameWorldSpace) == 0x988);
-	STATIC_ASSERT(offsetof(PlayerCharacter, unk890) == 0x890);
+	STATIC_ASSERT(offsetof(PlayerCharacter, playerGrabbedHandle) == 0x8C8);
 	STATIC_ASSERT(sizeof(PlayerCharacter) == 0xBE0);
 }

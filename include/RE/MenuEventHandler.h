@@ -13,11 +13,11 @@ namespace RE
 		MenuEventHandler() : unk08(0), unk09(0) {}
 		virtual ~MenuEventHandler() {}
 
-		virtual bool	CanProcess(InputEvent* a_event)				= 0;
-		virtual bool	ProcessKinect(KinectEvent* a_event)			{ return false; }
-		virtual bool	ProcessThumbstick(ThumbstickEvent* a_event)	{ return false; }
-		virtual bool	ProcessMouseMove(MouseMoveEvent* a_event)	{ return false; }
-		virtual bool	ProcessButton(ButtonEvent* a_event)			{ return false; }
+		virtual bool		CanProcess(InputEvent* a_event)				= 0;
+		inline virtual bool	ProcessKinect(KinectEvent* a_event)			{ return false; }
+		inline virtual bool	ProcessThumbstick(ThumbstickEvent* a_event)	{ return false; }
+		inline virtual bool	ProcessMouseMove(MouseMoveEvent* a_event)	{ return false; }
+		inline virtual bool	ProcessButton(ButtonEvent* a_event)			{ return false; }
 
 
 		UInt8	unk08;		// 08

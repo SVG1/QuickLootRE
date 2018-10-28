@@ -41,54 +41,20 @@ namespace RE
 
 		virtual ~ActorState();
 
-		UInt32	GetSitState() const;
-		UInt32	GetSleepState() const;
-		UInt32	GetFlyingState() const	{ return (flags04 >> 0x12) & 0x07; }
-		bool	IsBleedingOut() const	{ UInt32 state = (flags04 >> 0x15) & 0x0F; return (state == 7 || state == 8); }
-		bool	IsWeaponDrawn() const	{ return (flags08 >> 5 & 7) >= 3; }
-		bool	IsSneaking() const		{ return (flags04 & kState_Sneaking) != 0; }
-		bool	IsSwimming() const		{ return (flags04 & kState_Swimming) != 0; }
-		bool	IsSprinting() const		{ return (flags04 & kState_Sprinting) != 0; }
-		bool	IsFlying() const		{ UInt32 flyingState = GetFlyingState(); return (flyingState != 0) && (flyingState != 5); }
-		bool	IsUnconscious() const	{ return (flags04 & 0x01E00000) == 0x00600000; }
+		UInt32			GetSitState() const;
+		UInt32			GetSleepState() const;
+		inline UInt32	GetFlyingState() const	{ return (flags04 >> 0x12) & 0x07; }
+		inline bool		IsBleedingOut() const	{ UInt32 state = (flags04 >> 0x15) & 0x0F; return (state == 7 || state == 8); }
+		inline bool		IsWeaponDrawn() const	{ return (flags08 >> 5 & 7) >= 3; }
+		inline bool		IsSneaking() const		{ return (flags04 & kState_Sneaking) != 0; }
+		inline bool		IsSwimming() const		{ return (flags04 & kState_Swimming) != 0; }
+		inline bool		IsSprinting() const		{ return (flags04 & kState_Sprinting) != 0; }
+		inline bool		IsFlying() const		{ UInt32 flyingState = GetFlyingState(); return (flyingState != 0) && (flyingState != 5); }
+		inline bool		IsUnconscious() const	{ return (flags04 & 0x01E00000) == 0x00600000; }
 
 
 		UInt32	flags04;	// 08
 		UInt32	flags08;	// 0C
 	};
 	STATIC_ASSERT(sizeof(ActorState) == 0x10);
-
-
-	UInt32 ActorState::GetSitState() const
-	{
-		UInt32 state = (flags04 >> 0x0E) & 0x0F;
-		switch (state) {
-		case 1:
-		case 2:
-			return kSitState_WantsToSit;
-		case 3:
-			return kSitState_Sitting;
-		case 4:
-			return kSitState_WantsToStand;
-		default:
-			return kSitState_NotSitting;
-		}
-	}
-
-
-	UInt32 ActorState::GetSleepState() const
-	{
-		UInt32 state = (flags04 >> 0x0E) & 0x0F;
-		switch (state) {
-		case 5:
-		case 6:
-			return kSleepState_WantsToSleep;
-		case 7:
-			return kSleepState_Sleeping;
-		case 8:
-			return kSleepState_WantsToWake;
-		default:
-			return kSleepState_NotSleeping;
-		}
-	}
 }

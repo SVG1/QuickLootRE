@@ -13,7 +13,7 @@
 #include "Keywords.h"  // initializeKeywords()
 #include "LootMenu.h"  // LootMenuCreator, g_task
 
-#include "RE_EventDispatcherList.h"  // RE::EventDispatcherList
+#include "RE/EventDispatcherList.h"  // RE::EventDispatcherList
 
 
 static PluginHandle	g_pluginHandle = kPluginHandle_Invalid;
