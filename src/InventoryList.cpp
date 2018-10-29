@@ -16,7 +16,10 @@
 namespace QuickLootRE
 {
 	InventoryList::InventoryList()
-	{}
+	{
+		_itemList.reserve(100);
+		_heapList.reserve(100);
+	}
 
 
 	InventoryList::~InventoryList()

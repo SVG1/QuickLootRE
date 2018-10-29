@@ -70,6 +70,9 @@
     <Filter Include="include\RE\Skyrim\TESForms\Character">
       <UniqueIdentifier>{d7f094f4-06d5-4040-9339-310dfbb93cb8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\RE\Skyrim\BSCore">
+      <UniqueIdentifier>{6b39d050-b167-48d5-b2eb-a886eb541710}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -99,9 +102,6 @@
     <ClCompile Include="src\Hooks.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\RE\InputManager.cpp">
-      <Filter>src\RE\Skyrim\BSDevices</Filter>
-    </ClCompile>
     <ClCompile Include="src\RE\ActorState.cpp">
       <Filter>src\RE\Skyrim\TESForms\World\Components</Filter>
     </ClCompile>
@@ -116,6 +116,9 @@
     </ClCompile>
     <ClCompile Include="src\HasActivateChoiceVisitor.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RE\InputManager.cpp">
+      <Filter>src\RE\Skyrim\BSDevices</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -154,9 +157,6 @@
     </ClInclude>
     <ClInclude Include="include\RE\IAnimationGraphManagerHolder.h">
       <Filter>include\RE\Skyrim\Animation</Filter>
-    </ClInclude>
-    <ClInclude Include="include\RE\InputManager.h">
-      <Filter>include\RE\Skyrim\BSDevices</Filter>
     </ClInclude>
     <ClInclude Include="include\RE\MenuEventHandler.h">
       <Filter>include\RE\Skyrim\BSDevices</Filter>
@@ -217,6 +217,21 @@
     </ClInclude>
     <ClInclude Include="include\RE\BGSEntryPointFunctionDataActivateChoice.h">
       <Filter>include\RE\Skyrim\TESForms\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\BSTHashMap.h">
+      <Filter>include\RE\Skyrim\BSCore</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\BSTScatterTable.h">
+      <Filter>include\RE\Skyrim\BSCore</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\InputEventDispatcher.h">
+      <Filter>include\RE\Skyrim\BSDevices</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\InputManager.h">
+      <Filter>include\RE\Skyrim\BSDevices</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\CRC.h">
+      <Filter>include\RE\Skyrim\BSCore</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -11,13 +11,13 @@ namespace RE
 		tArray<InputContext::Mapping>* maps = 0;
 
 		switch (deviceType) {
-		case kInputDevice_Mouse:
+		case InputDevice::kInputDevice_Mouse:
 			maps = &context[contextIdx]->mouseMap;
 			break;
-		case kInputDevice_Gamepad:
+		case InputDevice::kInputDevice_Gamepad:
 			maps = &context[contextIdx]->gamepadMap;
 			break;
-		case kInputDevice_Keyboard:
+		case InputDevice::kInputDevice_Keyboard:
 			maps = &context[contextIdx]->keyboardMap;
 			break;
 		}
@@ -40,13 +40,13 @@ namespace RE
 		tArray<InputContext::Mapping>* maps = 0;
 
 		switch (deviceType) {
-		case kInputDevice_Mouse:
+		case InputDevice::kInputDevice_Mouse:
 			maps = &context[contextIdx]->mouseMap;
 			break;
-		case kInputDevice_Gamepad:
+		case InputDevice::kInputDevice_Gamepad:
 			maps = &context[contextIdx]->gamepadMap;
 			break;
-		case kInputDevice_Keyboard:
+		case InputDevice::kInputDevice_Keyboard:
 			maps = &context[contextIdx]->keyboardMap;
 			break;
 		}

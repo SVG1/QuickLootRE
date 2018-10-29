@@ -96,6 +96,9 @@ namespace QuickLootRE
 		void						SetSelectedIndex();
 
 	private:
+		bool						SingleLootEnabled();
+		void						PlayAnimation(const char* fromName, const char* toName);
+		void						PlayAnimationOpen();
 
 		static LootMenu*			_singleton;
 		static SimpleLock			_lock;

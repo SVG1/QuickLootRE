@@ -11,17 +11,22 @@
 #include <string>  // string
 
 #include "HasActivateChoiceVisitor.h"  // HasActivateChoiceVisitor
-#include "Input.h"  // InputDevice
 #include "ItemData.h"  // ItemData
 #include "InventoryList.h"  // g_invList
 
+#include "RE/ActorProcessManager.h"  // RE::ActorProcessManager
 #include "RE/BaseExtraList.h"  // RE::BaseExtraList
 #include "RE/BGSEntryPointPerkEntry.h"  // RE::BGSEntryPointPerkEntry
+#include "RE/BSWin32GamepadDevice.h"  // RE::BSWin32GamepadDevice
+#include "RE/BSWin32KeyboardDevice.h"  // RE::BSWin32KeyboardDevice
+#include "RE/BSWin32MouseDevice.h"  // RE::BSWin32MouseDevice
 #include "RE/ExtraContainerChanges.h"  // RE::ExtraContainerChanges, RE::ExtraContainerChanges::Data
-#include "RE/InputManager.h"  // RE::InputManager
+#include "RE/InputEventDispatcher.h"  // RE::InputEventDispatcher
+#include "RE/InputManager.h"  // RE::InputMappingManager
 #include "RE/MenuControls.h"  // RE::MenuControls
 #include "RE/MenuManager.h"  // RE::MenuManager
 #include "RE/PlayerCharacter.h"  // RE::PlayerCharacter
+#include "RE/TESBoundObject.h"  // RE::TESBoundObject
 #include "RE/TESObjectREFR.h"  // RE::TESObjectREFR
 
 class TESObjectREFR;
@@ -119,7 +124,7 @@ namespace QuickLootRE
 		}
 
 #if 0
-		//disabled for testing
+		// disabled for testing
 		if (ref->IsOffLimits()) {
 			return false;
 		}
@@ -129,9 +134,9 @@ namespace QuickLootRE
 		switch (a_ref->baseForm->formType) {
 		case kFormType_Activator:
 		{
-			UInt32 refHandle;
-			if (a_ref->extraData.GetAshPileRefHandle(refHandle) && refHandle != *g_invalidRefHandle) {
-				RE::TESObjectREFR* refPtr;
+			UInt32 refHandle = a_ref->extraData.GetAshPileRefHandle(refHandle);
+			if (refHandle != *g_invalidRefHandle) {
+				RE::TESObjectREFR* refPtr = 0;
 				if (RE::TESObjectREFR::LookupByHandle(refHandle, refPtr)) {
 					containerRef = refPtr;
 				}
@@ -156,9 +161,12 @@ namespace QuickLootRE
 
 		UInt32 numItems = containerRef->GetNumItems(false, false);
 
-		if (numItems == 0) {
+#if 0
+		// disabled for testing
+		if (numItems <= 0) {
 			return false;
 		}
+#endif
 
 
 #if 0
@@ -171,6 +179,8 @@ namespace QuickLootRE
 			}
 		}
 #endif
+
+		_containerRef = containerRef;
 
 		return true;
 	}
@@ -192,14 +202,18 @@ namespace QuickLootRE
 
 	bool LootMenu::CanProcess(InputEvent* a_event)
 	{
+		typedef RE::BSInputDevice::InputDevice InputDevice;
+		typedef RE::BSWin32GamepadDevice::Gamepad Gamepad;
+		typedef RE::BSWin32MouseDevice::Mouse Mouse;
+
 		if (view && a_event->eventType == InputEvent::kEventType_Button) {
 			ButtonEvent* button = static_cast<ButtonEvent*>(a_event);
 			switch (a_event->deviceType) {
-			case kInputDevice_Gamepad:
-				return (button->keyMask == kGamepad_Up || button->keyMask == kGamepad_Down);
-			case kInputDevice_Mouse:
-				return (button->keyMask == kMouse_WheelDown || button->keyMask == kMouse_WheelUp);
-			case kInputDevice_Keyboard:
+			case InputDevice::kInputDevice_Gamepad:
+				return (button->keyMask == Gamepad::kGamepad_Up || button->keyMask == Gamepad::kGamepad_Down);
+			case InputDevice::kInputDevice_Mouse:
+				return (button->keyMask == Mouse::kMouse_WheelDown || button->keyMask == Mouse::kMouse_WheelUp);
+			case InputDevice::kInputDevice_Keyboard:
 				static InputStringHolder* holder = InputStringHolder::GetSingleton();
 				return (*a_event->GetControlID() == holder->zoomIn || *a_event->GetControlID() == holder->zoomOut);
 			}
@@ -210,6 +224,9 @@ namespace QuickLootRE
 
 	bool LootMenu::ProcessButton(ButtonEvent* a_event)
 	{
+		typedef RE::BSWin32GamepadDevice::Gamepad Gamepad;
+		typedef RE::BSWin32MouseDevice::Mouse Mouse;
+
 		switch (a_event->deviceType) {
 		case kDeviceType_Gamepad:
 			switch (a_event->keyMask) {
@@ -275,17 +292,15 @@ namespace QuickLootRE
 
 	void LootMenu::TakeItem()
 	{
-		if (_singleton) {
+		if (view) {
+			SimpleLocker lock(&_lock);
+
 			if (_containerRef && !g_invList.empty()) {
 				ItemData item = g_invList[_selectedIndex];
 				g_invList.erase(g_invList.begin() + _selectedIndex);
+				static RE::PlayerCharacter* player = reinterpret_cast<RE::PlayerCharacter*>(*g_thePlayer);
 
-				UInt32 handle = 0;
-				BaseExtraList* xList = 0;
-				if (item.entryData()->extendDataList && item.entryData()->extendDataList->Count() > 0) {
-					xList = item.entryData()->extendDataList->GetNthItem(0);
-				}
-
+				// Containers don't have ExtraContainerChanges if the player hasn't opened them yet, so we must add them ourselves
 				RE::ExtraContainerChanges* xContainerChanges = static_cast<RE::ExtraContainerChanges*>(_containerRef->extraData.GetByType(kExtraData_ContainerChanges));
 				if (!xContainerChanges) {
 					RE::BaseExtraList* xList = &_containerRef->extraData;
@@ -294,7 +309,55 @@ namespace QuickLootRE
 					changes->InitContainer();
 				}
 
-				_containerRef->RemoveItem(&handle, item.form(), item.count(), RE::TESObjectREFR::RemoveType::kRemoveType_Take, xList, *g_thePlayer, 0, 0);
+				// Locate item's extra list (if any)
+				BaseExtraList* xList = 0;
+				if (item.entryData()->extendDataList && item.entryData()->extendDataList->Count() > 0) {
+					xList = item.entryData()->extendDataList->GetNthItem(0);
+				}
+
+				// Pickup dropped items
+				if (xList && xList->HasType(kExtraData_ItemDropper)) {
+					RE::TESObjectREFR* refItem = reinterpret_cast<RE::TESObjectREFR*>((UInt64)xList - 0x70);
+					player->PickUpItem(refItem, 1, false, true);
+				} else {
+					RE::TESObjectREFR::RemoveType lootMode = RE::TESObjectREFR::RemoveType::kRemoveType_Take;
+					SInt32 numItems = item.count();
+
+					if (_containerRef->IsDead(false)) {
+						player->PlayPickupEvent(item.form(), _containerRef->GetOwner(), _containerRef, RE::PlayerCharacter::EventType::kEventType_DeadBody);
+					} else {
+						player->PlayPickupEvent(item.form(), _containerRef->GetOwner(), _containerRef, RE::PlayerCharacter::EventType::kEventType_Container);
+
+						if (_containerRef->IsOffLimits()) {
+							lootMode = RE::TESObjectREFR::RemoveType::kRemoveType_Steal;
+						}
+					}
+
+					if (numItems > 1 && SingleLootEnabled()) {
+						numItems = 1;
+					}
+
+					UInt32 droppedHandle = 0;
+					_containerRef->RemoveItem(&droppedHandle, item.form(), numItems, lootMode, xList, player, 0, 0);
+
+					// Remove projectile 3D
+					static_cast<RE::TESBoundObject*>(item.form())->OnRemovedFrom(_containerRef);
+
+					if (_containerRef->baseForm->formType == kFormType_Character) {
+
+						// Dispell worn item enchantments
+						RE::Actor* actor = static_cast<RE::Actor*>(_containerRef);
+						if (actor->processManager) {
+							actor->DispelWornItemEnchantments();
+							actor->processManager->UpdateEquipment_Hooked(actor);
+						}
+					} else {
+						if (_containerRef->IsOffLimits()) {
+							UInt32 totalValue = item.value() * numItems;
+							player->SendStealAlarm(_containerRef, 0, 0, totalValue, _containerRef->GetOwner(), true);
+						}
+					}
+				}
 
 				OpenContainer();
 			}
@@ -305,6 +368,8 @@ namespace QuickLootRE
 	void LootMenu::ModSelectedIndex(SInt32 a_indexOffset)
 	{
 		if (view) {
+			SimpleLocker lock(&_lock);
+
 			_selectedIndex += a_indexOffset;
 			if (_selectedIndex < 0) {
 				_selectedIndex = 0;
@@ -319,6 +384,8 @@ namespace QuickLootRE
 	void LootMenu::OpenContainer()
 	{
 		if (view) {
+			SimpleLocker lock(&_lock);
+
 			LootMenuUIDelegate* dlgt = (LootMenuUIDelegate*)Heap_Allocate(sizeof(LootMenuUIDelegate));
 			new (dlgt)LootMenuUIDelegate(".openContainer", 6);
 
@@ -362,6 +429,8 @@ namespace QuickLootRE
 
 	void LootMenu::CloseContainer()
 	{
+		SimpleLocker lock(&_lock);
+
 		LootMenuUIDelegate* dlgt = (LootMenuUIDelegate*)Heap_Allocate(sizeof(LootMenuUIDelegate));
 		new (dlgt)LootMenuUIDelegate(".closeContainer", 0);
 		g_task->AddUITask(dlgt);
@@ -379,6 +448,57 @@ namespace QuickLootRE
 			dlgt->args[0].SetNumber(_selectedIndex);
 
 			g_task->AddUITask(dlgt);
+		}
+	}
+
+
+	bool LootMenu::SingleLootEnabled()
+	{
+		typedef RE::BSKeyboardDevice BSKeyboardDevice;
+		typedef RE::BSWin32KeyboardDevice BSWin32KeyboardDevice;
+		typedef RE::BSGamepadDevice BSGamepadDevice;
+		typedef RE::BSWin32GamepadDevice BSWin32GamepadDevice;
+		typedef RE::BSInputDevice::InputDevice InputDevice;
+
+		static RE::InputEventDispatcher* inputDispatcher = RE::InputEventDispatcher::GetSingleton();
+		static RE::InputManager* inputManager = RE::InputManager::GetSingleton();
+		static InputStringHolder* holder = InputStringHolder::GetSingleton();
+
+		RE::BSWin32KeyboardDevice* keyboard = DYNAMIC_CAST(inputDispatcher->keyboard, BSKeyboardDevice, BSWin32KeyboardDevice);
+		if (keyboard && keyboard->IsEnabled()) {
+			static UInt32 keyRun = inputManager->GetMappedKey(holder->run, InputDevice::kInputDevice_Keyboard);
+			if (keyRun != RE::InputManager::kInvalid && keyboard->IsPressed(keyRun)) {
+				return true;
+			}
+		}
+
+		RE::BSGamepadDevice* gamepadHandle = inputDispatcher->gamepadHandler ? inputDispatcher->gamepadHandler->gamepad : 0;
+		RE::BSWin32GamepadDevice* gamepad = DYNAMIC_CAST(gamepadHandle, BSGamepadDevice, BSWin32GamepadDevice);
+		if (gamepad && gamepad->IsEnabled()) {
+			static UInt32 keySprint = inputManager->GetMappedKey(holder->sprint, InputDevice::kInputDevice_Gamepad);
+			if (keySprint != RE::InputManager::kInvalid && gamepad->IsPressed(keySprint)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+
+	void LootMenu::PlayAnimation(const char* fromName, const char* toName)
+	{
+		NiNode* niNode = _containerRef->GetNiNode();
+		if (!niNode) {
+			return;
+		}
+		NiTimeController* controller = niNode->
+	}
+
+
+	void LootMenu::PlayAnimationOpen()
+	{
+		if (_containerRef) {
+
 		}
 	}
 

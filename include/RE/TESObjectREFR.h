@@ -1,8 +1,9 @@
 #pragma once
 
 #include "skse64/GameForms.h"  // TESForm
-#include "skse64/NiTypes.h"  // NiPoint3
+#include "skse64/GameReferences.h"  // TESObjectREFR
 #include "skse64/GameRTTI.h"  // DYNAMIC_CAST
+#include "skse64/NiTypes.h"  // NiPoint3
 
 #include "Offsets.h"
 
@@ -18,7 +19,6 @@ class NiNode;
 class TESFaction;
 class TESNPC;
 class TESObjectCELL;
-class TESObjectREFR;
 
 
 namespace RE
@@ -97,7 +97,7 @@ namespace RE
 		virtual void					Unk_53(void);
 		virtual void					Unk_54(void);
 		virtual void					Unk_55(void);
-		virtual void					RemoveItem(UInt32* droppedItemHandle, TESForm* akItem, UInt32 aiCount, RemoveType mode, ::BaseExtraList* extraList, ::TESObjectREFR* moveToRef, UInt32 unk7, UInt32 unk8);
+		virtual void					RemoveItem(UInt32* droppedItemHandle, TESForm* akItem, UInt32 aiCount, RemoveType mode, ::BaseExtraList* extraList, TESObjectREFR* moveToRef, UInt32 unk7, UInt32 unk8);
 		virtual void					Unk_57(void);
 		virtual void					Unk_58(void);
 		virtual void					Unk_59(void);

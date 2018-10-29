@@ -40,6 +40,14 @@ namespace RE
 		BSTEventSource<void*>				positionPlayerEventSource;	// 380
 
 
+		enum EventType : UInt32
+		{
+			kEventType_Thief = 3,
+			kEventType_Container = 5,
+			kEventType_DeadBody = 6
+		};
+
+
 		struct Data7DC
 		{
 			float	unk0;	// 0 - init'd to -1
@@ -58,15 +66,16 @@ namespace RE
 
 		virtual ~PlayerCharacter();
 
-		inline TintMask*				GetOverlayTintMask(TintMask* original)		{ return reinterpret_cast<::PlayerCharacter*>(this)->GetOverlayTintMask(original); }
-		inline tArray<TintMask*>*		GetTintList()								{ return reinterpret_cast<::PlayerCharacter*>(this)->GetTintList(); }
-		inline UInt32					GetNumTints(UInt32 tintType)				{ return CALL_MEMBER_FN(reinterpret_cast<::PlayerCharacter*>(this), GetNumTints)(tintType); }
-		inline TintMask*				GetTintMask(UInt32 tintType, UInt32 index)	{ return CALL_MEMBER_FN(reinterpret_cast<::PlayerCharacter*>(this), GetTintMask)(tintType, index); }
-		inline float					GetDamage(InventoryEntryData* pForm)		{ return CALL_MEMBER_FN(reinterpret_cast<::PlayerCharacter*>(this), GetDamage)(pForm); }
-		inline float					GetArmorValue(InventoryEntryData* pForm)	{ return CALL_MEMBER_FN(reinterpret_cast<::PlayerCharacter*>(this), GetArmorValue)(pForm); }
+		inline TintMask*				GetOverlayTintMask(TintMask* original)																		{ return reinterpret_cast<::PlayerCharacter*>(this)->GetOverlayTintMask(original); }
+		inline tArray<TintMask*>*		GetTintList()																								{ return reinterpret_cast<::PlayerCharacter*>(this)->GetTintList(); }
+		inline UInt32					GetNumTints(UInt32 tintType)																				{ return CALL_MEMBER_FN(reinterpret_cast<::PlayerCharacter*>(this), GetNumTints)(tintType); }
+		inline TintMask*				GetTintMask(UInt32 tintType, UInt32 index)																	{ return CALL_MEMBER_FN(reinterpret_cast<::PlayerCharacter*>(this), GetTintMask)(tintType, index); }
+		inline float					GetDamage(InventoryEntryData* pForm)																		{ return CALL_MEMBER_FN(reinterpret_cast<::PlayerCharacter*>(this), GetDamage)(pForm); }
+		inline float					GetArmorValue(InventoryEntryData* pForm)																	{ return CALL_MEMBER_FN(reinterpret_cast<::PlayerCharacter*>(this), GetArmorValue)(pForm); }
 
-		inline Actor*					GetActorInFavorState()						{ return CALL_MEMBER_FN(this, GetActorInFavorState)(); }
+		inline Actor*					GetActorInFavorState()																						{ return CALL_MEMBER_FN(this, GetActorInFavorState)(); }
 		TESObjectREFR*					GetGrabbedRef();
+		inline void						PlayPickupEvent(TESForm* item, TESForm* containerOwner, TESObjectREFR* containerRef, EventType eventType)	{ CALL_MEMBER_FN(this, PlayPickupEvent)(item, containerOwner, containerRef, eventType); }
 
 
 		// members
@@ -320,6 +329,7 @@ namespace RE
 	private:
 		MEMBER_FN_PREFIX(PlayerCharacter);
 		DEFINE_MEMBER_FN(GetActorInFavorState, Actor*, PLAYER_CHARACTER_GET_ACTOR_IN_FAVOR_STATE);
+		DEFINE_MEMBER_FN(PlayPickupEvent, void, PLAYER_CHARACTER_PLAY_PICKUP_EVENT, TESForm* item, TESForm* containerOwner, TESObjectREFR* containerRef, EventType eventType);
 	};
 
 	STATIC_ASSERT(offsetof(PlayerCharacter, playerGrabbedHandle) == 0x8C8);

@@ -5,12 +5,22 @@
 #include "skse64/GameInput.h"  // InputManager
 #include "skse64/GameTypes.h"  // BSFixedString, tArray
 
+#include "RE/BSInputDevice.h"  // RE::BSInputDevice
+
 
 namespace RE
 {
 	class InputManager
 	{
+	private:
+		typedef RE::BSInputDevice::InputDevice InputDevice;
+
 	public:
+		// parents
+		void*						unkPtr000;	// 000 - singleton
+		BSTEventSource<void*>		unk008;		// 008 - UserEventEnabledEvent
+
+
 		enum Context : UInt32
 		{
 			kContext_Gameplay = 0,
@@ -46,14 +56,6 @@ namespace RE
 		};
 
 
-		enum InputDevice : UInt32
-		{
-			kInputDevice_Keyboard = 0,
-			kInputDevice_Mouse,
-			kInputDevice_Gamepad
-		};
-
-
 		enum
 		{
 			kInvalid = 0xFFFFFFFF
@@ -84,7 +86,6 @@ namespace RE
 
 		UInt32						GetMappedKey(const BSFixedString& name, InputDevice deviceType, Context contextIdx = kContext_Gameplay) const;
 		const BSFixedString&		GetUserEventName(UInt32 buttonID, InputDevice deviceType, Context contextIdx = kContext_Gameplay) const;
-
 		inline bool					IsLookingControlsEnabled() const	{ return (controlState & kControlState_Looking) == kControlState_Looking; }
 		inline bool					IsFlyingControlsEnabled() const		{ return (controlState & kControlState_Flying) == kControlState_Flying; }
 		inline bool					IsSneakingControlsEnabled() const	{ return (controlState & kControlState_Sneaking) == kControlState_Sneaking; }
@@ -92,8 +93,7 @@ namespace RE
 		inline bool					IsMovementControlsEnabled() const	{ return (controlState & kControlState_Movement) == kControlState_Movement; }
 
 
-		void*						unkPtr000;					// 000
-		BSTEventSource<void*>		unk008;						// 008
+		// members
 		InputContext*				context[kContext_Count];	// 060
 		tArray<void*>				unk0E8;						// 0E8
 		tArray<void*>				unk100;						// 100
