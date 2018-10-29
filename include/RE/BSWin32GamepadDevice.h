@@ -34,6 +34,4 @@ namespace RE
 		UInt8	pad0DE[0x27];	// 0DE
 		UInt8	prevState;		// 105
 	};
-	STATIC_ASSERT(offsetof(BSWin32GamepadDevice, curState) == 0xDD);
-	STATIC_ASSERT(offsetof(BSWin32GamepadDevice, prevState) == 0x105);
 }

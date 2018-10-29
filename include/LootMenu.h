@@ -1,5 +1,7 @@
 #pragma once
 
+#undef PlaySound
+
 #include "common/ITypes.h"  // UInt32
 #include "skse64/CustomMenu.h"  // CustomMenuCreator, CustomMenu
 #include "skse64/GameEvents.h"  // BSTEventSink, TESContainerChangedEvent
@@ -99,11 +101,14 @@ namespace QuickLootRE
 		bool						SingleLootEnabled();
 		void						PlayAnimation(const char* fromName, const char* toName);
 		void						PlayAnimationOpen();
+		void						PlayAnimationClose();
+		void						PlaySound(TESForm* a_item);
 
 		static LootMenu*			_singleton;
 		static SimpleLock			_lock;
 		static SInt32				_selectedIndex;
 		static RE::TESObjectREFR*	_containerRef;
+		static bool					_isOpen;
 	};
 
 

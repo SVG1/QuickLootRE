@@ -21,6 +21,10 @@ namespace Hooks
 	RelocPtr<_ReadyWeaponHandler_ProcessButton> vtbl_ReadyWeaponHandler_ProcessButton(MOVEMENT_HANDLER_VTBL_META + (0x1B * 0x8));
 	_ReadyWeaponHandler_ProcessButton orig_ReadyWeaponHandler_ProcessButton;
 
+	RelocAddr<_PlayAnimation> PlayAnimation(PLAY_ANIMATION);
+
+	RelocAddr<_PlaySound> PlaySound(PLAY_SOUND);
+
 
 	void hook_StartActivation_Call(PlayerCharacter* a_player)
 	{

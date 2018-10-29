@@ -1,6 +1,14 @@
 #pragma once
 
-#include "skse64/NiObjects.h"
+#include "skse64/NiObjects.h"  // NiObjectNET
+#include "skse64/NiTypes.h"  // NiTransform
+
+#include "RE/NiObjectNET.h"  // RE::NiObjectNET
+
+class NiMatrix33;
+class NiNode;
+class NiPoint3;
+class NiProperty;
 
 
 namespace RE
@@ -30,33 +38,27 @@ namespace RE
 		};
 
 
-		virtual void		UpdateControllers(ControllerUpdateContext* ctx);	// calls controller vtbl+0x8C
+		virtual void		UpdateControllers(ControllerUpdateContext* ctx);
 		virtual void		UpdateNodeBound(ControllerUpdateContext* ctx);
-
-		// SE: one of these 4 functions was deleted. Until figuring out which one, assuming it was Unk_26
 		virtual void		ApplyTransform(NiMatrix33* mtx, NiPoint3* translate, bool postTransform);
 		virtual void		SetPropertyState(NiProperty* prop);
-		virtual void		Unk_25(UInt32 arg0); // SE: function 29
-		//virtual void	Unk_26(UInt32 arg0);
-
-		virtual NiAVObject*	GetObjectByName(const char** name);	// BSFixedString? alternatively BSFixedString is a typedef of a netimmerse type
+		virtual void		Unk_25(UInt32 arg0);
+		virtual NiAVObject*	GetObjectByName(const char** name);
 		virtual void		SetSelectiveUpdateFlags(bool* selectiveUpdate, bool selectiveUpdateTransforms, bool* rigid);
-		virtual void		UpdateDownwardPass(ControllerUpdateContext* ctx, void* unk1); // SE: changed unk to void*
-		virtual void		UpdateSelectedDownwardPass(ControllerUpdateContext* ctx, void* unk1); // SE: changed unk to void*
-		virtual void		UpdateRigidDownwardPass(ControllerUpdateContext* ctx, void* unk1); // SE: changed unk to void*
+		virtual void		UpdateDownwardPass(ControllerUpdateContext* ctx, void* unk1);
+		virtual void		UpdateSelectedDownwardPass(ControllerUpdateContext* ctx, void* unk1);
+		virtual void		UpdateRigidDownwardPass(ControllerUpdateContext* ctx, void* unk1);
 		virtual void		UpdateWorldBound(void);
-		virtual void		UpdateWorldData(ControllerUpdateContext* ctx);	// SE: function 30 (vtable+0x180)
+		virtual void		UpdateWorldData(ControllerUpdateContext* ctx);
 		virtual void		UpdateNoControllers(ControllerUpdateContext* ctx);
 		virtual void		UpdateDownwardPassTempParent(NiNode* parent, ControllerUpdateContext* ctx);
-		virtual void		Unk_30(void);	// calls virtual function on parent - SE: function 33
-
-		// SE: one of these functions was deleted. Doesn't matter which, they are unks, assuming Unk_32.
-		virtual void		Unk_31(UInt32 arg0); // SE: function 34
-		//virtual void	Unk_32(UInt32 arg0);
+		virtual void		Unk_30(void);
+		virtual void		Unk_31(UInt32 arg0);
 
 		void				UpdateNode(ControllerUpdateContext* ctx)	{ CALL_MEMBER_FN(reinterpret_cast<::NiAVObject*>(this), UpdateNode)(reinterpret_cast<::NiAVObject::ControllerUpdateContext*>(ctx)); }
 
 
+		// members
 		NiNode*				m_parent;			// 30
 		UInt32				unk038;				// 38 - New in SE, init'd to FFFFFFFF
 		UInt32				pad03C;				// 3C

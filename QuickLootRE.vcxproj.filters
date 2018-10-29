@@ -73,6 +73,9 @@
     <Filter Include="include\RE\Skyrim\BSCore">
       <UniqueIdentifier>{6b39d050-b167-48d5-b2eb-a886eb541710}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\RE\Skyrim\NetImmerse">
+      <UniqueIdentifier>{aa1d5fd2-7d10-468c-9f19-21f907656000}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -144,9 +147,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\Hooks.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Input.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\Offsets.h">
@@ -224,14 +224,68 @@
     <ClInclude Include="include\RE\BSTScatterTable.h">
       <Filter>include\RE\Skyrim\BSCore</Filter>
     </ClInclude>
-    <ClInclude Include="include\RE\InputEventDispatcher.h">
-      <Filter>include\RE\Skyrim\BSDevices</Filter>
-    </ClInclude>
     <ClInclude Include="include\RE\InputManager.h">
       <Filter>include\RE\Skyrim\BSDevices</Filter>
     </ClInclude>
     <ClInclude Include="include\RE\CRC.h">
       <Filter>include\RE\Skyrim\BSCore</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\InputEventDispatcher.h">
+      <Filter>include\RE\Skyrim\BSDevices</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\BSIInputDevice.h">
+      <Filter>include\RE\Skyrim\BSDevices</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\BSInputDevice.h">
+      <Filter>include\RE\Skyrim\BSDevices</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\BSGamepadDevice.h">
+      <Filter>include\RE\Skyrim\BSDevices</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\BSKeyboardDevice.h">
+      <Filter>include\RE\Skyrim\BSDevices</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\BSMouseDevice.h">
+      <Filter>include\RE\Skyrim\BSDevices</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\BSVirtualKeyboardDevice.h">
+      <Filter>include\RE\Skyrim\BSDevices</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\BSWin32KeyboardDevice.h">
+      <Filter>include\RE\Skyrim\BSDevices</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\BSWin32MouseDevice.h">
+      <Filter>include\RE\Skyrim\BSDevices</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\BSPCGamepadDeviceHandler.h">
+      <Filter>include\RE\Skyrim\BSDevices</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\BSPCGamepadDeviceDelegate.h">
+      <Filter>include\RE\Skyrim\BSDevices</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\BSWin32GamepadDevice.h">
+      <Filter>include\RE\Skyrim\BSDevices</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\TESBoundObject.h">
+      <Filter>include\RE\Skyrim\TESForms\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\ActorProcessManager.h">
+      <Filter>include\RE\Skyrim\TESForms\World\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\NiNode.h">
+      <Filter>include\RE\Skyrim\NetImmerse</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\NiAVObject.h">
+      <Filter>include\RE\Skyrim\NetImmerse</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\NiObjectNET.h">
+      <Filter>include\RE\Skyrim\NetImmerse</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\NiControllerManager.h">
+      <Filter>include\RE\Skyrim\NetImmerse</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\NiControllerSequence.h">
+      <Filter>include\RE\Skyrim\NetImmerse</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

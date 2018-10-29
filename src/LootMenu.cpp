@@ -4,6 +4,7 @@
 #include "skse64/GameInput.h"  // InputEvent, InputStringHolder
 #include "skse64/GameMenus.h"  // IMenu
 #include "skse64/GameTypes.h"  // BSFixedString, SimpleLock, SimpleLocker
+#include "skse64/NiRTTI.h"  // ni_cast
 #include "skse64/PluginAPI.h"  // SKSETaskInterface
 #include "skse64/ScaleformLoader.h"  // GFxLoader
 #include "skse64/ScaleformValue.h"  // GFxValue
@@ -11,6 +12,7 @@
 #include <string>  // string
 
 #include "HasActivateChoiceVisitor.h"  // HasActivateChoiceVisitor
+#include "Hooks.h"  // PlayAnimation(), PlaySound()
 #include "ItemData.h"  // ItemData
 #include "InventoryList.h"  // g_invList
 
@@ -25,6 +27,8 @@
 #include "RE/InputManager.h"  // RE::InputMappingManager
 #include "RE/MenuControls.h"  // RE::MenuControls
 #include "RE/MenuManager.h"  // RE::MenuManager
+#include "RE/NiControllerManager.h"  // RE::NiControllerManager
+#include "RE/NiNode.h"  // RE::NiNode
 #include "RE/PlayerCharacter.h"  // RE::PlayerCharacter
 #include "RE/TESBoundObject.h"  // RE::TESBoundObject
 #include "RE/TESObjectREFR.h"  // RE::TESObjectREFR
@@ -87,6 +91,9 @@ namespace QuickLootRE
 
 	void LootMenu::ClearContainerRef()
 	{
+		if (_singleton) {
+			_singleton->PlayAnimationClose();
+		}
 		_containerRef = 0;
 	}
 
@@ -202,9 +209,9 @@ namespace QuickLootRE
 
 	bool LootMenu::CanProcess(InputEvent* a_event)
 	{
-		typedef RE::BSInputDevice::InputDevice InputDevice;
-		typedef RE::BSWin32GamepadDevice::Gamepad Gamepad;
-		typedef RE::BSWin32MouseDevice::Mouse Mouse;
+		typedef RE::BSInputDevice::InputDevice		InputDevice;
+		typedef RE::BSWin32GamepadDevice::Gamepad	Gamepad;
+		typedef RE::BSWin32MouseDevice::Mouse		Mouse;
 
 		if (view && a_event->eventType == InputEvent::kEventType_Button) {
 			ButtonEvent* button = static_cast<ButtonEvent*>(a_event);
@@ -224,8 +231,8 @@ namespace QuickLootRE
 
 	bool LootMenu::ProcessButton(ButtonEvent* a_event)
 	{
-		typedef RE::BSWin32GamepadDevice::Gamepad Gamepad;
-		typedef RE::BSWin32MouseDevice::Mouse Mouse;
+		typedef RE::BSWin32GamepadDevice::Gamepad	Gamepad;
+		typedef RE::BSWin32MouseDevice::Mouse		Mouse;
 
 		switch (a_event->deviceType) {
 		case kDeviceType_Gamepad:
@@ -292,6 +299,9 @@ namespace QuickLootRE
 
 	void LootMenu::TakeItem()
 	{
+		typedef RE::PlayerCharacter::EventType	EventType;
+		typedef RE::TESObjectREFR::RemoveType	RemoveType;
+
 		if (view) {
 			SimpleLocker lock(&_lock);
 
@@ -320,16 +330,16 @@ namespace QuickLootRE
 					RE::TESObjectREFR* refItem = reinterpret_cast<RE::TESObjectREFR*>((UInt64)xList - 0x70);
 					player->PickUpItem(refItem, 1, false, true);
 				} else {
-					RE::TESObjectREFR::RemoveType lootMode = RE::TESObjectREFR::RemoveType::kRemoveType_Take;
+					RemoveType lootMode = RemoveType::kRemoveType_Take;
 					SInt32 numItems = item.count();
 
 					if (_containerRef->IsDead(false)) {
-						player->PlayPickupEvent(item.form(), _containerRef->GetOwner(), _containerRef, RE::PlayerCharacter::EventType::kEventType_DeadBody);
+						player->PlayPickupEvent(item.form(), _containerRef->GetOwner(), _containerRef, EventType::kEventType_DeadBody);
 					} else {
-						player->PlayPickupEvent(item.form(), _containerRef->GetOwner(), _containerRef, RE::PlayerCharacter::EventType::kEventType_Container);
+						player->PlayPickupEvent(item.form(), _containerRef->GetOwner(), _containerRef, EventType::kEventType_Container);
 
 						if (_containerRef->IsOffLimits()) {
-							lootMode = RE::TESObjectREFR::RemoveType::kRemoveType_Steal;
+							lootMode = RemoveType::kRemoveType_Steal;
 						}
 					}
 
@@ -356,7 +366,11 @@ namespace QuickLootRE
 							UInt32 totalValue = item.value() * numItems;
 							player->SendStealAlarm(_containerRef, 0, 0, totalValue, _containerRef->GetOwner(), true);
 						}
+
+						PlayAnimationOpen();
 					}
+
+					PlaySound(item.form());
 				}
 
 				OpenContainer();
@@ -454,11 +468,11 @@ namespace QuickLootRE
 
 	bool LootMenu::SingleLootEnabled()
 	{
-		typedef RE::BSKeyboardDevice BSKeyboardDevice;
-		typedef RE::BSWin32KeyboardDevice BSWin32KeyboardDevice;
-		typedef RE::BSGamepadDevice BSGamepadDevice;
-		typedef RE::BSWin32GamepadDevice BSWin32GamepadDevice;
-		typedef RE::BSInputDevice::InputDevice InputDevice;
+		typedef RE::BSKeyboardDevice			BSKeyboardDevice;
+		typedef RE::BSWin32KeyboardDevice		BSWin32KeyboardDevice;
+		typedef RE::BSGamepadDevice				BSGamepadDevice;
+		typedef RE::BSWin32GamepadDevice		BSWin32GamepadDevice;
+		typedef RE::BSInputDevice::InputDevice	InputDevice;
 
 		static RE::InputEventDispatcher* inputDispatcher = RE::InputEventDispatcher::GetSingleton();
 		static RE::InputManager* inputManager = RE::InputManager::GetSingleton();
@@ -487,18 +501,59 @@ namespace QuickLootRE
 
 	void LootMenu::PlayAnimation(const char* fromName, const char* toName)
 	{
-		NiNode* niNode = _containerRef->GetNiNode();
+		typedef RE::NiControllerManager NiControllerManager;
+
+		RE::NiNode* niNode = _containerRef->GetNiNode();
 		if (!niNode) {
 			return;
 		}
-		NiTimeController* controller = niNode->
+
+		NiTimeController* controller = niNode->GetController();
+		if (!controller) {
+			return;
+		}
+
+		RE::NiControllerManager* manager = ni_cast(controller, NiControllerManager);
+		if (!manager) {
+			return;
+		}
+
+		RE::NiControllerSequence* fromSeq = manager->GetSequenceByName(fromName);
+		RE::NiControllerSequence* toSeq = manager->GetSequenceByName(toName);
+		if (!fromSeq || !toSeq) {
+			return;
+		}
+
+		(*Hooks::PlayAnimation)(_containerRef, manager, toSeq, fromSeq, false);
 	}
 
 
 	void LootMenu::PlayAnimationOpen()
 	{
-		if (_containerRef) {
+		if (_containerRef && !_isOpen) {
+			PlayAnimation("Close", "Open");
+			_isOpen = true;
+			if (_containerRef->formType != kFormType_Character) {
+				_containerRef->ActivateRefChildren(*g_thePlayer);
+			}
+		}
+	}
 
+
+	void LootMenu::PlayAnimationClose()
+	{
+		if (_containerRef && _isOpen) {
+			PlayAnimation("Open", "Close");
+			_isOpen = false;
+		}
+	}
+
+
+	void LootMenu::PlaySound(TESForm* a_item)
+	{
+		BGSPickupPutdownSounds* sounds = DYNAMIC_CAST(a_item, TESForm, BGSPickupPutdownSounds);
+		if (sounds && sounds->pickUp) {
+			(*Hooks::PlaySound)(sounds->pickUp, false, &_containerRef->pos, (*g_thePlayer)->GetNiNode());
 		}
 	}
 
@@ -563,6 +618,7 @@ namespace QuickLootRE
 	SimpleLock LootMenu::_lock;
 	SInt32 LootMenu::_selectedIndex = 0;
 	RE::TESObjectREFR* LootMenu::_containerRef = 0;
+	bool LootMenu::_isOpen = false;
 
 
 	SKSETaskInterface* g_task = 0;

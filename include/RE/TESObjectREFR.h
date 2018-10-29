@@ -15,7 +15,6 @@ class ActorWeightModel;
 class BaseExtraList;
 class BSFaceGenAnimationData;
 class BSFaceGenNiNode;
-class NiNode;
 class TESFaction;
 class TESNPC;
 class TESObjectCELL;
@@ -23,6 +22,11 @@ class TESObjectCELL;
 
 namespace RE
 {
+	class NiControllerManager;
+	class NiControllerSequence;
+	class NiNode;
+
+
 	class TESObjectREFR : public TESForm
 	{
 	public:
@@ -195,6 +199,8 @@ namespace RE
 		inline static bool		LookupByHandle(UInt32& refHandle, ::TESObjectREFR*& refrOut)	{ return (*LookupREFRByHandle)(&refHandle, &refrOut); }
 		inline bool				IsLocked()														{ LockState* state = CALL_MEMBER_FN(this, GetLockState_Impl)(); return (state && state->isLocked); }
 		inline UInt32			GetNumItems(bool unk1, bool unk2)								{ return CALL_MEMBER_FN(this, GetNumItems)(unk1, unk2); }
+		inline UInt32			ActivateRefChildren(TESObjectREFR* activator)					{ return CALL_MEMBER_FN(this, ActivateRefChildren)(activator); }
+		inline UInt32			ActivateRefChildren(::TESObjectREFR* activator)					{ return CALL_MEMBER_FN(this, ActivateRefChildren)(reinterpret_cast<TESObjectREFR*>(activator)); }
 
 
 		// members
@@ -216,5 +222,6 @@ namespace RE
 		DEFINE_MEMBER_FN(GetOwner_Impl, TESForm*, TES_OBJECT_REFR_GET_OWNER_IMPL);
 		DEFINE_MEMBER_FN(GetLockState_Impl, LockState*, TES_OBJECT_REFR_GET_LOCK_STATE_IMPL);
 		DEFINE_MEMBER_FN(GetNumItems, UInt32, TES_OBJECT_REFR_GET_NUM_ITEMS, bool unk1, bool unk2);
+		DEFINE_MEMBER_FN(ActivateRefChildren, UInt32, TES_OBJECT_REFR_ACTIVATE_CHILDREN, TESObjectREFR* activator);
 	};
 };
