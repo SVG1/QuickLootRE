@@ -132,6 +132,12 @@ namespace QuickLootRE
 	}
 
 
+	void ItemData::reduceCount()
+	{
+		--_count;
+	}
+
+
 	float ItemData::getWeight()
 	{
 		TESWeightForm* weightForm = DYNAMIC_CAST(_entryData->type, TESForm, TESWeightForm);

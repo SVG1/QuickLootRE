@@ -299,5 +299,9 @@
     <ClInclude Include="include\RE\ButtonEvent.h">
       <Filter>include\RE\Skyrim\Events</Filter>
     </ClInclude>
+    <ClInclude Include="version.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="version.rc" />
   </ItemGroup>
 </Project>

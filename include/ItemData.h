@@ -367,6 +367,8 @@ namespace QuickLootRE
 		bool				isStolen()	const;
 		TESForm*			form()		const;
 
+		void				reduceCount();
+
 	private:
 		float				getWeight();
 		Type				getType();

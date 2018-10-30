@@ -29,19 +29,19 @@ namespace RE
 
 		virtual ~BSInputDevice();
 
-		virtual void				Initialize() = 0;
-		virtual	void				Process(float unk1) = 0;
-		virtual	void				Unk_03() = 0;
-		virtual	bool				Unk_04(UInt32 unk0, void *unk1);
-		virtual bool				Unk_05(void *unk0);
-		virtual bool				Unk_06(UInt32 unk0, UInt32 *unk1);
-		virtual bool				IsEnabled(void) const;
-		virtual void				Unk_08(void* unk1);
+		virtual void	Initialize() = 0;
+		virtual	void	Process(float unk1) = 0;
+		virtual	void	Unk_03() = 0;
+		virtual	bool	Unk_04(UInt32 unk0, void *unk1);
+		virtual bool	Unk_05(void *unk0);
+		virtual bool	Unk_06(UInt32 unk0, UInt32 *unk1);
+		virtual bool	IsEnabled(void) const;
+		virtual void	Unk_08(void* unk1);
 
-		inline bool IsKeyboard() const				{ return type == kInputDevice_Keyboard; }
-		inline bool IsMouse() const					{ return type == kInputDevice_Mouse; }
-		inline bool IsGamepad() const				{ return type == kInputDevice_Gamepad; }
-		inline bool IsPressed(UInt32 keyCode) const	{ Data *data = 0; return (codeMap.GetAt(keyCode, data) && data->timer > 0.0f); }
+		inline bool		IsKeyboard() const				{ return type == kInputDevice_Keyboard; }
+		inline bool		IsMouse() const					{ return type == kInputDevice_Mouse; }
+		inline bool		IsGamepad() const				{ return type == kInputDevice_Gamepad; }
+		inline bool		IsPressed(UInt32 keyCode) const	{ Data *data = 0; return (codeMap.GetAt(keyCode, data) && data->timer > 0.0f); }
 
 
 		// members
@@ -49,4 +49,8 @@ namespace RE
 		UInt32						pad0C;		// 0C
 		BSTHashMap<UInt32, Data*>	codeMap;	// 10
 	};
+	STATIC_ASSERT(offsetof(BSInputDevice, type) == 0x08);
+	STATIC_ASSERT(offsetof(BSInputDevice, pad0C) == 0x0C);
+	STATIC_ASSERT(offsetof(BSInputDevice, codeMap) == 0x10);
+	STATIC_ASSERT(sizeof(BSInputDevice::codeMap) == 0x30);
 }

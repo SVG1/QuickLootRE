@@ -114,13 +114,19 @@ namespace RE
 		};
 
 
-		inline bool	IsPressed(UInt32 keyCode) const { return (keyCode < sizeof(curState)) && ((curState[keyCode] & 0x80) != 0); }
+		inline bool	IsPressed(UInt32 keyCode) const
+		{
+			return (keyCode < sizeof(curState)) && ((curState[keyCode] & 0x80) != 0);
+		}
 
 		// members
-		void*		inputDevice;					// 030 - IDirectInputDevice8 *
-		UInt8		pad038[0x130];					// 038
-		UInt8		curState[0x100];				// 168
-		UInt8		prevState[0x100];				// 268
+		void*		inputDevice;		// 040 - IDirectInputDevice8 *
+		UInt8		pad048[0x120];		// 048
+		UInt8		curState[0x100];	// 168
+		UInt8		prevState[0x100];	// 268
 	};
+	STATIC_ASSERT(offsetof(BSWin32KeyboardDevice, inputDevice) == 0x40);
+	STATIC_ASSERT(offsetof(BSWin32KeyboardDevice, pad048) == 0x48);
 	STATIC_ASSERT(offsetof(BSWin32KeyboardDevice, curState) == 0x168);
+	STATIC_ASSERT(offsetof(BSWin32KeyboardDevice, prevState) == 0x268);
 }

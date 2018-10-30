@@ -53,7 +53,6 @@ namespace QuickLootRE
 
 	LootMenu::LootMenu(const char* a_swfPath)
 	{
-		_DMESSAGE("Created");
 		if (CALL_MEMBER_FN(GFxLoader::GetSingleton(), LoadMovie)(this, &view, a_swfPath, kScaleModeType_ShowAll, 0.0)) {
 			IMenu::flags = kFlag_DoNotDeleteOnClose | kFlag_DoNotPreventGameSave | kFlag_Unk10000;
 			IMenu::unk0C = 0x02;  // menuDepth, set lower than fade menu (3)
@@ -278,7 +277,7 @@ namespace QuickLootRE
 			_selectedIndex = 0;
 			static RE::MenuControls* mc = RE::MenuControls::GetSingleton();
 			mc->RegisterHandler(this);
-			OpenContainer();
+			DelayedUpdater::Register();
 		}
 	}
 
@@ -311,9 +310,16 @@ namespace QuickLootRE
 			return;
 		}
 
+		// Evaluate # of items to remove and update inv list accordingly
 		ItemData item = g_invList[_selectedIndex];
-		g_invList.erase(g_invList.begin() + _selectedIndex);
-		ModSelectedIndex(0);
+		SInt32 numItems = item.count();
+		if (numItems > 1 && SingleLootEnabled()) {
+			numItems = 1;
+			g_invList[_selectedIndex].reduceCount();
+		} else {
+			g_invList.erase(g_invList.begin() + _selectedIndex);
+			ModSelectedIndex(0);
+		}
 
 		static RE::PlayerCharacter* player = reinterpret_cast<RE::PlayerCharacter*>(*g_thePlayer);
 
@@ -338,7 +344,6 @@ namespace QuickLootRE
 			player->PickUpItem(refItem, 1, false, true);
 		} else {
 			RemoveType lootMode = RemoveType::kRemoveType_Take;
-			SInt32 numItems = item.count();
 
 			if (_containerRef->IsDead(false)) {
 				player->PlayPickupEvent(item.form(), _containerRef->GetOwner(), _containerRef, EventType::kEventType_DeadBody);
@@ -348,10 +353,6 @@ namespace QuickLootRE
 				if (_containerRef->IsOffLimits()) {
 					lootMode = RemoveType::kRemoveType_Steal;
 				}
-			}
-
-			if (numItems > 1 && SingleLootEnabled()) {
-				numItems = 1;
 			}
 
 			// Remove projectile 3D
@@ -383,7 +384,7 @@ namespace QuickLootRE
 			_containerRef->RemoveItem(&droppedHandle, item.form(), numItems, lootMode, xList, player, 0, 0);
 		}
 
-		OpenContainer();
+		DelayedUpdater::Register();
 	}
 
 	void LootMenu::ModSelectedIndex(SInt32 a_indexOffset)
@@ -411,6 +412,11 @@ namespace QuickLootRE
 			new (dlgt)LootMenuUIDelegate(".openContainer", 6);
 
 			view->CreateArray(&dlgt->args[0]);
+			if (!dlgt->args[0].objectInterface) {
+				_ERROR("[ERROR] GFxValue does not have an object interface!");
+				DelayedUpdater::Register();
+			}
+
 			for (auto& invItem : g_invList) {
 				GFxValue text;
 				text.SetString(invItem.name());
@@ -487,7 +493,7 @@ namespace QuickLootRE
 
 		RE::BSWin32KeyboardDevice* keyboard = DYNAMIC_CAST(inputDispatcher->keyboard, BSKeyboardDevice, BSWin32KeyboardDevice);
 		if (keyboard && keyboard->IsEnabled()) {
-			static UInt32 keyRun = inputManager->GetMappedKey(holder->run, InputDevice::kInputDevice_Keyboard);
+			static UInt32 keyRun = inputManager->GetMappedKey(holder->sprint, InputDevice::kInputDevice_Keyboard);
 			if (keyRun != RE::InputManager::kInvalid && keyboard->IsPressed(keyRun)) {
 				return true;
 			}
