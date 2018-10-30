@@ -53,6 +53,7 @@ namespace QuickLootRE
 
 	LootMenu::LootMenu(const char* a_swfPath)
 	{
+		_DMESSAGE("Created");
 		if (CALL_MEMBER_FN(GFxLoader::GetSingleton(), LoadMovie)(this, &view, a_swfPath, kScaleModeType_ShowAll, 0.0)) {
 			IMenu::flags = kFlag_DoNotDeleteOnClose | kFlag_DoNotPreventGameSave | kFlag_Unk10000;
 			IMenu::unk0C = 0x02;  // menuDepth, set lower than fade menu (3)
@@ -312,6 +313,7 @@ namespace QuickLootRE
 
 		ItemData item = g_invList[_selectedIndex];
 		g_invList.erase(g_invList.begin() + _selectedIndex);
+		ModSelectedIndex(0);
 
 		static RE::PlayerCharacter* player = reinterpret_cast<RE::PlayerCharacter*>(*g_thePlayer);
 
@@ -352,11 +354,11 @@ namespace QuickLootRE
 				numItems = 1;
 			}
 
-			UInt32 droppedHandle = 0;
-			_containerRef->RemoveItem(&droppedHandle, item.form(), numItems, lootMode, xList, player, 0, 0);
-
 			// Remove projectile 3D
-			static_cast<RE::TESBoundObject*>(item.form())->OnRemovedFrom(_containerRef);
+			RE::TESBoundObject* bound = static_cast<RE::TESBoundObject*>(item.form());
+			if (bound) {
+				bound->OnRemovedFrom(_containerRef);
+			}
 
 			if (_containerRef->baseForm->formType == kFormType_Character) {
 
@@ -376,6 +378,9 @@ namespace QuickLootRE
 			}
 
 			player->PlaySounds(item.form(), true, false);
+
+			UInt32 droppedHandle = 0;
+			_containerRef->RemoveItem(&droppedHandle, item.form(), numItems, lootMode, xList, player, 0, 0);
 		}
 
 		OpenContainer();

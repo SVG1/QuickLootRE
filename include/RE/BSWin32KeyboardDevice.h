@@ -122,4 +122,5 @@ namespace RE
 		UInt8		curState[0x100];				// 168
 		UInt8		prevState[0x100];				// 268
 	};
+	STATIC_ASSERT(offsetof(BSWin32KeyboardDevice, curState) == 0x168);
 }

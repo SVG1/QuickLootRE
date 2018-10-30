@@ -23,8 +23,8 @@ namespace RE
 		virtual bool	Unk_4A(void);
 		virtual bool	Unk_4B(void* arg0, BSString* dst);
 		virtual bool	Unk_4C(void* arg0, UInt8 arg1, UInt32 arg2, float arg3);
+		virtual void	Unk_4D(UInt32 arg);
 		virtual void	OnRemovedFrom(TESObjectREFR* ref);
-		virtual void	Unk_4E(UInt32 arg);
 		virtual void	Unk_4F(void);
 		virtual void	Unk_50(void);
 		virtual void	Unk_51(void);

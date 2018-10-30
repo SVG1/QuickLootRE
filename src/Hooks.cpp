@@ -39,7 +39,7 @@ namespace Hooks
 
 			bool result = (this->*orig_CanProcess)(a_event);
 			if (result && a_event && QuickLootRE::LootMenu::GetSingleton()) {
-				result = (a_event->GetControlID() == &holder->togglePOV);
+				result = (*a_event->GetControlID() == holder->togglePOV);
 			}
 
 			return result;
@@ -56,8 +56,8 @@ namespace Hooks
 
 
 	template <uintptr_t offset> typename CameraStateHandler<offset>::_CanProcess CameraStateHandler<offset>::orig_CanProcess;
-	typedef CameraStateHandler<FIRST_PERSON_STATE_VTBL_META + 0x58> FirstPersonStateHandler;
-	typedef CameraStateHandler<THIRD_PERSON_STATE_VTBL_META + 0x90> ThirdPersonStateHandler;
+	typedef CameraStateHandler<FIRST_PERSON_STATE_VTBL_META + 0x60> FirstPersonStateHandler;
+	typedef CameraStateHandler<THIRD_PERSON_STATE_VTBL_META + 0x98> ThirdPersonStateHandler;
 
 
 	class FavoritesHandler : public RE::MenuEventHandler
