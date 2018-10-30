@@ -62,6 +62,28 @@ namespace QuickLootRE
 	{}
 
 
+	bool operator<(const ItemData& a_lhs, const ItemData& a_rhs)
+	{
+		typedef int(*FnCompare)(const ItemData& a_lhs, const ItemData& a_rhs);
+		static FnCompare compares[] = {
+			&CompareByStolen,
+			&CompareByType,
+			&CompareByName,
+			&CompareByValue,
+			&CompareByCount
+		};
+
+		for (FnCompare compare : compares) {
+			int cmp = compare(a_lhs, a_rhs);
+			if (cmp) {
+				return cmp < 0;
+			}
+		}
+
+		return a_lhs._entryData < a_rhs._entryData;
+	}
+
+
 	InventoryEntryData* ItemData::entryData() const
 	{
 		return _entryData;

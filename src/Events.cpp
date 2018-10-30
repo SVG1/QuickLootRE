@@ -10,7 +10,6 @@
 
 #include <map>  // map
 
-#include "Hooks.h"  // startActivation()
 #include "InventoryList.h"  // g_invList
 #include "LootMenu.h"  // LootMenu
 
@@ -48,29 +47,35 @@ namespace QuickLootRE
 
 	EventResult CrosshairRefEventHandler::ReceiveEvent(SKSECrosshairRefEvent* a_event, EventDispatcher<SKSECrosshairRefEvent>* a_dispatcher)
 	{
-		if (a_event && a_event->crosshairRef) {
-			RE::TESObjectREFR* ref = reinterpret_cast<RE::TESObjectREFR*>(a_event->crosshairRef);
-			if (LootMenu::CanOpen(ref)) {
-				LootMenu::SetContainerRef(ref);
-				TESContainer* container = ref->GetContainer();
-				g_invList.clear();
-				defaultMap.clear();
-				getInventoryList(&ref->extraData, container);
+		// If player is not looking at anything
+		LootMenu* loot = LootMenu::GetSingleton();
+		if (!a_event || !a_event->crosshairRef) {
+			if (loot) {
 				CALL_MEMBER_FN(UIManager::GetSingleton(), AddMessage)(&LootMenu::GetName(), UIMessage::kMessage_Close, 0);
-				CALL_MEMBER_FN(UIManager::GetSingleton(), AddMessage)(&LootMenu::GetName(), UIMessage::kMessage_Open, 0);
+				LootMenu::ClearContainerRef();
 			}
-		} else if (LootMenu::GetSingleton()) {
+			return kEvent_Continue;
+		}
+
+		// If player went from container -> container
+		RE::TESObjectREFR* ref = reinterpret_cast<RE::TESObjectREFR*>(a_event->crosshairRef);
+		if (loot && (loot->GetContainerRef() != ref)) {
 			CALL_MEMBER_FN(UIManager::GetSingleton(), AddMessage)(&LootMenu::GetName(), UIMessage::kMessage_Close, 0);
 			LootMenu::ClearContainerRef();
 		}
-		return kEvent_Continue;
-	}
 
-
-	EventResult MenuOpenCloseEventHandler::ReceiveEvent(MenuOpenCloseEvent* a_event, EventDispatcher<MenuOpenCloseEvent>* a_dispatcher)
-	{
+		// If player is looking at a container
+		if (LootMenu::CanOpen(ref)) {
+			LootMenu::SetContainerRef(ref);
+			TESContainer* container = ref->GetContainer();
+			g_invList.clear();
+			defaultMap.clear();
+			getInventoryList(&ref->extraData, container);
+			g_invList.sort();
+			CALL_MEMBER_FN(UIManager::GetSingleton(), AddMessage)(&LootMenu::GetName(), UIMessage::kMessage_Close, 0);
+			CALL_MEMBER_FN(UIManager::GetSingleton(), AddMessage)(&LootMenu::GetName(), UIMessage::kMessage_Open, 0);
+		}
 		return kEvent_Continue;
-		// TODO
 	}
 
 
@@ -113,7 +118,5 @@ namespace QuickLootRE
 
 
 	CrosshairRefEventHandler g_crosshairRefEventHandler;
-	MenuOpenCloseEventHandler g_menuOpenCloseEventHandler;
-	InputEventHandler g_inputEventHandler;
 	TESContainerChangedEventHandler g_containerChangedEventHandler;
 }

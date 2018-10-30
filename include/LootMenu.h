@@ -20,6 +20,11 @@
 #include "RE/MenuEventHandler.h"  // RE::MenuEventHandler
 #include "RE/TESObjectREFR.h"  // RE::TESObjectREFR
 
+namespace RE
+{
+	class ButtonEvent;
+}
+
 
 namespace QuickLootRE
 {
@@ -85,7 +90,7 @@ namespace QuickLootRE
 
 		// MenuEventHandler
 		virtual bool				CanProcess(InputEvent* a_event) override;
-		virtual bool				ProcessButton(ButtonEvent* a_event) override;
+		virtual bool				ProcessButton(RE::ButtonEvent* a_event) override;
 
 		void						OnMenuOpen();
 		void						OnMenuClose();

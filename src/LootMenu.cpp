@@ -22,6 +22,7 @@
 #include "RE/BSWin32GamepadDevice.h"  // RE::BSWin32GamepadDevice
 #include "RE/BSWin32KeyboardDevice.h"  // RE::BSWin32KeyboardDevice
 #include "RE/BSWin32MouseDevice.h"  // RE::BSWin32MouseDevice
+#include "RE/ButtonEvent.h"  // RE::ButtonEvent
 #include "RE/ExtraContainerChanges.h"  // RE::ExtraContainerChanges, RE::ExtraContainerChanges::Data
 #include "RE/InputEventDispatcher.h"  // RE::InputEventDispatcher
 #include "RE/InputManager.h"  // RE::InputMappingManager
@@ -130,12 +131,9 @@ namespace QuickLootRE
 			return false;
 		}
 
-#if 0
-		// disabled for testing
-		if (ref->IsOffLimits()) {
+		if (a_ref->IsOffLimits()) {
 			return false;
 		}
-#endif
 
 		RE::TESObjectREFR* containerRef = 0;
 		switch (a_ref->baseForm->formType) {
@@ -168,13 +166,9 @@ namespace QuickLootRE
 
 		UInt32 numItems = containerRef->GetNumItems(false, false);
 
-#if 0
-		// disabled for testing
 		if (numItems <= 0) {
 			return false;
 		}
-#endif
-
 
 #if 0
 		// Disabled until I can understand this better
@@ -229,10 +223,14 @@ namespace QuickLootRE
 	}
 
 
-	bool LootMenu::ProcessButton(ButtonEvent* a_event)
+	bool LootMenu::ProcessButton(RE::ButtonEvent* a_event)
 	{
 		typedef RE::BSWin32GamepadDevice::Gamepad	Gamepad;
 		typedef RE::BSWin32MouseDevice::Mouse		Mouse;
+
+		if (!a_event->IsDown()) {
+			return true;
+		}
 
 		switch (a_event->deviceType) {
 		case kDeviceType_Gamepad:
@@ -302,82 +300,86 @@ namespace QuickLootRE
 		typedef RE::PlayerCharacter::EventType	EventType;
 		typedef RE::TESObjectREFR::RemoveType	RemoveType;
 
-		if (view) {
-			SimpleLocker lock(&_lock);
-
-			if (_containerRef && !g_invList.empty()) {
-				ItemData item = g_invList[_selectedIndex];
-				g_invList.erase(g_invList.begin() + _selectedIndex);
-				static RE::PlayerCharacter* player = reinterpret_cast<RE::PlayerCharacter*>(*g_thePlayer);
-
-				// Containers don't have ExtraContainerChanges if the player hasn't opened them yet, so we must add them ourselves
-				RE::ExtraContainerChanges* xContainerChanges = static_cast<RE::ExtraContainerChanges*>(_containerRef->extraData.GetByType(kExtraData_ContainerChanges));
-				if (!xContainerChanges) {
-					RE::BaseExtraList* xList = &_containerRef->extraData;
-					RE::ExtraContainerChanges::Data* changes = new RE::ExtraContainerChanges::Data(_containerRef);
-					xList->SetInventoryChanges(changes);
-					changes->InitContainer();
-				}
-
-				// Locate item's extra list (if any)
-				BaseExtraList* xList = 0;
-				if (item.entryData()->extendDataList && item.entryData()->extendDataList->Count() > 0) {
-					xList = item.entryData()->extendDataList->GetNthItem(0);
-				}
-
-				// Pickup dropped items
-				if (xList && xList->HasType(kExtraData_ItemDropper)) {
-					RE::TESObjectREFR* refItem = reinterpret_cast<RE::TESObjectREFR*>((UInt64)xList - 0x70);
-					player->PickUpItem(refItem, 1, false, true);
-				} else {
-					RemoveType lootMode = RemoveType::kRemoveType_Take;
-					SInt32 numItems = item.count();
-
-					if (_containerRef->IsDead(false)) {
-						player->PlayPickupEvent(item.form(), _containerRef->GetOwner(), _containerRef, EventType::kEventType_DeadBody);
-					} else {
-						player->PlayPickupEvent(item.form(), _containerRef->GetOwner(), _containerRef, EventType::kEventType_Container);
-
-						if (_containerRef->IsOffLimits()) {
-							lootMode = RemoveType::kRemoveType_Steal;
-						}
-					}
-
-					if (numItems > 1 && SingleLootEnabled()) {
-						numItems = 1;
-					}
-
-					UInt32 droppedHandle = 0;
-					_containerRef->RemoveItem(&droppedHandle, item.form(), numItems, lootMode, xList, player, 0, 0);
-
-					// Remove projectile 3D
-					static_cast<RE::TESBoundObject*>(item.form())->OnRemovedFrom(_containerRef);
-
-					if (_containerRef->baseForm->formType == kFormType_Character) {
-
-						// Dispell worn item enchantments
-						RE::Actor* actor = static_cast<RE::Actor*>(_containerRef);
-						if (actor->processManager) {
-							actor->DispelWornItemEnchantments();
-							actor->processManager->UpdateEquipment_Hooked(actor);
-						}
-					} else {
-						if (_containerRef->IsOffLimits()) {
-							UInt32 totalValue = item.value() * numItems;
-							player->SendStealAlarm(_containerRef, 0, 0, totalValue, _containerRef->GetOwner(), true);
-						}
-
-						PlayAnimationOpen();
-					}
-
-					PlaySound(item.form());
-				}
-
-				OpenContainer();
-			}
+		if (!view) {
+			return;
 		}
-	}
 
+		SimpleLocker lock(&_lock);
+
+		if (!_containerRef || g_invList.empty()) {
+			return;
+		}
+
+		ItemData item = g_invList[_selectedIndex];
+		g_invList.erase(g_invList.begin() + _selectedIndex);
+
+		static RE::PlayerCharacter* player = reinterpret_cast<RE::PlayerCharacter*>(*g_thePlayer);
+
+		// Containers don't have ExtraContainerChanges if the player hasn't opened them yet, so we must add them ourselves
+		RE::ExtraContainerChanges* xContainerChanges = static_cast<RE::ExtraContainerChanges*>(_containerRef->extraData.GetByType(kExtraData_ContainerChanges));
+		if (!xContainerChanges) {
+			RE::BaseExtraList* xList = &_containerRef->extraData;
+			RE::ExtraContainerChanges::Data* changes = new RE::ExtraContainerChanges::Data(_containerRef);
+			xList->SetInventoryChanges(changes);
+			changes->InitContainer();
+		}
+
+		// Locate item's extra list (if any)
+		BaseExtraList* xList = 0;
+		if (item.entryData()->extendDataList && item.entryData()->extendDataList->Count() > 0) {
+			xList = item.entryData()->extendDataList->GetNthItem(0);
+		}
+
+		// Pickup dropped items
+		if (xList && xList->HasType(kExtraData_ItemDropper)) {
+			RE::TESObjectREFR* refItem = reinterpret_cast<RE::TESObjectREFR*>((UInt64)xList - 0x70);
+			player->PickUpItem(refItem, 1, false, true);
+		} else {
+			RemoveType lootMode = RemoveType::kRemoveType_Take;
+			SInt32 numItems = item.count();
+
+			if (_containerRef->IsDead(false)) {
+				player->PlayPickupEvent(item.form(), _containerRef->GetOwner(), _containerRef, EventType::kEventType_DeadBody);
+			} else {
+				player->PlayPickupEvent(item.form(), _containerRef->GetOwner(), _containerRef, EventType::kEventType_Container);
+
+				if (_containerRef->IsOffLimits()) {
+					lootMode = RemoveType::kRemoveType_Steal;
+				}
+			}
+
+			if (numItems > 1 && SingleLootEnabled()) {
+				numItems = 1;
+			}
+
+			UInt32 droppedHandle = 0;
+			_containerRef->RemoveItem(&droppedHandle, item.form(), numItems, lootMode, xList, player, 0, 0);
+
+			// Remove projectile 3D
+			static_cast<RE::TESBoundObject*>(item.form())->OnRemovedFrom(_containerRef);
+
+			if (_containerRef->baseForm->formType == kFormType_Character) {
+
+				// Dispell worn item enchantments
+				RE::Actor* actor = static_cast<RE::Actor*>(_containerRef);
+				if (actor->processManager) {
+					actor->DispelWornItemEnchantments();
+					actor->processManager->UpdateEquipment_Hooked(actor);
+				}
+			} else {
+				if (_containerRef->IsOffLimits()) {
+					UInt32 totalValue = item.value() * numItems;
+					player->SendStealAlarm(_containerRef, 0, 0, totalValue, _containerRef->GetOwner(), true);
+				}
+
+				PlayAnimationOpen();
+			}
+
+			player->PlaySounds(item.form(), true, false);
+		}
+
+		OpenContainer();
+	}
 
 	void LootMenu::ModSelectedIndex(SInt32 a_indexOffset)
 	{

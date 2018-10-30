@@ -1,13 +1,11 @@
 #pragma once
 
-#include "common/ITypes.h"  // UInt32
-#include "skse64/GameExtraData.h"  // InventoryEntryData
-#include "skse64/GameFormComponents.h"  // TESFullName
-#include "skse64/GameForms.h"  // TESForm
-
 #include <vector>  // vector
 
 #include "ItemData.h"  // ItemData
+
+class InventoryEntryData;
+class TESForm;
 
 
 namespace QuickLootRE
@@ -22,6 +20,8 @@ namespace QuickLootRE
 		void								add(InventoryEntryData* a_entryData, SInt32 a_count);
 		void								add(TESForm* a_form, SInt32 a_count);
 
+		void								sort();
+
 		ItemData&							operator[](UInt32 a_pos) { return _itemList[a_pos]; }
 
 		std::vector<ItemData>::iterator		begin() noexcept { return _itemList.begin(); }
@@ -35,6 +35,10 @@ namespace QuickLootRE
 
 	private:
 		bool								isValidItem(TESForm* a_item);
+
+		void								quicksort(SInt32 a_lo, SInt32 a_hi);
+		UInt64								partition(SInt32 a_lo, SInt32 a_hi);
+		ItemData&							pivot(SInt32 a_lo, SInt32 a_hi);
 
 		std::vector<ItemData>				_itemList;
 		std::vector<InventoryEntryData*>	_heapList;

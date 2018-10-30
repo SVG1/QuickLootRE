@@ -356,6 +356,7 @@ namespace QuickLootRE
 		friend bool			operator> (const ItemData& a_lhs, const ItemData& a_rhs);
 		friend bool			operator<=(const ItemData& a_lhs, const ItemData& a_rhs);
 		friend bool			operator>=(const ItemData& a_lhs, const ItemData& a_rhs);
+		friend void			swap(ItemData& a_lhs, ItemData& a_rhs);
 
 		InventoryEntryData*	entryData()	const;
 		const char*			name()		const;
@@ -400,15 +401,7 @@ namespace QuickLootRE
 
 	inline ItemData& ItemData::operator=(ItemData a_rhs)
 	{
-		std::swap(this->_entryData, a_rhs._entryData);
-		std::swap(this->_name, a_rhs._name);
-		std::swap(this->_count, a_rhs._count);
-		std::swap(this->_value, a_rhs._value);
-		std::swap(this->_weight, a_rhs._weight);
-		std::swap(this->_type, a_rhs._type);
-		std::swap(this->_isStolen, a_rhs._isStolen);
-		std::swap(this->_isEnchanted, a_rhs._isEnchanted);
-		std::swap(this->_priority, a_rhs._priority);
+		swap(*this, a_rhs);
 		return *this;
 	}
 
@@ -433,28 +426,6 @@ namespace QuickLootRE
 	}
 
 
-	inline bool operator<(const ItemData& a_lhs, const ItemData& a_rhs)
-	{
-		typedef int(*FnCompare)(const ItemData& a_lhs, const ItemData& a_rhs);
-		static FnCompare compares[] = {
-			&CompareByStolen,
-			&CompareByType,
-			&CompareByName,
-			&CompareByValue,
-			&CompareByCount
-		};
-
-		for (FnCompare compare : compares) {
-			int cmp = compare(a_lhs, a_rhs);
-			if (cmp) {
-				return cmp < 0;
-			}
-		}
-
-		return a_lhs._entryData < a_rhs._entryData;
-	}
-
-
 	inline bool operator>(const ItemData& a_lhs, const ItemData& a_rhs)
 	{
 		return operator<(a_rhs, a_lhs);
@@ -470,5 +441,18 @@ namespace QuickLootRE
 	inline bool operator>=(const ItemData& a_lhs, const ItemData& a_rhs)
 	{
 		return !operator<(a_lhs, a_rhs);
+	}
+
+	inline void swap(ItemData& a_lhs, ItemData& a_rhs)
+	{
+		std::swap(a_lhs._entryData, a_rhs._entryData);
+		std::swap(a_lhs._name, a_rhs._name);
+		std::swap(a_lhs._count, a_rhs._count);
+		std::swap(a_lhs._value, a_rhs._value);
+		std::swap(a_lhs._weight, a_rhs._weight);
+		std::swap(a_lhs._type, a_rhs._type);
+		std::swap(a_lhs._isStolen, a_rhs._isStolen);
+		std::swap(a_lhs._isEnchanted, a_rhs._isEnchanted);
+		std::swap(a_lhs._priority, a_rhs._priority);
 	}
 }

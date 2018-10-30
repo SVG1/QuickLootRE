@@ -16,10 +16,7 @@
 namespace QuickLootRE
 {
 	InventoryList::InventoryList()
-	{
-		_itemList.reserve(100);
-		_heapList.reserve(100);
-	}
+	{}
 
 
 	InventoryList::~InventoryList()
@@ -49,6 +46,12 @@ namespace QuickLootRE
 		InventoryEntryData* entryData = InventoryEntryData::Create(a_form, a_count);
 		_heapList.push_back(entryData);
 		add(entryData);
+	}
+
+
+	void InventoryList::sort()
+	{
+		quicksort(0, _itemList.size() - 1);
 	}
 
 
@@ -96,6 +99,49 @@ namespace QuickLootRE
 		}
 
 		return true;
+	}
+
+
+	void InventoryList::quicksort(SInt32 a_lo, SInt32 a_hi)
+	{
+		if (a_lo < a_hi) {
+			SInt32 p = partition(a_lo, a_hi);
+			quicksort(a_lo, p - 1);
+			quicksort(p + 1, a_hi);
+		}
+	}
+
+
+	UInt64 InventoryList::partition(SInt32 a_lo, SInt32 a_hi)
+	{
+		ItemData& p = pivot(a_lo, a_hi);
+		SInt32 i = a_lo;
+		for (SInt32 j = a_lo; j < a_hi - 1; ++j) {
+			if (_itemList[j] < p) {
+				if (i != j) {
+					swap(_itemList[i], _itemList[j]);
+				}
+				++i;
+			}
+		}
+		swap(_itemList[i], _itemList[a_hi]);
+		return i;
+	}
+
+
+	ItemData& InventoryList::pivot(SInt32 a_lo, SInt32 a_hi)
+	{
+		SInt32 mid = a_lo + (a_hi - a_lo) / 2;
+		if (_itemList[mid] < _itemList[a_lo]) {
+			swap(_itemList[mid], _itemList[a_lo]);
+		}
+		if (_itemList[a_hi] < _itemList[a_lo]) {
+			swap(_itemList[a_hi], _itemList[a_lo]);
+		}
+		if (_itemList[mid] < _itemList[a_hi]) {
+			swap(_itemList[mid], _itemList[a_hi]);
+		}
+		return _itemList[a_hi];
 	}
 
 

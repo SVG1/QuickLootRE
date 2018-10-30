@@ -8,7 +8,7 @@
 
 #include <ShlObj.h>  // CSIDL_MYDOCUMENTS
 
-#include "Events.h"  // g_crosshairRefEventHandler, g_menuOpenCloseEventHandler
+#include "Events.h"  // g_crosshairRefEventHandler, g_containerChangedEventHandler
 #include "Hooks.h"  // installHooks()
 #include "Keywords.h"  // initializeKeywords()
 #include "LootMenu.h"  // LootMenuCreator, g_task
@@ -29,15 +29,11 @@ void MessageHandler(SKSEMessagingInterface::Message* a_msg)
 		crosshairRefDispatcher->AddEventSink(&QuickLootRE::g_crosshairRefEventHandler);
 		_MESSAGE("[MESSAGE] Crosshair ref event handler sinked");
 
-		MenuManager* mm = MenuManager::GetSingleton();
-		mm->MenuOpenCloseEventDispatcher()->AddEventSink(&QuickLootRE::g_menuOpenCloseEventHandler);
-		_MESSAGE("[MESSAGE] Menu open/close event handler sinked");
-
 		RE::EventDispatcherList* dispatcherList = RE::EventDispatcherList::GetEventDispatcherList();
 		dispatcherList->containerChangedDispatcher.AddEventSink(&QuickLootRE::g_containerChangedEventHandler);
 		_MESSAGE("[MESSAGE] Container changed event handler sinked");
 
-		mm->Register("LootMenu", QuickLootRE::LootMenuCreator::Create);
+		MenuManager::GetSingleton()->Register("LootMenu", QuickLootRE::LootMenuCreator::Create);
 		_MESSAGE("[MESSAGE] LootMenu registered");
 
 		break;

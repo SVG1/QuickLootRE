@@ -87,7 +87,7 @@ namespace RE
 		virtual void	Unk_A0(void);
 		virtual void	Unk_A1(void);
 		virtual void	Unk_A2(void);
-		virtual void	Unk_A3(void);
+		virtual void	PlaySounds(TESForm* item, bool isPickup, bool unk);
 		virtual void	Unk_A4(void);
 		virtual void	Unk_A5(void);
 		virtual void	DrawSheatheWeapon(bool draw);

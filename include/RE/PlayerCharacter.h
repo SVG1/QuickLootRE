@@ -76,6 +76,7 @@ namespace RE
 		inline Actor*					GetActorInFavorState()																						{ return CALL_MEMBER_FN(this, GetActorInFavorState)(); }
 		TESObjectREFR*					GetGrabbedRef();
 		inline void						PlayPickupEvent(TESForm* item, TESForm* containerOwner, TESObjectREFR* containerRef, EventType eventType)	{ CALL_MEMBER_FN(this, PlayPickupEvent)(item, containerOwner, containerRef, eventType); }
+		inline void						StartActivation()																							{ CALL_MEMBER_FN(this, StartActivation)(); }
 
 
 		// members
@@ -330,6 +331,7 @@ namespace RE
 		MEMBER_FN_PREFIX(PlayerCharacter);
 		DEFINE_MEMBER_FN(GetActorInFavorState, Actor*, PLAYER_CHARACTER_GET_ACTOR_IN_FAVOR_STATE);
 		DEFINE_MEMBER_FN(PlayPickupEvent, void, PLAYER_CHARACTER_PLAY_PICKUP_EVENT, TESForm* item, TESForm* containerOwner, TESObjectREFR* containerRef, EventType eventType);
+		DEFINE_MEMBER_FN(StartActivation, void, PLAYER_CHARACTER_START_ACTIVATION_FN);
 	};
 
 	STATIC_ASSERT(offsetof(PlayerCharacter, playerGrabbedHandle) == 0x8C8);

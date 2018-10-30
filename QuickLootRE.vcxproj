@@ -175,6 +175,7 @@
     <ClInclude Include="include\RE\BSWin32GamepadDevice.h" />
     <ClInclude Include="include\RE\BSWin32KeyboardDevice.h" />
     <ClInclude Include="include\RE\BSWin32MouseDevice.h" />
+    <ClInclude Include="include\RE\ButtonEvent.h" />
     <ClInclude Include="include\RE\Character.h" />
     <ClInclude Include="include\RE\CRC.h" />
     <ClInclude Include="include\RE\ExtraLock.h" />
@@ -201,6 +202,8 @@
     <ClInclude Include="include\RE\PerkEntryVisitor.h" />
     <ClInclude Include="include\RE\PlayerCharacter.h" />
     <ClInclude Include="include\RE\PlayerControls.h" />
+    <ClInclude Include="include\RE\PlayerInputHandler.h" />
+    <ClInclude Include="include\RE\ReadyWeaponHandler.h" />
     <ClInclude Include="include\RE\TESBoundObject.h" />
     <ClInclude Include="include\RE\TESObjectLIGH.h" />
     <ClInclude Include="include\RE\TESObjectREFR.h" />

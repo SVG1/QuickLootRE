@@ -2,11 +2,15 @@
 
 #include "skse64/GameTypes.h"  // BSIntrusiveRefCounted
 
-class ButtonEvent;
 class InputEvent;
 class KinectEvent;
 class MouseMoveEvent;
 class ThumbstickEvent;
+
+namespace RE
+{
+	class ButtonEvent;
+}
 
 
 namespace RE
@@ -21,7 +25,7 @@ namespace RE
 		inline virtual bool	ProcessKinect(KinectEvent* a_event)			{ return false; }
 		inline virtual bool	ProcessThumbstick(ThumbstickEvent* a_event)	{ return false; }
 		inline virtual bool	ProcessMouseMove(MouseMoveEvent* a_event)	{ return false; }
-		inline virtual bool	ProcessButton(ButtonEvent* a_event)			{ return false; }
+		inline virtual bool	ProcessButton(RE::ButtonEvent* a_event)		{ return false; }
 
 
 		UInt8	unk08;		// 08
