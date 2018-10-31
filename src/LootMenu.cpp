@@ -511,7 +511,7 @@ namespace QuickLootRE
 					throw bad_gfx_value_interface();
 				}
 
-				for (int i = 0; i < g_invList.size() && i < (int)Settings::itemLimit; ++i) {
+				for (SInt32 i = 0; i < g_invList.size() && i < Settings::itemLimit; ++i) {
 					GFxValue text;
 					text.SetString(g_invList[i].name());
 					GFxValue count;

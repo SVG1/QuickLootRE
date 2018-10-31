@@ -28,7 +28,6 @@ namespace QuickLootRE
 				switch (it->type()) {
 				case json::value_t::boolean:
 				{
-					_DMESSAGE("boolean");
 					bool b = it.value();
 					setting->Assign(b);
 					break;
@@ -36,14 +35,12 @@ namespace QuickLootRE
 				case json::value_t::number_integer:
 				case json::value_t::number_unsigned:
 				{
-					_DMESSAGE("int");
 					int num = it.value();
 					setting->Assign(num);
 					break;
 				}
 				case json::value_t::number_float:
 				{
-					_DMESSAGE("float");
 					float num = it.value();
 					setting->Assign(num);
 					break;
@@ -66,7 +63,7 @@ namespace QuickLootRE
 	bSetting	Settings::disableTheft("disableTheft", true);
 	bSetting	Settings::disableIfEmpty("disableIfEmpty", true);
 	bSetting	Settings::disableSingleLoot("disableSingleLoot", false);
-	iSetting	Settings::itemLimit("itemLimit", 100);
+	iSetting	Settings::itemLimit("itemLimit", 50);
 	fSetting	Settings::scale("scale", -1.0);
 	fSetting	Settings::positionX("positionX", -1.0);
 	fSetting	Settings::positionY("positionY", -1.0);
