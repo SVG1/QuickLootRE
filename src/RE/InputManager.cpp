@@ -4,8 +4,6 @@
 #include "skse64/GameTypes.h"  // BSFixedString, tArray
 
 
-#include <sstream>  // TODO
-
 namespace RE
 {
 	UInt32 InputManager::GetMappedKey(const BSFixedString& name, InputDevice deviceType, Context contextIdx) const
@@ -28,9 +26,6 @@ namespace RE
 			InputContext::Mapping mapping;
 			for (int i = 0; i < maps->count; ++i) {
 				if (maps->GetNthItem(i, mapping) && mapping.name == name) {
-					std::stringstream ss;
-					ss << maps << "\n" << &mapping;
-					_DMESSAGE(ss.str().c_str());
 					return mapping.buttonID;
 				}
 			}

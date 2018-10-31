@@ -12,8 +12,10 @@
 #include "Hooks.h"  // installHooks()
 #include "Keywords.h"  // initializeKeywords()
 #include "LootMenu.h"  // LootMenuCreator, g_task
+#include "Settings.h"  // Settings
 
 #include "RE/EventDispatcherList.h"  // RE::EventDispatcherList
+#include "RE/MenuManager.h"  // RE::MenuManager
 
 
 static PluginHandle	g_pluginHandle = kPluginHandle_Invalid;
@@ -33,8 +35,11 @@ void MessageHandler(SKSEMessagingInterface::Message* a_msg)
 		dispatcherList->containerChangedDispatcher.AddEventSink(&QuickLootRE::g_containerChangedEventHandler);
 		_MESSAGE("[MESSAGE] Container changed event handler sinked");
 
-		MenuManager::GetSingleton()->Register("LootMenu", QuickLootRE::LootMenuCreator::Create);
+		RE::MenuManager::GetSingleton()->Register("LootMenu", QuickLootRE::LootMenuCreator::Create);
 		_MESSAGE("[MESSAGE] LootMenu registered");
+
+		QuickLootRE::Settings::loadSettings();
+		_MESSAGE("[MESSAGE] Settings loaded");
 
 		break;
 	}

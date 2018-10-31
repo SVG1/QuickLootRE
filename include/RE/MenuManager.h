@@ -4,12 +4,13 @@
 #include "skse64/GameMenus.h"  // MenuTableItem, MenuManager
 #include "skse64/GameTypes.h"  // BSFixedString
 
-class GFxMovieView;
-class IMenu;
-
 
 namespace RE
 {
+	class GFxMovieView;
+	class IMenu;
+
+
 	class MenuManager
 	{
 	public:
@@ -48,14 +49,14 @@ namespace RE
 		};
 
 
-		static MenuManager*						GetSingleton(void)								{ return reinterpret_cast<MenuManager*>(::MenuManager::GetSingleton()); }
-		EventDispatcher<MenuOpenCloseEvent>*	MenuOpenCloseEventDispatcher()					{ return reinterpret_cast<::MenuManager*>(this)->MenuOpenCloseEventDispatcher(); }
-		bool									IsMenuOpen(BSFixedString* menuName)				{ return reinterpret_cast<::MenuManager*>(this)->IsMenuOpen(menuName); }
-		IMenu*									GetMenu(BSFixedString* menuName)				{ return reinterpret_cast<::MenuManager*>(this)->GetMenu(menuName); }
-		GFxMovieView*							GetMovieView(BSFixedString* menuName)			{ return reinterpret_cast<::MenuManager*>(this)->GetMovieView(menuName); }
-		void									ShowMenus(bool show)							{ reinterpret_cast<::MenuManager*>(this)->ShowMenus(show); }
-		bool									IsShowingMenus()								{ return reinterpret_cast<::MenuManager*>(this)->IsShowingMenus(); }
-		void									Register(const char* name, CreatorFunc creator)	{ reinterpret_cast<::MenuManager*>(this)->Register(name, creator); }
+		inline static MenuManager*					GetSingleton(void)								{ return reinterpret_cast<MenuManager*>(::MenuManager::GetSingleton()); }
+		inline EventDispatcher<MenuOpenCloseEvent>*	MenuOpenCloseEventDispatcher()					{ return reinterpret_cast<::MenuManager*>(this)->MenuOpenCloseEventDispatcher(); }
+		inline bool									IsMenuOpen(BSFixedString* menuName)				{ return reinterpret_cast<::MenuManager*>(this)->IsMenuOpen(menuName); }
+		inline IMenu*								GetMenu(BSFixedString* menuName)				{ return reinterpret_cast<IMenu*>(reinterpret_cast<::MenuManager*>(this)->GetMenu(menuName)); }
+		inline GFxMovieView*						GetMovieView(BSFixedString* menuName)			{ return reinterpret_cast<GFxMovieView*>(reinterpret_cast<::MenuManager*>(this)->GetMovieView(menuName)); }
+		inline void									ShowMenus(bool show)							{ reinterpret_cast<::MenuManager*>(this)->ShowMenus(show); }
+		inline bool									IsShowingMenus()								{ return reinterpret_cast<::MenuManager*>(this)->IsShowingMenus(); }
+		inline void									Register(const char* name, CreatorFunc creator)	{ reinterpret_cast<::MenuManager*>(this)->Register(name, reinterpret_cast<::MenuManager::CreatorFunc>(creator)); }
 
 
 		// members

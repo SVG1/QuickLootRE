@@ -17,8 +17,11 @@
 #include <vector>  // vector
 #include <string>  // string
 
+#include "RE/IMenu.h"  // RE::IMenu
 #include "RE/MenuEventHandler.h"  // RE::MenuEventHandler
 #include "RE/TESObjectREFR.h"  // RE::TESObjectREFR
+
+class GFxValue;
 
 namespace RE
 {
@@ -31,7 +34,7 @@ namespace QuickLootRE
 	class LootMenuCreator
 	{
 	public:
-		static IMenu* Create();
+		static RE::IMenu* Create();
 
 	private:
 		LootMenuCreator();
@@ -39,38 +42,15 @@ namespace QuickLootRE
 
 
 	class LootMenu :
-		public IMenu,
+		public RE::IMenu,
 		public RE::MenuEventHandler
 	{
+		friend class LootMenuUIDelegate;
 	private:
-		enum ScaleModeType : UInt32
+		enum Platform : UInt32
 		{
-			kScaleModeType_NoScale,
-			kScaleModeType_ShowAll,
-			kScaleModeType_ExactFit,
-			kScaleModeType_NoBorder
-		};
-
-
-		enum Flag : UInt32
-		{
-			kFlag_PauseGame				= 1 << 0,
-			kFlag_DoNotDeleteOnClose	= 1 << 1,
-			kFlag_ShowCursor			= 1 << 2,
-			kFlag_Unk0008				= 1 << 3,
-			kFlag_Modal					= 1 << 4,
-			kFlag_StopDrawingWorld		= 1 << 5,
-			kFlag_Open					= 1 << 6,
-			kFlag_PreventGameLoad		= 1 << 7,
-			kFlag_Unk0100				= 1 << 8,
-			kFlag_HideOther				= 1 << 9,
-			kFlag_Unk0400				= 1 << 10,
-			kFlag_DoNotPreventGameSave	= 1 << 11,
-			kFlag_Unk1000				= 1 << 12,
-			kFlag_ItemMenu				= 1 << 13,
-			kFlag_StopCrosshairUpdate	= 1 << 14,
-			kFlag_Unk8000				= 1 << 15,
-			kFlag_Unk10000				= 1 << 16  // ignore mouse cursor?
+			kPlatform_PC = 0,
+			kPlatform_Other = 2
 		};
 
 
@@ -87,6 +67,7 @@ namespace QuickLootRE
 
 		// IMenu
 		virtual UInt32				ProcessMessage(UIMessage* a_message) override;
+		virtual void				Render() override;
 
 		// MenuEventHandler
 		virtual bool				CanProcess(InputEvent* a_event) override;
@@ -98,6 +79,8 @@ namespace QuickLootRE
 		void						ModSelectedIndex(SInt32 a_indexOffset);
 
 		// Scaleform
+		void						SetPlatform();
+		void						Setup();
 		void						OpenContainer();
 		void						CloseContainer();
 		void						SetSelectedIndex();
@@ -114,6 +97,8 @@ namespace QuickLootRE
 		static SInt32				_selectedIndex;
 		static RE::TESObjectREFR*	_containerRef;
 		static bool					_isOpen;
+		static Platform				_platform;
+		static bool					_badRender;
 	};
 
 
