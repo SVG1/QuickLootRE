@@ -48,9 +48,8 @@ namespace QuickLootRE
 	EventResult CrosshairRefEventHandler::ReceiveEvent(SKSECrosshairRefEvent* a_event, EventDispatcher<SKSECrosshairRefEvent>* a_dispatcher)
 	{
 		// If player is not looking at anything
-		LootMenu* loot = LootMenu::GetSingleton();
 		if (!a_event || !a_event->crosshairRef) {
-			if (loot) {
+			if (LootMenu::IsOpen()) {
 				CALL_MEMBER_FN(UIManager::GetSingleton(), AddMessage)(&LootMenu::GetName(), UIMessage::kMessage_Close, 0);
 				LootMenu::ClearContainerRef();
 			}
@@ -59,7 +58,7 @@ namespace QuickLootRE
 
 		// If player went from container -> container
 		RE::TESObjectREFR* ref = reinterpret_cast<RE::TESObjectREFR*>(a_event->crosshairRef);
-		if (loot && (loot->GetContainerRef() != ref)) {
+		if (LootMenu::IsOpen() && (LootMenu::GetContainerRef() != ref)) {
 			CALL_MEMBER_FN(UIManager::GetSingleton(), AddMessage)(&LootMenu::GetName(), UIMessage::kMessage_Close, 0);
 			LootMenu::ClearContainerRef();
 		}
@@ -81,9 +80,8 @@ namespace QuickLootRE
 
 	EventResult TESContainerChangedEventHandler::ReceiveEvent(TESContainerChangedEvent* a_event, EventDispatcher<TESContainerChangedEvent>* a_dispatcher)
 	{
-		LootMenu* singleton = LootMenu::GetSingleton();
-		if (singleton && a_event) {
-			RE::TESObjectREFR* ref = singleton->GetContainerRef();
+		if (LootMenu::IsOpen() && a_event) {
+			RE::TESObjectREFR* ref = LootMenu::GetContainerRef();
 			if (a_event->fromFormId == ref->baseForm->formID || a_event->toFormId == ref->baseForm->formID) {
 				TESContainer* container = ref->GetContainer();
 				if (container) {

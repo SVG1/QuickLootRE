@@ -50,8 +50,8 @@ namespace QuickLootRE
 	{
 		void* p = ScaleformHeap_Allocate(sizeof(LootMenu));
 		if (p) {
-			RE::IMenu* menu = new (p) LootMenu("LootMenu");
-			return menu;
+			LootMenu::_singleton = new (p) LootMenu(LootMenu::GetName());
+			return LootMenu::_singleton;
 		} else {
 			return 0;
 		}
@@ -78,7 +78,8 @@ namespace QuickLootRE
 
 	BSFixedString LootMenu::GetName()
 	{
-		return "LootMenu";
+		static BSFixedString name = "LootMenu";
+		return name;
 	}
 
 
@@ -102,14 +103,14 @@ namespace QuickLootRE
 
 	void LootMenu::ClearContainerRef()
 	{
-		if (_singleton) {
+		if (IsOpen()) {
 			_singleton->PlayAnimationClose();
 		}
 		_containerRef = 0;
 	}
 
 
-	bool LootMenu::CanOpen(RE::TESObjectREFR*& a_ref)
+	bool LootMenu::CanOpen(RE::TESObjectREFR* a_ref)
 	{
 		if (!a_ref || !a_ref->baseForm) {
 			return false;
@@ -197,6 +198,12 @@ namespace QuickLootRE
 	}
 
 
+	bool LootMenu::IsOpen()
+	{
+		return _isOpen;
+	}
+
+
 	UInt32 LootMenu::ProcessMessage(UIMessage* a_message)
 	{
 		if (!Settings::isApplied) {
@@ -219,7 +226,7 @@ namespace QuickLootRE
 	{
 		if (_badRender) {
 			_badRender = false;
-		} else if (view) {
+		} else if (IsOpen()) {
 			view->Render();
 		}
 	}
@@ -231,7 +238,7 @@ namespace QuickLootRE
 		typedef RE::BSWin32GamepadDevice::Gamepad	Gamepad;
 		typedef RE::BSWin32MouseDevice::Mouse		Mouse;
 
-		if (view && a_event->eventType == InputEvent::kEventType_Button) {
+		if (IsOpen() && a_event->eventType == InputEvent::kEventType_Button) {
 			ButtonEvent* button = static_cast<ButtonEvent*>(a_event);
 			switch (a_event->deviceType) {
 			case InputDevice::kInputDevice_Gamepad:
@@ -306,24 +313,22 @@ namespace QuickLootRE
 
 	void LootMenu::OnMenuOpen()
 	{
-		if (view) {
-			SimpleLocker lock(&_lock);
+		SimpleLocker lock(&_lock);
 
-			_singleton = this;
-			_selectedIndex = 0;
-			static RE::MenuControls* mc = RE::MenuControls::GetSingleton();
-			mc->RegisterHandler(this);
-			DelayedUpdater::Register();
-		}
+		_selectedIndex = 0;
+		_isOpen = true;
+		static RE::MenuControls* mc = RE::MenuControls::GetSingleton();
+		mc->RegisterHandler(this);
+		DelayedUpdater::Register();
 	}
 
 
 	void LootMenu::OnMenuClose()
 	{
-		if (_singleton) {
+		if (IsOpen()) {
 			SimpleLocker lock(&_lock);
 
-			_singleton = 0;
+			_isOpen = false;
 			static RE::MenuControls* mc = RE::MenuControls::GetSingleton();
 			mc->RemoveHandler(this);
 			CloseContainer();
@@ -336,13 +341,9 @@ namespace QuickLootRE
 		typedef RE::PlayerCharacter::EventType	EventType;
 		typedef RE::TESObjectREFR::RemoveType	RemoveType;
 
-		if (!view) {
-			return;
-		}
-
 		SimpleLocker lock(&_lock);
 
-		if (!_containerRef || g_invList.empty()) {
+		if (!IsOpen() || !_containerRef || g_invList.empty()) {
 			return;
 		}
 
@@ -425,7 +426,7 @@ namespace QuickLootRE
 
 	void LootMenu::ModSelectedIndex(SInt32 a_indexOffset)
 	{
-		if (view) {
+		if (IsOpen()) {
 			SimpleLocker lock(&_lock);
 
 			_selectedIndex += a_indexOffset;
@@ -441,11 +442,11 @@ namespace QuickLootRE
 
 	void LootMenu::SetPlatform()
 	{
-		if (view) {
+		if (IsOpen()) {
 			SimpleLocker lock(&_lock);
 
 			LootMenuUIDelegate* dlgt = (LootMenuUIDelegate*)Heap_Allocate(sizeof(LootMenuUIDelegate));
-			new (dlgt)LootMenuUIDelegate(".Setup", 2);
+			new (dlgt)LootMenuUIDelegate(".SetPlatform", 2);
 
 			dlgt->args[0].SetNumber(_platform);
 			dlgt->args[0].SetBool(false);
@@ -457,7 +458,7 @@ namespace QuickLootRE
 
 	void LootMenu::Setup()
 	{
-		if (view) {
+		if (IsOpen()) {
 			SimpleLocker lock(&_lock);
 
 			LootMenuUIDelegate* dlgt = (LootMenuUIDelegate*)Heap_Allocate(sizeof(LootMenuUIDelegate));
@@ -497,7 +498,7 @@ namespace QuickLootRE
 
 	void LootMenu::OpenContainer()
 	{
-		if (view) {
+		if (IsOpen()) {
 			SimpleLocker lock(&_lock);
 
 			LootMenuUIDelegate* dlgt = 0;
@@ -512,25 +513,33 @@ namespace QuickLootRE
 				}
 
 				for (SInt32 i = 0; i < g_invList.size() && i < Settings::itemLimit; ++i) {
+					GFxValue item;
+					dlgt->AddRef();
+					view->CreateObject(&item);
+
 					GFxValue text;
+					dlgt->AddRef();
 					text.SetString(g_invList[i].name());
 					GFxValue count;
+					dlgt->AddRef();
 					count.SetNumber(g_invList[i].count());
 					GFxValue value;
+					dlgt->AddRef();
 					value.SetNumber(g_invList[i].value());
 					GFxValue weight;
+					dlgt->AddRef();
 					weight.SetNumber(g_invList[i].weight());
 					GFxValue isStolen;
+					dlgt->AddRef();
 					isStolen.SetBool(g_invList[i].isStolen());
 					GFxValue iconLabel;
+					dlgt->AddRef();
 					iconLabel.SetString(g_invList[i].icon());
 
-					GFxValue item;
-					view->CreateObject(&item);
 					item.SetMember("text", &text);
 					item.SetMember("count", &count);
-					//item.SetMember("value", &value);
-					//item.SetMember("weight", &weight);
+					item.SetMember("value", &value);
+					item.SetMember("weight", &weight);
 					item.SetMember("isStolen", &isStolen);
 					item.SetMember("iconLabel", &iconLabel);
 
@@ -546,7 +555,7 @@ namespace QuickLootRE
 				g_task->AddUITask(dlgt);
 			} catch (std::exception& e) {
 				_ERROR(e.what());
-				Heap_Free(dlgt);
+				dlgt->Dispose();
 			}
 		}
 	}
@@ -564,7 +573,7 @@ namespace QuickLootRE
 
 	void LootMenu::SetSelectedIndex()
 	{
-		if (view) {
+		if (IsOpen()) {
 			SimpleLocker lock(&_lock);
 
 			LootMenuUIDelegate* dlgt = (LootMenuUIDelegate*)Heap_Allocate(sizeof(LootMenuUIDelegate));
@@ -617,6 +626,8 @@ namespace QuickLootRE
 	void LootMenu::PlayAnimation(const char* fromName, const char* toName)
 	{
 		typedef RE::NiControllerManager NiControllerManager;
+
+		SimpleLocker lock(&_lock);
 
 		RE::NiNode* niNode = _containerRef->GetNiNode();
 		if (!niNode) {
@@ -674,23 +685,24 @@ namespace QuickLootRE
 
 
 	LootMenuUIDelegate::LootMenuUIDelegate(std::string a_target, UInt32 a_numArgs) :
-		target(a_target),
-		args(0)
+		_target(a_target),
+		args(a_numArgs + 10),
+		_refCount(0)
 	{
 		for (int i = 0; i < a_numArgs; ++i) {
 			args.emplace_back();
+			AddRef();
 		}
-		args.shrink_to_fit();
+		//args.shrink_to_fit();
 	}
 
 
 	void LootMenuUIDelegate::Run()
 	{
-		LootMenu* loot = LootMenu::GetSingleton();
-		if (loot) {
-			RE::GFxMovieView* view = loot->view;
+		if (LootMenu::IsOpen()) {
+			RE::GFxMovieView* view = LootMenu::_singleton->view;
 
-			std::string name = "_root.Menu_mc" + target;
+			std::string name = "_root.Menu_mc" + _target;
 
 			GFxValue* value = 0;
 			if (args.size() > 0) {
@@ -705,20 +717,29 @@ namespace QuickLootRE
 	void LootMenuUIDelegate::Dispose()
 	{
 		if (this) {
+			while (_refCount--) {
+				LootMenu::_singleton->Release();
+			}
 			Heap_Free(this);
 		}
 	}
 
 
+	void LootMenuUIDelegate::AddRef()
+	{
+		LootMenu::_singleton->AddRef();
+		++_refCount;
+	}
+
+
 	void DelayedUpdater::Run()
 	{
-		LootMenu* lootMenu = LootMenu::GetSingleton();
-		if (lootMenu) {
+		if (LootMenu::IsOpen()) {
 			if (Settings::disableIfEmpty && g_invList.empty()) {
 				CALL_MEMBER_FN(UIManager::GetSingleton(), AddMessage)(&LootMenu::GetName(), UIMessage::kMessage_Close, 0);
 				LootMenu::ClearContainerRef();
 			} else {
-				lootMenu->OpenContainer();
+				LootMenu::_singleton->OpenContainer();
 			}
 		}
 	}
@@ -742,7 +763,6 @@ namespace QuickLootRE
 	bool				LootMenu::_isOpen = false;
 	LootMenu::Platform	LootMenu::_platform = kPlatform_PC;
 	bool				LootMenu::_badRender = false;
-
 
 	SKSETaskInterface* g_task = 0;
 }

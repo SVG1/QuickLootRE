@@ -45,6 +45,8 @@ namespace QuickLootRE
 		public RE::IMenu,
 		public RE::MenuEventHandler
 	{
+		friend class DelayedUpdater;
+		friend class LootMenuCreator;
 		friend class LootMenuUIDelegate;
 	private:
 		enum Platform : UInt32
@@ -63,7 +65,8 @@ namespace QuickLootRE
 		static void					SetContainerRef(RE::TESObjectREFR* a_ref);
 		static RE::TESObjectREFR*	GetContainerRef();
 		static void					ClearContainerRef();
-		static bool					CanOpen(RE::TESObjectREFR*& a_ref);
+		static bool					CanOpen(RE::TESObjectREFR* a_ref);
+		static bool					IsOpen();
 
 		// IMenu
 		virtual UInt32				ProcessMessage(UIMessage* a_message) override;
@@ -92,6 +95,7 @@ namespace QuickLootRE
 		void						PlayAnimationClose();
 		void						PlaySound(TESForm* a_item);
 
+
 		static LootMenu*			_singleton;
 		static SimpleLock			_lock;
 		static SInt32				_selectedIndex;
@@ -107,11 +111,16 @@ namespace QuickLootRE
 	public:
 		LootMenuUIDelegate(std::string a_target, UInt32 a_numArgs);
 
-		virtual void Run() override;
-		virtual void Dispose() override;
+		virtual void			Run() override;
+		virtual void			Dispose() override;
+		void					AddRef();
 
-		std::vector<GFxValue> args;
-		std::string target;
+
+		std::vector<GFxValue>	args;
+
+	private:
+		std::string				_target;
+		SInt32					_refCount;
 	};
 
 

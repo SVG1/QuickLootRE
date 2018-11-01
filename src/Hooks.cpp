@@ -38,7 +38,7 @@ namespace Hooks
 			static InputStringHolder* holder = InputStringHolder::GetSingleton();
 
 			bool result = (this->*orig_CanProcess)(a_event);
-			if (result && a_event && QuickLootRE::LootMenu::GetSingleton()) {
+			if (result && a_event && QuickLootRE::LootMenu::IsOpen()) {
 				result = (*a_event->GetControlID() == holder->togglePOV);
 			}
 
@@ -72,7 +72,7 @@ namespace Hooks
 			typedef RE::BSWin32GamepadDevice::Gamepad Gamepad;
 
 			bool result = (this->*orig_CanProcess)(a_event);
-			if (result && a_event && QuickLootRE::LootMenu::GetSingleton()) {
+			if (result && a_event && QuickLootRE::LootMenu::IsOpen()) {
 				if (a_event->deviceType == kDeviceType_Gamepad && a_event->eventType == InputEvent::kEventType_Button) {
 					ButtonEvent* button = static_cast<ButtonEvent*>(a_event);
 					result = (button->keyMask != Gamepad::kGamepad_Up && button->keyMask != Gamepad::kGamepad_Down);
@@ -107,7 +107,7 @@ namespace Hooks
 			using QuickLootRE::LootMenu;
 			static RE::PlayerCharacter* player = reinterpret_cast<RE::PlayerCharacter*>(*g_thePlayer);
 
-			if (LootMenu::GetSingleton()) {
+			if (LootMenu::IsOpen()) {
 				CALL_MEMBER_FN(UIManager::GetSingleton(), AddMessage)(&LootMenu::GetName(), UIMessage::kMessage_Close, 0);
 				LootMenu::ClearContainerRef();
 				player->StartActivation();
@@ -139,8 +139,7 @@ namespace Hooks
 		{
 			static RE::PlayerCharacter* player = reinterpret_cast<RE::PlayerCharacter*>(*g_thePlayer);
 
-			QuickLootRE::LootMenu* singleton = QuickLootRE::LootMenu::GetSingleton();
-			singleton ? singleton->TakeItem() : player->StartActivation();
+			QuickLootRE::LootMenu::IsOpen() ? QuickLootRE::LootMenu::GetSingleton()->TakeItem() : player->StartActivation();
 		}
 
 

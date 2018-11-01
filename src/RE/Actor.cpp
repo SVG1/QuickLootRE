@@ -8,14 +8,14 @@ namespace RE
 {
 	TESRace * Actor::GetRace()
 	{
-		TESRace* race = 0;
+		TESRace* outRace = 0;
 
 		TESNPC* actorBase = GetActorBase();
 		if (actorBase) {
-			race = actorBase->race.race;
+			outRace = actorBase->race.race;
 		}
 
-		return race;
+		return outRace;
 	}
 
 

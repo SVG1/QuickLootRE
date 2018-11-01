@@ -4,11 +4,10 @@
 #include "skse64/GameFormComponents.h"  // TESContainer, TESFullName
 #include "skse64/GameForms.h"  // TESFaction
 #include "skse64/GameObjects.h"  // TESNPC, TESObjectCONT, TESActorBase
+#include "skse64/GameRTTI.h"  // DYNAMIC_CAST
 #include "skse64/GameTypes.h"  // BSFixedString
 
 #include <exception>  // exception
-
-#include <sstream>  // TODO
 
 
 namespace RE

@@ -87,10 +87,10 @@ namespace RE
 		virtual void	Unk_A0(void);
 		virtual void	Unk_A1(void);
 		virtual void	Unk_A2(void);
-		virtual void	PlaySounds(TESForm* item, bool isPickup, bool unk);
+		virtual void	PlaySounds(TESForm* a_item, bool a_isPickup, bool a_unk);
 		virtual void	Unk_A4(void);
 		virtual void	Unk_A5(void);
-		virtual void	DrawSheatheWeapon(bool draw);
+		virtual void	DrawSheatheWeapon(bool a_draw);
 		virtual void	Unk_A7(void);
 		virtual void	Unk_A8(void);
 		virtual void	Unk_A9(void);
@@ -128,7 +128,7 @@ namespace RE
 		virtual void	Unk_C9(void);
 		virtual void	Unk_CA(void);
 		virtual void	Unk_CB(void);
-		virtual void	PickUpItem(TESObjectREFR* item, UInt32 count, bool arg3, bool playSound);
+		virtual void	PickUpItem(TESObjectREFR* a_item, UInt32 a_count, bool a_arg3, bool a_playSound);
 		virtual void	Unk_CD(void);
 		virtual void	Unk_CE(void);
 		virtual void	Unk_CF(void);
@@ -151,7 +151,7 @@ namespace RE
 		virtual void	Unk_E0(void);
 		virtual void	Unk_E1(void);
 		virtual void	Unk_E2(void);
-		virtual bool	IsInCombat(void);
+		virtual bool	IsInCombat();
 		virtual void	Unk_E4(void);
 		virtual void	Unk_E5(void);
 		virtual void	Unk_E6(void);
@@ -171,45 +171,45 @@ namespace RE
 		virtual void	Unk_F4(void);
 		virtual void	Unk_F5(void);
 		virtual void	Unk_F6(void);
-		virtual void	AdvanceSkill(UInt32 skillId, float points, UInt32 unk1, UInt32 unk2);
+		virtual void	AdvanceSkill(UInt32 a_skillId, float a_points, UInt32 a_unk1, UInt32 a_unk2);
 		virtual void	Unk_F8(void);
 		virtual void	Unk_F9(void);
 		virtual void	VisitPerks(void);
-		virtual void	AddPerk(BGSPerk* perk, UInt32 unk1);
-		virtual void	RemovePerk(BGSPerk* perk);
+		virtual void	AddPerk(BGSPerk* a_perk, UInt32 a_unk1);
+		virtual void	RemovePerk(BGSPerk* a_perk);
 		virtual void	Unk_FC(void);
 		virtual void	Unk_FD(void);
-		virtual bool	CanProcessEntryPointPerkEntry(BGSEntryPointPerkEntry::EntryPointType entryType);
-		virtual void	VisitEntryPointPerkEntries(BGSEntryPointPerkEntry::EntryPointType entryType, PerkEntryVisitor& visitor);
+		virtual bool	CanProcessEntryPointPerkEntry(BGSEntryPointPerkEntry::EntryPointType a_entryType);
+		virtual void	VisitEntryPointPerkEntries(BGSEntryPointPerkEntry::EntryPointType a_entryType, PerkEntryVisitor& a_visitor);
 
 
-		inline bool		VisitFactions(::Actor::FactionVisitor& visitor)																						{ return reinterpret_cast<::Actor*>(this)->VisitFactions(visitor); }
-		inline TESForm*	GetEquippedObject(bool abLeftHand)																									{ return reinterpret_cast<::Actor*>(this)->GetEquippedObject(abLeftHand); }
-		inline void		UpdateSkinColor()																													{ reinterpret_cast<::Actor*>(this)->UpdateSkinColor(); }
-		inline void		UpdateHairColor()																													{ reinterpret_cast<::Actor*>(this)->UpdateHairColor(); }
-		inline void		QueueNiNodeUpdate(bool updateWeight)																								{ CALL_MEMBER_FN(reinterpret_cast<::Actor*>(this), QueueNiNodeUpdate)(updateWeight); }
-		inline bool		HasPerk(BGSPerk* perk)																												{ return CALL_MEMBER_FN(reinterpret_cast<::Actor*>(this), HasPerk)(perk); }
-		inline UInt16	GetLevel(BGSPerk* perk)																												{ return CALL_MEMBER_FN(reinterpret_cast<::Actor*>(this), GetLevel)(); }
-		inline void		SetRace(TESRace* race, bool isPlayer)																								{ CALL_MEMBER_FN(reinterpret_cast<::Actor*>(this), SetRace)(race, isPlayer); }
-		inline void		UpdateWeaponAbility(TESForm* weapon, ::BaseExtraList* extraData, bool bLeftHand)													{ CALL_MEMBER_FN(reinterpret_cast<::Actor*>(this), UpdateWeaponAbility)(weapon, extraData, bLeftHand); }
-		inline void		UpdateArmorAbility(TESForm* armor, ::BaseExtraList* extraData)																		{ CALL_MEMBER_FN(reinterpret_cast<::Actor*>(this), UpdateArmorAbility)(armor, extraData); }
-		inline bool		IsHostileToActor(::Actor* actor)																									{ return CALL_MEMBER_FN(reinterpret_cast<::Actor*>(this), IsHostileToActor)(actor); }
-		inline void		ResetAI(UInt32 unk1, UInt32 unk2)																									{ CALL_MEMBER_FN(reinterpret_cast<::Actor*>(this), ResetAI)(unk1, unk2); }
+		inline bool		VisitFactions(::Actor::FactionVisitor& a_visitor)																								{ return reinterpret_cast<::Actor*>(this)->VisitFactions(a_visitor); }
+		inline TESForm*	GetEquippedObject(bool a_abLeftHand)																											{ return reinterpret_cast<::Actor*>(this)->GetEquippedObject(a_abLeftHand); }
+		inline void		UpdateSkinColor()																																{ reinterpret_cast<::Actor*>(this)->UpdateSkinColor(); }
+		inline void		UpdateHairColor()																																{ reinterpret_cast<::Actor*>(this)->UpdateHairColor(); }
+		inline void		QueueNiNodeUpdate(bool a_updateWeight)																											{ CALL_MEMBER_FN(reinterpret_cast<::Actor*>(this), QueueNiNodeUpdate)(a_updateWeight); }
+		inline bool		HasPerk(BGSPerk* a_perk)																														{ return CALL_MEMBER_FN(reinterpret_cast<::Actor*>(this), HasPerk)(a_perk); }
+		inline UInt16	GetLevel()																																		{ return CALL_MEMBER_FN(reinterpret_cast<::Actor*>(this), GetLevel)(); }
+		inline void		SetRace(TESRace* a_race, bool a_isPlayer)																										{ CALL_MEMBER_FN(reinterpret_cast<::Actor*>(this), SetRace)(a_race, a_isPlayer); }
+		inline void		UpdateWeaponAbility(TESForm* a_weapon, ::BaseExtraList* a_extraData, bool a_bLeftHand)															{ CALL_MEMBER_FN(reinterpret_cast<::Actor*>(this), UpdateWeaponAbility)(a_weapon, a_extraData, a_bLeftHand); }
+		inline void		UpdateArmorAbility(TESForm* a_armor, ::BaseExtraList* a_extraData)																				{ CALL_MEMBER_FN(reinterpret_cast<::Actor*>(this), UpdateArmorAbility)(a_armor, a_extraData); }
+		inline bool		IsHostileToActor(::Actor* a_actor)																												{ return CALL_MEMBER_FN(reinterpret_cast<::Actor*>(this), IsHostileToActor)(a_actor); }
+		inline void		ResetAI(UInt32 a_unk1, UInt32 a_unk2)																											{ CALL_MEMBER_FN(reinterpret_cast<::Actor*>(this), ResetAI)(a_unk1, a_unk2); }
 
-		inline TESNPC*	GetActorBase()																														{ return static_cast<TESNPC*>(baseForm); }
+		inline TESNPC*	GetActorBase()																																	{ return static_cast<TESNPC*>(baseForm); }
 		TESRace*		GetRace();
-		inline bool		IsBeingRidden()																														{ return ((flags2 & kFlags2_HasInteraction) != 0) && extraData.HasType(kExtraData_Interaction); }
-		inline bool		IsCommandedActor() const																											{ return (flags2 & kFlags2_CommandedActor) != 0; }
-		inline bool		IsEssential() const																													{ return (flags2 & kFlags2_Essential) != 0; }
-		inline bool		IsGuard() const																														{ return (flags1 & kFlags1_Guard) != 0; }
-		inline bool		IsInKillMove() const																												{ return (flags2 & kFlags2_KillMove) != 0; }
-		inline bool		IsAIEnabled() const																													{ return (flags1 & kFlags1_AIEnabled) != 0; }
-		inline bool		IsOnMount()																															{ return ((flags2 & kFlags2_HasInteraction) != 0) && extraData.HasType(kExtraData_Interaction); }
-		inline bool		IsPlayerTeammate() const																											{ return (flags1 & kFlags1_PlayerTeammate) != 0; }
+		inline bool		IsBeingRidden()																																	{ return ((flags2 & kFlags2_HasInteraction) != 0) && extraData.HasType(kExtraData_Interaction); }
+		inline bool		IsCommandedActor() const																														{ return (flags2 & kFlags2_CommandedActor) != 0; }
+		inline bool		IsEssential() const																																{ return (flags2 & kFlags2_Essential) != 0; }
+		inline bool		IsGuard() const																																	{ return (flags1 & kFlags1_Guard) != 0; }
+		inline bool		IsInKillMove() const																															{ return (flags2 & kFlags2_KillMove) != 0; }
+		inline bool		IsAIEnabled() const																																{ return (flags1 & kFlags1_AIEnabled) != 0; }
+		inline bool		IsOnMount()																																		{ return ((flags2 & kFlags2_HasInteraction) != 0) && extraData.HasType(kExtraData_Interaction); }
+		inline bool		IsPlayerTeammate() const																														{ return (flags1 & kFlags1_PlayerTeammate) != 0; }
 		bool			IsSneaking();
-		inline bool		IsTrespassing() const																												{ return (flags2 & kFlags2_Trespassing) != 0; }
-		inline void		DispelWornItemEnchantments()																										{ CALL_MEMBER_FN(this, DispelWornItemEnchantments)(); }
-		inline void		SendStealAlarm(TESObjectREFR* refItemOrContainer, TESForm* stolenItem, UInt32 numItems, UInt32 value, TESForm* owner, bool unk2)	{ CALL_MEMBER_FN(this, SendStealAlarm)(refItemOrContainer, stolenItem, numItems, value, owner, unk2); }
+		inline bool		IsTrespassing() const																															{ return (flags2 & kFlags2_Trespassing) != 0; }
+		inline void		DispelWornItemEnchantments()																													{ CALL_MEMBER_FN(this, DispelWornItemEnchantments)(); }
+		inline void		SendStealAlarm(TESObjectREFR* a_refItemOrContainer, TESForm* a_stolenItem, UInt32 a_numItems, UInt32 a_value, TESForm* a_owner, bool a_unk2)	{ CALL_MEMBER_FN(this, SendStealAlarm)(a_refItemOrContainer, a_stolenItem, a_numItems, a_value, a_owner, a_unk2); }
 
 
 		// members
