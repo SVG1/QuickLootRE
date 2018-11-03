@@ -82,6 +82,9 @@
     <Filter Include="include\RE\Skyrim\Scaleform">
       <UniqueIdentifier>{ddbc9483-11ab-4ce5-8204-11dc08f668ba}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\RE\Skyrim\Misc">
+      <UniqueIdentifier>{9c902473-086f-40d9-a348-20edac18af80}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -341,6 +344,12 @@
     </ClInclude>
     <ClInclude Include="include\RE\HeldStateHandler.h">
       <Filter>include\RE\Skyrim\BSDevices</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\TESObjectBOOK.h">
+      <Filter>include\RE\Skyrim\TESForms\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\InventoryEntryData.h">
+      <Filter>include\RE\Skyrim\Misc</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

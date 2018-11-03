@@ -109,12 +109,12 @@ namespace RE
 		virtual void					GetMarkerPosition(::NiPoint3 * pos);
 		virtual void					Unk_5C(void);
 		virtual void					Unk_5D(void);
-		virtual void					Unk_5E(void);
+		virtual bool					IsChild() const;
 		virtual void					Unk_5F(void);
 		virtual void					Unk_60(void);
-		virtual BSFaceGenNiNode*		GetFaceGenNiNode(void);
+		virtual BSFaceGenNiNode*		GetFaceGenNiNode();
 		virtual void					Unk_62(void);
-		virtual BSFaceGenAnimationData*	GetFaceGenAnimationData(void);
+		virtual BSFaceGenAnimationData*	GetFaceGenAnimationData();
 		virtual void					Unk_64(void);
 		virtual void					Unk_65(void);
 		virtual void					Unk_66(void);

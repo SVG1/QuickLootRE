@@ -25,6 +25,8 @@ namespace Hooks
 	RelocAddr<_PlayAnimation> PlayAnimation(PLAY_ANIMATION);
 	RelocAddr<_PlaySound> PlaySound(PLAY_SOUND);
 
+	RelocAddr<_SendItemsPickPocketedEvent> SendItemsPickPocketedEvent(SEND_ITEMS_PICKPOCKETED_EVENT);
+
 
 	template <uintptr_t offset>
 	class CameraStateHandler : public RE::PlayerInputHandler

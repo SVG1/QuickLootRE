@@ -13,6 +13,7 @@
 class BaseExtraList;
 class BGSPerk;
 class SpellItem;
+class TESFaction;
 class TESForm;
 class TESNPC;
 class TESRace;
@@ -173,7 +174,7 @@ namespace RE
 		virtual void	Unk_F6(void);
 		virtual void	AdvanceSkill(UInt32 a_skillId, float a_points, UInt32 a_unk1, UInt32 a_unk2);
 		virtual void	Unk_F8(void);
-		virtual void	Unk_F9(void);
+		virtual bool	IsInFaction(TESFaction* faction);
 		virtual void	VisitPerks(void);
 		virtual void	AddPerk(BGSPerk* a_perk, UInt32 a_unk1);
 		virtual void	RemovePerk(BGSPerk* a_perk);

@@ -24,6 +24,7 @@ class TintMask;
 namespace RE
 {
 	class Actor;
+	class InventoryEntryData;
 	class TESObjectREFR;
 
 
@@ -70,13 +71,14 @@ namespace RE
 		inline tArray<TintMask*>*		GetTintList()																								{ return reinterpret_cast<::PlayerCharacter*>(this)->GetTintList(); }
 		inline UInt32					GetNumTints(UInt32 tintType)																				{ return CALL_MEMBER_FN(reinterpret_cast<::PlayerCharacter*>(this), GetNumTints)(tintType); }
 		inline TintMask*				GetTintMask(UInt32 tintType, UInt32 index)																	{ return CALL_MEMBER_FN(reinterpret_cast<::PlayerCharacter*>(this), GetTintMask)(tintType, index); }
-		inline float					GetDamage(InventoryEntryData* pForm)																		{ return CALL_MEMBER_FN(reinterpret_cast<::PlayerCharacter*>(this), GetDamage)(pForm); }
-		inline float					GetArmorValue(InventoryEntryData* pForm)																	{ return CALL_MEMBER_FN(reinterpret_cast<::PlayerCharacter*>(this), GetArmorValue)(pForm); }
+		inline float					GetDamage(InventoryEntryData* pForm)																		{ return CALL_MEMBER_FN(reinterpret_cast<::PlayerCharacter*>(this), GetDamage)(reinterpret_cast<::InventoryEntryData*>(pForm)); }
+		inline float					GetArmorValue(InventoryEntryData* pForm)																	{ return CALL_MEMBER_FN(reinterpret_cast<::PlayerCharacter*>(this), GetArmorValue)(reinterpret_cast<::InventoryEntryData*>(pForm)); }
 
 		inline Actor*					GetActorInFavorState()																						{ return CALL_MEMBER_FN(this, GetActorInFavorState)(); }
 		TESObjectREFR*					GetGrabbedRef();
 		inline void						PlayPickupEvent(TESForm* item, TESForm* containerOwner, TESObjectREFR* containerRef, EventType eventType)	{ CALL_MEMBER_FN(this, PlayPickupEvent)(item, containerOwner, containerRef, eventType); }
 		inline void						StartActivation()																							{ CALL_MEMBER_FN(this, StartActivation)(); }
+		inline bool						TryToPickPocket(Actor* target, InventoryEntryData* pEntry, UInt32 numItems, bool unk4)						{ return CALL_MEMBER_FN(this, TryToPickPocket)(target, pEntry, numItems, unk4); }
 
 
 		// members
@@ -332,6 +334,7 @@ namespace RE
 		DEFINE_MEMBER_FN(GetActorInFavorState, Actor*, PLAYER_CHARACTER_GET_ACTOR_IN_FAVOR_STATE);
 		DEFINE_MEMBER_FN(PlayPickupEvent, void, PLAYER_CHARACTER_PLAY_PICKUP_EVENT, TESForm* item, TESForm* containerOwner, TESObjectREFR* containerRef, EventType eventType);
 		DEFINE_MEMBER_FN(StartActivation, void, PLAYER_CHARACTER_START_ACTIVATION);
+		DEFINE_MEMBER_FN(TryToPickPocket, bool, PLAYER_CHARACTER_TRY_TO_PICK_POCKET, Actor* target, InventoryEntryData* pEntry, UInt32 numItems, bool unk4);
 	};
 
 	STATIC_ASSERT(offsetof(PlayerCharacter, playerGrabbedHandle) == 0x8C8);

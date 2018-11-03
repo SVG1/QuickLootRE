@@ -214,6 +214,7 @@
     <ClInclude Include="include\RE\BGSBipedObjectForm.h" />
     <ClInclude Include="include\RE\EventDispatcherList.h" />
     <ClInclude Include="include\RE\ExtraContainerChanges.h" />
+    <ClInclude Include="include\RE\InventoryEntryData.h" />
     <ClInclude Include="include\RE\MenuControls.h" />
     <ClInclude Include="include\RE\MenuEventHandler.h" />
     <ClInclude Include="include\RE\MenuManager.h" />
@@ -228,6 +229,7 @@
     <ClInclude Include="include\RE\PlayerInputHandler.h" />
     <ClInclude Include="include\RE\ReadyWeaponHandler.h" />
     <ClInclude Include="include\RE\TESBoundObject.h" />
+    <ClInclude Include="include\RE\TESObjectBOOK.h" />
     <ClInclude Include="include\RE\TESObjectLIGH.h" />
     <ClInclude Include="include\RE\TESObjectREFR.h" />
     <ClInclude Include="include\Settings.h" />

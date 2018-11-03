@@ -32,5 +32,8 @@ namespace Hooks
 	typedef bool(*_PlaySound)(BGSSoundDescriptorForm* a_sound, UInt32 a_flag, const NiPoint3* a_position, NiNode* a_unk);
 	extern RelocAddr<_PlaySound> PlaySound;
 
+	typedef void(*_SendItemsPickPocketedEvent)(UInt32 numItems);	// Returns an int, but idk what it is
+	extern RelocAddr<_SendItemsPickPocketedEvent> SendItemsPickPocketedEvent;
+
 	void installHooks();
 }

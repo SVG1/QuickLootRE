@@ -11,6 +11,7 @@ class TESForm;
 namespace RE
 {
 	class EntryDataList;
+	class InventoryEntryData;
 	class TESObjectREFR;
 
 
@@ -22,10 +23,9 @@ namespace RE
 		public:
 			explicit Data(TESObjectREFR* ref)																			{ CALL_MEMBER_FN(this, ctor)(ref); }
 
-			inline InventoryEntryData* FindItemEntry(TESForm* item)														{ return reinterpret_cast<::ExtraContainerChanges::Data*>(this)->FindItemEntry(item); }
-			inline InventoryEntryData* CreateEquipEntryData(TESForm* item)												{ return reinterpret_cast<::ExtraContainerChanges::Data*>(this)->CreateEquipEntryData(item); }
-			inline void GetEquipItemData(InventoryEntryData::EquipData& stateOut, TESForm* item, SInt32 itemId)			{ reinterpret_cast<::ExtraContainerChanges::Data*>(this)->GetEquipItemData(stateOut, item, itemId); }
-
+			inline InventoryEntryData* FindItemEntry(TESForm* item)														{ return reinterpret_cast<InventoryEntryData*>(reinterpret_cast<::ExtraContainerChanges::Data*>(this)->FindItemEntry(item)); }
+			inline InventoryEntryData* CreateEquipEntryData(TESForm* item)												{ return reinterpret_cast<InventoryEntryData*>(reinterpret_cast<::ExtraContainerChanges::Data*>(this)->CreateEquipEntryData(item)); }
+			inline void GetEquipItemData(::InventoryEntryData::EquipData& stateOut, TESForm* item, SInt32 itemId)		{ reinterpret_cast<::ExtraContainerChanges::Data*>(this)->GetEquipItemData(stateOut, item, itemId); }
 			inline void SetUniqueID(::BaseExtraList* itemList, TESForm* oldForm, TESForm* newForm)						{ CALL_MEMBER_FN(reinterpret_cast<::ExtraContainerChanges::Data*>(this), SetUniqueID)(itemList, oldForm, newForm); }
 			inline void TransferItemUID(::BaseExtraList* extraList, TESForm* oldForm, TESForm* newForm, UInt32 unk1)	{ CALL_MEMBER_FN(reinterpret_cast<::ExtraContainerChanges::Data*>(this), TransferItemUID)(extraList, oldForm, newForm, unk1); }
 

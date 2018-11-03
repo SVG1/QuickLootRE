@@ -1,7 +1,7 @@
 #include "Events.h"
 
 #include "skse64/GameEvents.h"  // EventResult, EventDispatcher
-#include "skse64/GameExtraData.h"  // InventoryEntryData, ExtraContainerChanges
+#include "skse64/GameExtraData.h"  // ExtraContainerChanges
 #include "skse64/GameFormComponents.h"  // TESContainer
 #include "skse64/GameReferences.h"  // TESObjectREFR
 #include "skse64/GameRTTI.h"  // DYNAMIC_CAST
@@ -14,6 +14,8 @@
 #include "LootMenu.h"  // LootMenu
 
 #include "RE/BaseExtraList.h"  // RE::BaseExtraList
+#include "RE/InventoryEntryData.h"  // RE::InventoryEntryData
+#include "RE/PlayerCharacter.h"  // RE::PlayerCharacter
 #include "RE/TESObjectREFR.h"  // RE::TESObjectREFR
 
 
@@ -28,17 +30,18 @@ namespace QuickLootRE
 
 	bool EntryDataListVisitor::Accept(InventoryEntryData* a_entryData)
 	{
-		if (a_entryData) {
-			auto it = defaultMap.find(a_entryData->type);
+		RE::InventoryEntryData* entryData = reinterpret_cast<RE::InventoryEntryData*>(a_entryData);
+		if (entryData) {
+			auto it = defaultMap.find(entryData->type);
 			if (it != defaultMap.end()) {
-				SInt32 count = it->second + a_entryData->countDelta;
+				SInt32 count = it->second + entryData->countDelta;
 				if (count > 0) {
-					g_invList.add(a_entryData, count);
+					g_invList.add(entryData, count);
 				} else {
-					defaultMap.erase(a_entryData->type);
+					defaultMap.erase(entryData->type);
 				}
-			} else if (a_entryData->countDelta > 0) {
-				g_invList.add(a_entryData);
+			} else if (entryData->countDelta > 0) {
+				g_invList.add(entryData);
 			}
 		}
 		return true;
@@ -47,10 +50,14 @@ namespace QuickLootRE
 
 	EventResult CrosshairRefEventHandler::ReceiveEvent(SKSECrosshairRefEvent* a_event, EventDispatcher<SKSECrosshairRefEvent>* a_dispatcher)
 	{
+		static UIManager*			uiManager	= UIManager::GetSingleton();
+		static RE::PlayerCharacter*	player		= reinterpret_cast<RE::PlayerCharacter*>(*g_thePlayer);
+
+
 		// If player is not looking at anything
 		if (!a_event || !a_event->crosshairRef) {
 			if (LootMenu::IsOpen()) {
-				CALL_MEMBER_FN(UIManager::GetSingleton(), AddMessage)(&LootMenu::GetName(), UIMessage::kMessage_Close, 0);
+				CALL_MEMBER_FN(uiManager, AddMessage)(&LootMenu::GetName(), UIMessage::kMessage_Close, 0);
 				LootMenu::ClearContainerRef();
 			}
 			return kEvent_Continue;
@@ -59,20 +66,20 @@ namespace QuickLootRE
 		// If player went from container -> container
 		RE::TESObjectREFR* ref = reinterpret_cast<RE::TESObjectREFR*>(a_event->crosshairRef);
 		if (LootMenu::IsOpen() && (LootMenu::GetContainerRef() != ref)) {
-			CALL_MEMBER_FN(UIManager::GetSingleton(), AddMessage)(&LootMenu::GetName(), UIMessage::kMessage_Close, 0);
+			CALL_MEMBER_FN(uiManager, AddMessage)(&LootMenu::GetName(), UIMessage::kMessage_Close, 0);
 			LootMenu::ClearContainerRef();
 		}
 
 		// If player is looking at a container
-		if (LootMenu::CanOpen(ref)) {
+		if (LootMenu::CanOpen(ref, player->IsSneaking())) {
 			LootMenu::SetContainerRef(ref);
 			TESContainer* container = ref->GetContainer();
 			g_invList.clear();
 			defaultMap.clear();
 			getInventoryList(&ref->extraData, container);
 			g_invList.sort();
-			CALL_MEMBER_FN(UIManager::GetSingleton(), AddMessage)(&LootMenu::GetName(), UIMessage::kMessage_Close, 0);
-			CALL_MEMBER_FN(UIManager::GetSingleton(), AddMessage)(&LootMenu::GetName(), UIMessage::kMessage_Open, 0);
+			CALL_MEMBER_FN(uiManager, AddMessage)(&LootMenu::GetName(), UIMessage::kMessage_Close, 0);
+			CALL_MEMBER_FN(uiManager, AddMessage)(&LootMenu::GetName(), UIMessage::kMessage_Open, 0);
 		}
 		return kEvent_Continue;
 	}

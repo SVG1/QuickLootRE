@@ -7,6 +7,11 @@
 
 #include <utility>  // swap
 
+namespace RE
+{
+	class InventoryEntryData;
+}
+
 
 namespace QuickLootRE
 {
@@ -345,57 +350,61 @@ namespace QuickLootRE
 		};
 
 	public:
-		explicit ItemData(InventoryEntryData* a_entryData);
-		explicit ItemData(InventoryEntryData* a_entryData, SInt32 a_count);
+		explicit ItemData(RE::InventoryEntryData* a_entryData);
+		explicit ItemData(RE::InventoryEntryData* a_entryData, SInt32 a_count);
 		~ItemData();
 
-		ItemData&			operator= (ItemData a_rhs);
-		friend bool			operator==(const ItemData& a_lhs, const ItemData& a_rhs);
-		friend bool			operator!=(const ItemData& a_lhs, const ItemData& a_rhs);
-		friend bool			operator< (const ItemData& a_lhs, const ItemData& a_rhs);
-		friend bool			operator> (const ItemData& a_lhs, const ItemData& a_rhs);
-		friend bool			operator<=(const ItemData& a_lhs, const ItemData& a_rhs);
-		friend bool			operator>=(const ItemData& a_lhs, const ItemData& a_rhs);
-		friend void			swap(ItemData& a_lhs, ItemData& a_rhs);
+		ItemData&				operator= (ItemData a_rhs);
+		friend bool				operator==(const ItemData& a_lhs, const ItemData& a_rhs);
+		friend bool				operator!=(const ItemData& a_lhs, const ItemData& a_rhs);
+		friend bool				operator< (const ItemData& a_lhs, const ItemData& a_rhs);
+		friend bool				operator> (const ItemData& a_lhs, const ItemData& a_rhs);
+		friend bool				operator<=(const ItemData& a_lhs, const ItemData& a_rhs);
+		friend bool				operator>=(const ItemData& a_lhs, const ItemData& a_rhs);
+		friend void				swap(ItemData& a_lhs, ItemData& a_rhs);
 
-		InventoryEntryData*	entryData()	const;
-		const char*			name()		const;
-		SInt32				count()		const;
-		SInt32				value()		const;
-		float				weight()	const;
-		const char*			icon()		const;
-		bool				isStolen()	const;
-		TESForm*			form()		const;
+		RE::InventoryEntryData*	entryData()		const;
+		const char*				name()			const;
+		SInt32					count()			const;
+		SInt32					value()			const;
+		float					weight()		const;
+		const char*				icon()			const;
+		bool					isStolen()		const;
+		bool					isRead()		const;
+		bool					isEnchanted()	const;
+		TESForm*				form()			const;
 
-		void				reduceCount();
+		void					reduceCount();
 
 	private:
-		float				getWeight();
-		Type				getType();
-		Type				getTypeArmor(TESObjectARMO* a_armor);
-		Type				getTypeBook(TESObjectBOOK* a_book);
-		Type				getTypeMisc(TESObjectMISC* a_misc);
-		Type				getTypeWeapon(TESObjectWEAP* a_weap);
-		Type				getTypePotion(AlchemyItem* a_potion);
-		Type				getTypeSoulGem(TESSoulGem* a_gem);
-		bool				getEnchanted();
-		Priority			getPriority();
+		float					getWeight();
+		Type					getType();
+		Type					getTypeArmor(TESObjectARMO* a_armor);
+		Type					getTypeBook(TESObjectBOOK* a_book);
+		Type					getTypeMisc(TESObjectMISC* a_misc);
+		Type					getTypeWeapon(TESObjectWEAP* a_weap);
+		Type					getTypePotion(AlchemyItem* a_potion);
+		Type					getTypeSoulGem(TESSoulGem* a_gem);
+		bool					getRead();
+		bool					getEnchanted();
+		Priority				getPriority();
 
-		friend int			CompareByStolen	(const ItemData& a_lhs, const ItemData& a_rhs);
-		friend int			CompareByType	(const ItemData& a_lhs, const ItemData& a_rhs);
-		friend int			CompareByName	(const ItemData& a_lhs, const ItemData& a_rhs);
-		friend int			CompareByValue	(const ItemData& a_lhs, const ItemData& a_rhs);
-		friend int			CompareByCount	(const ItemData& a_lhs, const ItemData& a_rhs);
+		friend int				CompareByStolen	(const ItemData& a_lhs, const ItemData& a_rhs);
+		friend int				CompareByType	(const ItemData& a_lhs, const ItemData& a_rhs);
+		friend int				CompareByName	(const ItemData& a_lhs, const ItemData& a_rhs);
+		friend int				CompareByValue	(const ItemData& a_lhs, const ItemData& a_rhs);
+		friend int				CompareByCount	(const ItemData& a_lhs, const ItemData& a_rhs);
 
-		InventoryEntryData*	_entryData;
-		const char*			_name;
-		SInt32				_count;
-		SInt32				_value;
-		float				_weight;
-		Type				_type;
-		bool				_isStolen;
-		bool				_isEnchanted;
-		Priority			_priority;
+		RE::InventoryEntryData*	_entryData;
+		const char*				_name;
+		SInt32					_count;
+		SInt32					_value;
+		float					_weight;
+		Type					_type;
+		bool					_isStolen;
+		bool					_isRead;
+		bool					_isEnchanted;
+		Priority				_priority;
 
 		static const char*	_strIcons[];
 	};

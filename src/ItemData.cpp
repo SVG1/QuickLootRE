@@ -11,11 +11,13 @@
 #include "Keywords.h"  // keywords
 
 #include "RE/BGSBipedObjectForm.h"  // RE::BGSBipedObjectForm
+#include "RE/InventoryEntryData.h"  // RE::InventoryEntryData
+#include "RE/TESObjectBOOK.h"  // RE::TESObjectBOOK
 
 
 namespace QuickLootRE
 {
-	ItemData::ItemData(InventoryEntryData* a_entryData) :
+	ItemData::ItemData(RE::InventoryEntryData* a_entryData) :
 		_entryData(a_entryData),
 		_name(""),
 		_count(0),
@@ -23,21 +25,23 @@ namespace QuickLootRE
 		_weight(0.0),
 		_type(kType_None),
 		_isStolen(false),
+		_isRead(false),
 		_isEnchanted(false),
 		_priority(kPriority_Key)
 	{
-		_name = CALL_MEMBER_FN(_entryData, GenerateName)();
+		_name = _entryData->GenerateName();
 		_count = _entryData->countDelta;
-		_value = CALL_MEMBER_FN(_entryData, GetValue)();
+		_value = _entryData->GetValue();
 		_weight = getWeight();
 		_type = getType();
-		_isStolen = CALL_MEMBER_FN(_entryData, IsOwnedBy)((*g_thePlayer), false);
+		_isStolen = _entryData->IsOwnedBy(*g_thePlayer, _entryData->GetOwner(), true);
+		_isRead = getRead();
 		_isEnchanted = getEnchanted();
 		_priority = getPriority();
 	}
 
 
-	ItemData::ItemData(InventoryEntryData* a_entryData, SInt32 a_count) :
+	ItemData::ItemData(RE::InventoryEntryData* a_entryData, SInt32 a_count) :
 		_entryData(a_entryData),
 		_name(""),
 		_count(a_count),
@@ -45,14 +49,16 @@ namespace QuickLootRE
 		_weight(0.0),
 		_type(kType_None),
 		_isStolen(false),
+		_isRead(false),
 		_isEnchanted(false),
 		_priority(kPriority_Key)
 	{
-		_name = CALL_MEMBER_FN(_entryData, GenerateName)();
-		_value = CALL_MEMBER_FN(_entryData, GetValue)();
+		_name = _entryData->GenerateName();
+		_value = _entryData->GetValue();
 		_weight = getWeight();
 		_type = getType();
-		_isStolen = CALL_MEMBER_FN(_entryData, IsOwnedBy)((*g_thePlayer), false);
+		_isStolen = _entryData->IsOwnedBy(*g_thePlayer, _entryData->GetOwner(), true);
+		_isRead = getRead();
 		_isEnchanted = getEnchanted();
 		_priority = getPriority();
 	}
@@ -84,7 +90,7 @@ namespace QuickLootRE
 	}
 
 
-	InventoryEntryData* ItemData::entryData() const
+	RE::InventoryEntryData* ItemData::entryData() const
 	{
 		return _entryData;
 	}
@@ -123,6 +129,18 @@ namespace QuickLootRE
 	bool ItemData::isStolen() const
 	{
 		return _isStolen;
+	}
+
+
+	bool ItemData::isRead() const
+	{
+		return _isRead;
+	}
+
+
+	bool ItemData::isEnchanted() const
+	{
+		return _isEnchanted;
 	}
 
 
@@ -391,7 +409,7 @@ namespace QuickLootRE
 		if (a_gem->formID == kFormID_DA01SoulGemBlackStar || a_gem->formID == kFormID_DA01SoulGemAzurasStar) {
 			return kType_SoulGemAzura;
 		} else {
-			UInt32 xSoulSize = CALL_MEMBER_FN(_entryData, GetSoulLevel)();
+			UInt32 xSoulSize = _entryData->GetSoulLevel();
 			if (a_gem->gemSize < 4) {
 				if (a_gem->soulSize >= a_gem->gemSize || xSoulSize >= a_gem->gemSize) {
 					return kType_SoulGemFull;
@@ -427,6 +445,17 @@ namespace QuickLootRE
 			return true;
 		}
 		return false;
+	}
+
+
+	bool ItemData::getRead()
+	{
+		if (_entryData->type->formType == kFormType_Book) {
+			RE::TESObjectBOOK* book = static_cast<RE::TESObjectBOOK*>(_entryData->type);
+			return book->IsRead();
+		} else {
+			return false;
+		}
 	}
 
 

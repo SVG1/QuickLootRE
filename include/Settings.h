@@ -87,8 +87,10 @@ namespace QuickLootRE
 
 		static bSetting	disableInCombat;
 		static bSetting	disableTheft;
+		static bSetting	disablePickPocketing;
 		static bSetting	disableIfEmpty;
 		static bSetting	disableSingleLoot;
+		static bSetting	playAnimations;
 		static iSetting itemLimit;
 		static fSetting	scale;
 		static fSetting	positionX;

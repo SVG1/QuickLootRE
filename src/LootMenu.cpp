@@ -1,6 +1,7 @@
 #include "LootMenu.h"
 
 #include "skse64/GameAPI.h"  // g_thePlayer
+#include "skse64/GameSettings.h"  // g_gameSettingCollection
 #include "skse64/GameInput.h"  // InputEvent, InputStringHolder
 #include "skse64/GameMenus.h"  // IMenu
 #include "skse64/GameTypes.h"  // BSFixedString, SimpleLock, SimpleLocker
@@ -12,11 +13,9 @@
 #include <exception>  // exception
 #include <string>  // string
 
-#include <crtdbg.h>
-
 #include "Exceptions.h"  // bad_gfx_value
 #include "HasActivateChoiceVisitor.h"  // HasActivateChoiceVisitor
-#include "Hooks.h"  // PlayAnimation(), PlaySound()
+#include "Hooks.h"  // PlayAnimation(), PlaySound(), SendItemsPickPocketedEvent()
 #include "ItemData.h"  // ItemData
 #include "InventoryList.h"  // g_invList
 #include "Settings.h"  // Settings
@@ -35,6 +34,7 @@
 #include "RE/IMenu.h"  // RE::IMenu
 #include "RE/InputEventDispatcher.h"  // RE::InputEventDispatcher
 #include "RE/InputManager.h"  // RE::InputMappingManager
+#include "RE/InventoryEntryData.h"  // RE::InventoryEntryData
 #include "RE/MenuControls.h"  // RE::MenuControls
 #include "RE/MenuManager.h"  // RE::MenuManager
 #include "RE/NiControllerManager.h"  // RE::NiControllerManager
@@ -68,6 +68,14 @@ namespace QuickLootRE
 		if (loader->LoadMovie(this, view, a_swfPath, ScaleModeType::kScaleModeType_ShowAll, 0.0)) {
 			flags = kFlag_DoNotDeleteOnClose | kFlag_DoNotPreventGameSave | kFlag_Unk10000;
 			context = 0x02;  // menuDepth, set lower than fade menu (3)
+		}
+	}
+
+
+	LootMenu::~LootMenu()
+	{
+		if (this) {
+			ScaleformHeap_Free(this);
 		}
 	}
 
@@ -112,7 +120,7 @@ namespace QuickLootRE
 	}
 
 
-	bool LootMenu::CanOpen(RE::TESObjectREFR* a_ref)
+	bool LootMenu::CanOpen(RE::TESObjectREFR* a_ref, bool a_isSneaking)
 	{
 		if (!a_ref || !a_ref->baseForm) {
 			return false;
@@ -169,6 +177,15 @@ namespace QuickLootRE
 		case kFormType_NPC:
 			if (a_ref->IsDead(true)) {
 				containerRef = a_ref;
+			} else if (!Settings::disablePickPocketing && !a_ref->IsChild() && a_isSneaking) {
+				static TESFaction* CurrentFollowerFaction = static_cast<TESFaction*>(LookupFormByID(0x0005C84E));
+
+				RE::Actor* target = static_cast<RE::Actor*>(a_ref);
+				if (!target->IsPlayerTeammate() && !target->IsInFaction(CurrentFollowerFaction)) {
+					if (!target->IsInCombat()) {
+						containerRef = a_ref;
+					}
+				}
 			}
 			break;
 		}
@@ -206,6 +223,50 @@ namespace QuickLootRE
 	}
 
 
+	void LootMenu::Register(Scaleform a_reg)
+	{
+		switch (a_reg) {
+		case kScaleform_SetPlatform:
+		{
+			SetPlatforUIDelegate* dlgt = (SetPlatforUIDelegate*)Heap_Allocate(sizeof(SetPlatforUIDelegate));
+			new (dlgt)SetPlatforUIDelegate;
+			g_task->AddUITask(dlgt);
+			break;
+		}
+		case kScaleform_Setup:
+		{
+			SetupUIDelegate* dlgt = (SetupUIDelegate*)Heap_Allocate(sizeof(SetupUIDelegate));
+			new (dlgt)SetupUIDelegate;
+			g_task->AddUITask(dlgt);
+			break;
+		}
+		case kScaleform_OpenContainer:
+		{
+			OpenContainerUIDelegate* dlgt = (OpenContainerUIDelegate*)Heap_Allocate(sizeof(OpenContainerUIDelegate));
+			new (dlgt)OpenContainerUIDelegate;
+			g_task->AddUITask(dlgt);
+			break;
+		}
+		case kScaleform_CloseContainer:
+		{
+			CloseContainerUIDelegate* dlgt = (CloseContainerUIDelegate*)Heap_Allocate(sizeof(CloseContainerUIDelegate));
+			new (dlgt)CloseContainerUIDelegate;
+			g_task->AddUITask(dlgt);
+			break;
+		}
+		case kScaleform_SetSelectedIndex:
+		{
+			SetSelectedIndexUIDelegate* dlgt = (SetSelectedIndexUIDelegate*)Heap_Allocate(sizeof(SetSelectedIndexUIDelegate));
+			new (dlgt)SetSelectedIndexUIDelegate;
+			g_task->AddUITask(dlgt);
+			break;
+		}
+		default:
+			_ERROR("[ERROR] Invalid registration (%i)", a_reg);
+		}
+	}
+
+
 	UInt32 LootMenu::ProcessMessage(UIMessage* a_message)
 	{
 		if (!Settings::isApplied) {
@@ -238,16 +299,22 @@ namespace QuickLootRE
 		typedef RE::BSWin32GamepadDevice::Gamepad	Gamepad;
 		typedef RE::BSWin32MouseDevice::Mouse		Mouse;
 
+		static InputStringHolder*	strHolder = InputStringHolder::GetSingleton();
+
 		if (IsOpen() && a_event->eventType == InputEvent::kEventType_Button) {
 			ButtonEvent* button = static_cast<ButtonEvent*>(a_event);
+
+			if (*a_event->GetControlID() == strHolder->sneak) {
+				return true;
+			}
+
 			switch (a_event->deviceType) {
 			case InputDevice::kInputDevice_Gamepad:
 				return (button->keyMask == Gamepad::kGamepad_Up || button->keyMask == Gamepad::kGamepad_Down);
 			case InputDevice::kInputDevice_Mouse:
 				return (button->keyMask == Mouse::kMouse_WheelDown || button->keyMask == Mouse::kMouse_WheelUp);
 			case InputDevice::kInputDevice_Keyboard:
-				static InputStringHolder* holder = InputStringHolder::GetSingleton();
-				return (*a_event->GetControlID() == holder->zoomIn || *a_event->GetControlID() == holder->zoomOut);
+				return (*a_event->GetControlID() == strHolder->zoomIn || *a_event->GetControlID() == strHolder->zoomOut);
 			}
 		}
 		return false;
@@ -259,7 +326,20 @@ namespace QuickLootRE
 		typedef RE::BSWin32GamepadDevice::Gamepad	Gamepad;
 		typedef RE::BSWin32MouseDevice::Mouse		Mouse;
 
+		static InputStringHolder*	strHolder	= InputStringHolder::GetSingleton();
+		static UIManager*			uiManager	= UIManager::GetSingleton();
+		static RE::PlayerCharacter*	player		= reinterpret_cast<RE::PlayerCharacter*>(*g_thePlayer);
+
 		if (!a_event->IsDown()) {
+			return true;
+		}
+
+		if (*a_event->GetControlID() == strHolder->sneak) {
+			CALL_MEMBER_FN(uiManager, AddMessage)(&GetName(), UIMessage::kMessage_Close, 0);
+			bool isSneaking = !player->IsSneaking();
+			if (CanOpen(_containerRef, isSneaking)) {
+				CALL_MEMBER_FN(uiManager, AddMessage)(&GetName(), UIMessage::kMessage_Open, 0);
+			}
 			return true;
 		}
 
@@ -298,10 +378,9 @@ namespace QuickLootRE
 				_platform = kPlatform_PC;
 				Register(kScaleform_SetPlatform);
 			}
-			static InputStringHolder* holder = InputStringHolder::GetSingleton();
-			if (*a_event->GetControlID() == holder->zoomIn) {
+			if (*a_event->GetControlID() == strHolder->zoomIn) {
 				ModSelectedIndex(-1);
-			} else if (*a_event->GetControlID() == holder->zoomOut) {
+			} else if (*a_event->GetControlID() == strHolder->zoomOut) {
 				ModSelectedIndex(1);
 			}
 			break;
@@ -314,6 +393,9 @@ namespace QuickLootRE
 	void LootMenu::OnMenuOpen()
 	{
 		_selectedIndex = 0;
+		if (!IsOpen()) {
+			PlayAnimationOpen();
+		}
 		_isOpen = true;
 		Register(kScaleform_OpenContainer);
 	}
@@ -373,8 +455,20 @@ namespace QuickLootRE
 		} else {
 			RemoveType lootMode = RemoveType::kRemoveType_Take;
 
-			if (_containerRef->IsDead(false)) {
-				player->PlayPickupEvent(item.form(), _containerRef->GetOwner(), _containerRef, EventType::kEventType_DeadBody);
+			if (_containerRef->baseForm->formType == kFormType_NPC) {
+				if (_containerRef->IsDead(false)) {
+					player->PlayPickupEvent(item.form(), _containerRef->GetOwner(), _containerRef, EventType::kEventType_DeadBody);
+				} else {
+					RE::Actor* target = static_cast<RE::Actor*>(_containerRef);
+					bool pickSuccess = player->TryToPickPocket(target, item.entryData(), item.count(), true);
+					player->PlayPickupEvent(item.entryData()->type, _containerRef->GetActorOwner(), _containerRef, EventType::kEventType_Thief);
+					lootMode = RemoveType::kRemoveType_Steal;
+					if (!pickSuccess) {
+						return;
+					} else {
+						(*Hooks::SendItemsPickPocketedEvent)(item.count());
+					}
+				}
 			} else {
 				player->PlayPickupEvent(item.form(), _containerRef->GetOwner(), _containerRef, EventType::kEventType_Container);
 
@@ -399,11 +493,8 @@ namespace QuickLootRE
 				}
 			} else {
 				if (_containerRef->IsOffLimits()) {
-					UInt32 totalValue = item.value() * numItems;
-					player->SendStealAlarm(_containerRef, 0, 0, totalValue, _containerRef->GetOwner(), true);
+					player->SendStealAlarm(_containerRef, item.entryData()->type, numItems, item.value(), _containerRef->GetOwner(), true);
 				}
-
-				PlayAnimationOpen();
 			}
 
 			player->PlaySounds(item.form(), true, false);
@@ -437,9 +528,9 @@ namespace QuickLootRE
 		typedef RE::BSWin32GamepadDevice		BSWin32GamepadDevice;
 		typedef RE::BSInputDevice::InputDevice	InputDevice;
 
-		static RE::InputEventDispatcher* inputDispatcher = RE::InputEventDispatcher::GetSingleton();
-		static RE::InputManager* inputManager = RE::InputManager::GetSingleton();
-		static InputStringHolder* holder = InputStringHolder::GetSingleton();
+		static RE::InputEventDispatcher*	inputDispatcher	= RE::InputEventDispatcher::GetSingleton();
+		static RE::InputManager*			inputManager	= RE::InputManager::GetSingleton();
+		static InputStringHolder*			holder			= InputStringHolder::GetSingleton();
 
 		if (Settings::disableSingleLoot) {
 			return false;
@@ -468,30 +559,32 @@ namespace QuickLootRE
 
 	void LootMenu::PlayAnimation(const char* fromName, const char* toName)
 	{
-		typedef RE::NiControllerManager NiControllerManager;
+		if (Settings::playAnimations) {
+			typedef RE::NiControllerManager NiControllerManager;
 
-		RE::NiNode* niNode = _containerRef->GetNiNode();
-		if (!niNode) {
-			return;
+			RE::NiNode* niNode = _containerRef->GetNiNode();
+			if (!niNode) {
+				return;
+			}
+
+			NiTimeController* controller = niNode->GetController();
+			if (!controller) {
+				return;
+			}
+
+			RE::NiControllerManager* manager = ni_cast(controller, NiControllerManager);
+			if (!manager) {
+				return;
+			}
+
+			RE::NiControllerSequence* fromSeq = manager->GetSequenceByName(fromName);
+			RE::NiControllerSequence* toSeq = manager->GetSequenceByName(toName);
+			if (!fromSeq || !toSeq) {
+				return;
+			}
+
+			(*Hooks::PlayAnimation)(_containerRef, manager, toSeq, fromSeq, false);
 		}
-
-		NiTimeController* controller = niNode->GetController();
-		if (!controller) {
-			return;
-		}
-
-		RE::NiControllerManager* manager = ni_cast(controller, NiControllerManager);
-		if (!manager) {
-			return;
-		}
-
-		RE::NiControllerSequence* fromSeq = manager->GetSequenceByName(fromName);
-		RE::NiControllerSequence* toSeq = manager->GetSequenceByName(toName);
-		if (!fromSeq || !toSeq) {
-			return;
-		}
-
-		(*Hooks::PlayAnimation)(_containerRef, manager, toSeq, fromSeq, false);
 	}
 
 
@@ -521,50 +614,6 @@ namespace QuickLootRE
 		BGSPickupPutdownSounds* sounds = DYNAMIC_CAST(a_item, TESForm, BGSPickupPutdownSounds);
 		if (sounds && sounds->pickUp) {
 			(*Hooks::PlaySound)(sounds->pickUp, false, &_containerRef->pos, (*g_thePlayer)->GetNiNode());
-		}
-	}
-
-
-	void LootMenu::Register(Scaleform a_reg)
-	{
-		switch (a_reg) {
-		case kScaleform_SetPlatform:
-		{
-			SetPlatforUIDelegate* dlgt = (SetPlatforUIDelegate*)Heap_Allocate(sizeof(SetPlatforUIDelegate));
-			new (dlgt)SetPlatforUIDelegate;
-			g_task->AddUITask(dlgt);
-			break;
-		}
-		case kScaleform_Setup:
-		{
-			SetupUIDelegate* dlgt = (SetupUIDelegate*)Heap_Allocate(sizeof(SetupUIDelegate));
-			new (dlgt)SetupUIDelegate;
-			g_task->AddUITask(dlgt);
-			break;
-		}
-		case kScaleform_OpenContainer:
-		{
-			OpenContainerUIDelegate* dlgt = (OpenContainerUIDelegate*)Heap_Allocate(sizeof(OpenContainerUIDelegate));
-			new (dlgt)OpenContainerUIDelegate;
-			g_task->AddUITask(dlgt);
-			break;
-		}
-		case kScaleform_CloseContainer:
-		{
-			CloseContainerUIDelegate* dlgt = (CloseContainerUIDelegate*)Heap_Allocate(sizeof(CloseContainerUIDelegate));
-			new (dlgt)CloseContainerUIDelegate;
-			g_task->AddUITask(dlgt);
-			break;
-		}
-		case kScaleform_SetSelectedIndex:
-		{
-			SetSelectedIndexUIDelegate* dlgt = (SetSelectedIndexUIDelegate*)Heap_Allocate(sizeof(SetSelectedIndexUIDelegate));
-			new (dlgt)SetSelectedIndexUIDelegate;
-			g_task->AddUITask(dlgt);
-			break;
-		}
-		default:
-			_ERROR("[ERROR] Invalid registration (%i)", a_reg);
 		}
 	}
 
@@ -672,6 +721,10 @@ namespace QuickLootRE
 				new (isStolen)GFxValue[size];
 				GFxValue* iconLabel = (GFxValue*)ScaleformHeap_Allocate(sizeof(GFxValue) * size);
 				new (iconLabel)GFxValue[size];
+				GFxValue* isRead = (GFxValue*)ScaleformHeap_Allocate(sizeof(GFxValue) * size);
+				new (isRead)GFxValue[size];
+				GFxValue* isEnchanted = (GFxValue*)ScaleformHeap_Allocate(sizeof(GFxValue) * size);
+				new (isEnchanted)GFxValue[size];
 
 				for (SInt32 i = 0; i < size; ++i) {
 					LootMenu::_singleton->view->CreateObject(&item[i]);
@@ -682,6 +735,8 @@ namespace QuickLootRE
 					weight[i].SetNumber(g_invList[i].weight());
 					isStolen[i].SetBool(g_invList[i].isStolen());
 					iconLabel[i].SetString(g_invList[i].icon());
+					isRead[i].SetBool(g_invList[i].isRead());
+					isEnchanted[i].SetBool(g_invList[i].isEnchanted());
 
 					item[i].SetMember("text", &text[i]);
 					item[i].SetMember("count", &count[i]);
@@ -689,14 +744,22 @@ namespace QuickLootRE
 					item[i].SetMember("weight", &weight[i]);
 					item[i].SetMember("isStolen", &isStolen[i]);
 					item[i].SetMember("iconLabel", &iconLabel[i]);
+					item[i].SetMember("isRead", &isRead[i]);
+					item[i].SetMember("isEnchanted", &isEnchanted[i]);
 
 					args[0].PushBack(&item[i]);
 				}
 
+				static const char* sTake = (*g_gameSettingCollection)->Get("sTake")->data.s;
+				static const char* sSteal = (*g_gameSettingCollection)->Get("sSteal")->data.s;
+				static const char* sSearch = (*g_gameSettingCollection)->Get("sSearch")->data.s;
+
+				const char* takeType = LootMenu::_containerRef->IsOffLimits() ? sSteal : sTake;
+
 				args[1].SetNumber(LootMenu::_containerRef->formID);
 				args[2].SetString(LootMenu::_containerRef->GetReferenceName());
-				args[3].SetString("Take");
-				args[4].SetString("Search");
+				args[3].SetString(takeType);
+				args[4].SetString(sSearch);
 				args[5].SetNumber(LootMenu::_selectedIndex);
 
 				LootMenu::_singleton->view->Invoke("_root.Menu_mc.openContainer", 0, args, 6);
@@ -710,6 +773,8 @@ namespace QuickLootRE
 				dlgt->heapAllocVals.push_back(weight);
 				dlgt->heapAllocVals.push_back(isStolen);
 				dlgt->heapAllocVals.push_back(iconLabel);
+				dlgt->heapAllocVals.push_back(isRead);
+				dlgt->heapAllocVals.push_back(isEnchanted);
 				g_task->AddTask(dlgt);
 			} catch (std::exception& e) {
 				_ERROR(e.what());
@@ -764,6 +829,7 @@ namespace QuickLootRE
 	{
 		for (auto& val : heapAllocVals) {
 			ScaleformHeap_Free(val);
+			val = 0;
 		}
 	}
 

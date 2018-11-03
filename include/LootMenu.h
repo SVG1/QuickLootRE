@@ -71,15 +71,19 @@ namespace QuickLootRE
 
 
 		LootMenu(const char* a_swfPath);
+		virtual ~LootMenu();
 
 		static LootMenu*			GetSingleton();
 		static BSFixedString		GetName();
+
 		static void					SetContainerRef(TESObjectREFR* a_ref);
 		static void					SetContainerRef(RE::TESObjectREFR* a_ref);
 		static RE::TESObjectREFR*	GetContainerRef();
 		static void					ClearContainerRef();
-		static bool					CanOpen(RE::TESObjectREFR* a_ref);
+
+		static bool					CanOpen(RE::TESObjectREFR* a_ref, bool a_isSneaking);
 		static bool					IsOpen();
+
 		static void					Register(Scaleform a_reg);
 
 		// IMenu

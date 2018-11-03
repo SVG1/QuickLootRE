@@ -10,6 +10,7 @@
 
 #include "Utility.h"  // numToHexString
 
+#include "RE/InventoryEntryData.h"  // RE::InventoryEntryData
 #include "RE/TESObjectLIGH.h"  // RE::TESObjectLIGH
 
 
@@ -25,7 +26,7 @@ namespace QuickLootRE
 	}
 
 
-	void InventoryList::add(InventoryEntryData* a_entryData)
+	void InventoryList::add(RE::InventoryEntryData* a_entryData)
 	{
 		if (isValidItem(a_entryData->type)) {
 			_itemList.emplace_back(a_entryData);
@@ -33,7 +34,7 @@ namespace QuickLootRE
 	}
 
 
-	void InventoryList::add(InventoryEntryData* a_entryData, SInt32 a_count)
+	void InventoryList::add(RE::InventoryEntryData* a_entryData, SInt32 a_count)
 	{
 		if (isValidItem(a_entryData->type)) {
 			_itemList.emplace_back(a_entryData, a_count);
@@ -43,7 +44,7 @@ namespace QuickLootRE
 
 	void InventoryList::add(TESForm* a_form, SInt32 a_count)
 	{
-		InventoryEntryData* entryData = InventoryEntryData::Create(a_form, a_count);
+		RE::InventoryEntryData* entryData = RE::InventoryEntryData::Create(a_form, a_count);
 		_heapList.push_back(entryData);
 		add(entryData);
 	}
