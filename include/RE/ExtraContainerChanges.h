@@ -36,6 +36,8 @@ namespace RE
 			TESObjectREFR*	owner;			// 08
 			float			totalWeight;	// 10
 			float			armorWeight;	// 14
+			bool			changed;		// 18
+			UInt8			pad19[0x3];		// 19
 
 		private:
 			MEMBER_FN_PREFIX(Data);

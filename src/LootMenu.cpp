@@ -12,6 +12,8 @@
 #include <exception>  // exception
 #include <string>  // string
 
+#include <crtdbg.h>
+
 #include "Exceptions.h"  // bad_gfx_value
 #include "HasActivateChoiceVisitor.h"  // HasActivateChoiceVisitor
 #include "Hooks.h"  // PlayAnimation(), PlaySound()
@@ -350,10 +352,11 @@ namespace QuickLootRE
 
 		// Containers don't have ExtraContainerChanges if the player hasn't opened them yet, so we must add them ourselves
 		RE::ExtraContainerChanges* xContainerChanges = static_cast<RE::ExtraContainerChanges*>(_containerRef->extraData.GetByType(kExtraData_ContainerChanges));
-		if (!xContainerChanges) {
-			RE::BaseExtraList* xList = &_containerRef->extraData;
-			RE::ExtraContainerChanges::Data* changes = new RE::ExtraContainerChanges::Data(_containerRef);
-			xList->SetInventoryChanges(changes);
+		RE::ExtraContainerChanges::Data* changes = xContainerChanges ? xContainerChanges->data : 0;
+		if (!changes) {
+			RE::ExtraContainerChanges::Data* changes = (RE::ExtraContainerChanges::Data*)Heap_Allocate(sizeof(RE::ExtraContainerChanges::Data));
+			new (changes)RE::ExtraContainerChanges::Data(_containerRef);
+			_containerRef->extraData.SetInventoryChanges(changes);
 			changes->InitContainer();
 		}
 
