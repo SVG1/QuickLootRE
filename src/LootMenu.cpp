@@ -299,12 +299,16 @@ namespace QuickLootRE
 		typedef RE::BSWin32GamepadDevice::Gamepad	Gamepad;
 		typedef RE::BSWin32MouseDevice::Mouse		Mouse;
 
-		static InputStringHolder*	strHolder = InputStringHolder::GetSingleton();
+		static InputStringHolder* strHolder = InputStringHolder::GetSingleton();
 
 		if (IsOpen() && a_event->eventType == InputEvent::kEventType_Button) {
 			ButtonEvent* button = static_cast<ButtonEvent*>(a_event);
 
-			if (*a_event->GetControlID() == strHolder->sneak) {
+			BSFixedString controlID = *a_event->GetControlID();
+
+			if (controlID == strHolder->sneak ||
+				controlID == strHolder->pause ||
+				controlID == strHolder->journal) {
 				return true;
 			}
 
@@ -314,7 +318,7 @@ namespace QuickLootRE
 			case InputDevice::kInputDevice_Mouse:
 				return (button->keyMask == Mouse::kMouse_WheelDown || button->keyMask == Mouse::kMouse_WheelUp);
 			case InputDevice::kInputDevice_Keyboard:
-				return (*a_event->GetControlID() == strHolder->zoomIn || *a_event->GetControlID() == strHolder->zoomOut);
+				return (controlID == strHolder->zoomIn || controlID == strHolder->zoomOut);
 			}
 		}
 		return false;
@@ -334,13 +338,17 @@ namespace QuickLootRE
 			return true;
 		}
 
-		if (*a_event->GetControlID() == strHolder->sneak) {
+		BSFixedString controlID = *a_event->GetControlID();
+		if (controlID == strHolder->sneak) {
 			CALL_MEMBER_FN(uiManager, AddMessage)(&GetName(), UIMessage::kMessage_Close, 0);
 			bool isSneaking = !player->IsSneaking();
 			if (CanOpen(_containerRef, isSneaking)) {
 				CALL_MEMBER_FN(uiManager, AddMessage)(&GetName(), UIMessage::kMessage_Open, 0);
 			}
 			return true;
+		} else if (controlID == strHolder->pause ||
+				   controlID == strHolder->journal) {
+			CALL_MEMBER_FN(uiManager, AddMessage)(&GetName(), UIMessage::kMessage_Close, 0);
 		}
 
 		switch (a_event->deviceType) {
@@ -378,9 +386,9 @@ namespace QuickLootRE
 				_platform = kPlatform_PC;
 				Register(kScaleform_SetPlatform);
 			}
-			if (*a_event->GetControlID() == strHolder->zoomIn) {
+			if (controlID == strHolder->zoomIn) {
 				ModSelectedIndex(-1);
-			} else if (*a_event->GetControlID() == strHolder->zoomOut) {
+			} else if (controlID == strHolder->zoomOut) {
 				ModSelectedIndex(1);
 			}
 			break;
