@@ -34,7 +34,7 @@ namespace QuickLootRE
 		bool									empty()											{ return _itemList.empty(); }
 		UInt32									size()											{ return _itemList.size(); }
 
-		void clear();
+		void									clear();
 		std::vector<ItemData>::iterator			erase(std::vector<ItemData>::iterator a_pos)	{ return _itemList.erase(a_pos); }
 
 	private:

@@ -76,6 +76,7 @@ namespace QuickLootRE
 			TESContainer* container = ref->GetContainer();
 			g_invList.clear();
 			defaultMap.clear();
+			ItemData::setContainer(ref);
 			getInventoryList(&ref->extraData, container);
 			g_invList.sort();
 			CALL_MEMBER_FN(uiManager, AddMessage)(&LootMenu::GetName(), UIMessage::kMessage_Close, 0);
@@ -93,6 +94,7 @@ namespace QuickLootRE
 				TESContainer* container = ref->GetContainer();
 				if (container) {
 					g_invList.clear();
+					ItemData::setContainer(ref);
 					getInventoryList(&ref->extraData, container);
 					LootMenu::Register(LootMenu::kScaleform_OpenContainer);
 				}

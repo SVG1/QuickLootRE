@@ -12,7 +12,9 @@
 
 #include "RE/BGSBipedObjectForm.h"  // RE::BGSBipedObjectForm
 #include "RE/InventoryEntryData.h"  // RE::InventoryEntryData
+#include "RE/PlayerCharacter.h"  // RE::PlayerCharacter
 #include "RE/TESObjectBOOK.h"  // RE::TESObjectBOOK
+#include "RE/TESObjectREFR.h"  // RE::TESObjectREFR
 
 
 namespace QuickLootRE
@@ -34,7 +36,7 @@ namespace QuickLootRE
 		_value = _entryData->GetValue();
 		_weight = getWeight();
 		_type = getType();
-		_isStolen = _entryData->IsOwnedBy(*g_thePlayer, _entryData->GetOwner(), true);
+		_isStolen = getStolen();
 		_isRead = getRead();
 		_isEnchanted = getEnchanted();
 		_priority = getPriority();
@@ -57,7 +59,7 @@ namespace QuickLootRE
 		_value = _entryData->GetValue();
 		_weight = getWeight();
 		_type = getType();
-		_isStolen = _entryData->IsOwnedBy(*g_thePlayer, _entryData->GetOwner(), true);
+		_isStolen = getStolen();
 		_isRead = getRead();
 		_isEnchanted = getEnchanted();
 		_priority = getPriority();
@@ -153,6 +155,12 @@ namespace QuickLootRE
 	void ItemData::reduceCount()
 	{
 		--_count;
+	}
+
+
+	void ItemData::setContainer(RE::TESObjectREFR* a_container)
+	{
+		_container = a_container;
 	}
 
 
@@ -431,6 +439,22 @@ namespace QuickLootRE
 	}
 
 
+	bool ItemData::getStolen()
+	{
+		static RE::PlayerCharacter* player = reinterpret_cast<RE::PlayerCharacter*>(*g_thePlayer);
+
+		TESForm* owner = _entryData->GetOwner();
+		if (!owner) {
+			owner = _container->GetOwner();
+		}
+		if (owner) {
+			return !_entryData->IsOwnedBy(player, owner, true);
+		} else {
+			return player->IsSneaking() && _container->baseForm->formType == kFormType_NPC && !_container->IsDead(1);
+		}
+	}
+
+
 	bool ItemData::getEnchanted()
 	{
 		if (_entryData->extendDataList) {
@@ -544,6 +568,8 @@ namespace QuickLootRE
 		return valueLHS - valueRHS;
 	}
 
+
+	RE::TESObjectREFR* ItemData::_container = 0;
 
 	const char* ItemData::_strIcons[] = {
 		"none",					// 00

@@ -58,6 +58,7 @@ namespace QuickLootRE
 
 	void InventoryList::clear()
 	{
+		ItemData::setContainer(0);
 		_itemList.clear();
 		for (auto& entryData : _heapList) {
 			entryData->Delete();
