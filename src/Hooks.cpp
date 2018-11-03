@@ -3,11 +3,14 @@
 #include "skse64/GameReferences.h"  // g_thePlayer
 #include "skse64_common/BranchTrampoline.h"  // g_branchTrampoline
 #include "skse64_common/SafeWrite.h"  // SafeWrite64
+#include "xbyak/xbyak.h"
 
 #include "LootMenu.h"  // LootMenu
 #include "Offsets.h"
 
+#include "RE/ActivateHandler.h"  // RE::ActivateHandler
 #include "RE/BSWin32GamepadDevice.h"  // RE::BSWin32GamepadDevice
+#include "RE/ButtonEvent.h"  // RE::ButtonEvent
 #include "RE/PlayerCharacter.h"  // RE::PlayerCharacter
 #include "RE/PlayerControls.h"  // PlayerControls, PlayerControls::Data024
 #include "RE/PlayerInputHandler.h"  // RE::PlayerInputHandler
@@ -19,8 +22,6 @@ class PlayerCharacter;
 
 namespace Hooks
 {
-	RelocPtr<uintptr_t> StartActivation_Call(PLAYER_CHARACTER_START_ACTIVATION_FN);
-
 	RelocAddr<_PlayAnimation> PlayAnimation(PLAY_ANIMATION);
 	RelocAddr<_PlaySound> PlaySound(PLAY_SOUND);
 
@@ -85,7 +86,7 @@ namespace Hooks
 
 		static void installHook()
 		{
-			RelocPtr<_CanProcess> vtbl_CanProcess(FAVORITES_HANDLER_VTBL_META + 0x8);
+			RelocPtr<_CanProcess> vtbl_CanProcess(FAVORITES_HANDLER_VTBL_META + 0x10);
 			orig_CanProcess = *vtbl_CanProcess;
 			SafeWrite64(vtbl_CanProcess.GetUIntPtr(), GetFnAddr(&hook_CanProcess));
 		}
@@ -129,26 +130,38 @@ namespace Hooks
 	ReadyWeaponHandlerEx::_ProcessButton ReadyWeaponHandlerEx::orig_ProcessButton;
 
 
-	class PlayerCharacterEx : public PlayerCharacter
+	class ActivateHandlerEx : public RE::ActivateHandler
 	{
 	public:
-		typedef void(PlayerCharacterEx::*_StartActivation)();
+		typedef bool(ActivateHandlerEx::*_CanProcess)(InputEvent* a_event);
+		static _CanProcess orig_CanProcess;
 
 
-		void hook_StartActivation()
+		bool hook_CanProcess(InputEvent* a_event)
 		{
-			static RE::PlayerCharacter* player = reinterpret_cast<RE::PlayerCharacter*>(*g_thePlayer);
+			static InputStringHolder* holder = InputStringHolder::GetSingleton();
 
-			QuickLootRE::LootMenu::IsOpen() ? QuickLootRE::LootMenu::GetSingleton()->TakeItem() : player->StartActivation();
+			if (QuickLootRE::LootMenu::IsOpen() && a_event && (*a_event->GetControlID() == holder->activate) && (a_event->eventType == InputEvent::kEventType_Button)) {
+				RE::ButtonEvent* button = static_cast<RE::ButtonEvent*>(a_event);
+				if (button->IsDown()) {
+					QuickLootRE::LootMenu::GetSingleton()->TakeItem();
+					return false;
+				}
+			}
+			return (this->*orig_CanProcess)(a_event);;
 		}
 
 
 		static void installHook()
 		{
-			RelocAddr<_StartActivation> call_StartActivation(PLAYER_CHARACTER_START_ACTIVATION_CALL);
-			g_branchTrampoline.Write5Call(call_StartActivation.GetUIntPtr(), GetFnAddr(&hook_StartActivation));
+			RelocPtr<_CanProcess> vtbl_CanProcess(ACTIVATE_HANDLER_VTBL_META + 0x10);
+			orig_CanProcess = *vtbl_CanProcess;
+			SafeWrite64(vtbl_CanProcess.GetUIntPtr(), GetFnAddr(&hook_CanProcess));
 		}
 	};
+
+
+	ActivateHandlerEx::_CanProcess ActivateHandlerEx::orig_CanProcess;
 
 
 	void installHooks()
@@ -157,6 +170,6 @@ namespace Hooks
 		ThirdPersonStateHandler::installHook();
 		FavoritesHandler::installHook();
 		ReadyWeaponHandlerEx::installHook();
-		PlayerCharacterEx::installHook();
+		ActivateHandlerEx::installHook();
 	}
 }

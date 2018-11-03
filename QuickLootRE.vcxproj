@@ -104,6 +104,10 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ForcedIncludeFiles>common/IPrefix.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <WholeProgramOptimization>false</WholeProgramOptimization>
+      <OmitFramePointers>false</OmitFramePointers>
+      <MultiProcessorCompilation>
+      </MultiProcessorCompilation>
+      <CompileAs>CompileAsCpp</CompileAs>
     </ClCompile>
     <Link>
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
@@ -122,7 +126,7 @@
     <PostBuildEvent>
       <Message>
       </Message>
-      <Command>copy "$(TargetPath)" "D:\Mods\ModOrganizer2_SkyrimSE\mods\QuickLootRE\SKSE\Plugins\$(TargetFileName)" /Y</Command>
+      <Command>copy "$(TargetPath)" "D:\Games\SteamLibrary\steamapps\common\Skyrim Special Edition\Data\SKSE\Plugins\$(TargetFileName)" /Y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -161,6 +165,7 @@
     <ClInclude Include="include\Events.h" />
     <ClInclude Include="include\Exceptions.h" />
     <ClInclude Include="include\ExtendDataListVisitor.h" />
+    <ClInclude Include="include\RE\ActivateHandler.h" />
     <ClInclude Include="include\RE\GFxFileConstants.h" />
     <ClInclude Include="include\RE\GFxLoader.h" />
     <ClInclude Include="include\RE\GFxMovieDef.h" />
@@ -195,6 +200,7 @@
     <ClInclude Include="include\RE\GFxResource.h" />
     <ClInclude Include="include\RE\GFxState.h" />
     <ClInclude Include="include\RE\GFxStateBag.h" />
+    <ClInclude Include="include\RE\HeldStateHandler.h" />
     <ClInclude Include="include\RE\IAnimationGraphManagerHolder.h" />
     <ClInclude Include="include\RE\IMenu.h" />
     <ClInclude Include="include\RE\InputEventDispatcher.h" />

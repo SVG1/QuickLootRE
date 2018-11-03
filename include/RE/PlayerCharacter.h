@@ -331,7 +331,7 @@ namespace RE
 		MEMBER_FN_PREFIX(PlayerCharacter);
 		DEFINE_MEMBER_FN(GetActorInFavorState, Actor*, PLAYER_CHARACTER_GET_ACTOR_IN_FAVOR_STATE);
 		DEFINE_MEMBER_FN(PlayPickupEvent, void, PLAYER_CHARACTER_PLAY_PICKUP_EVENT, TESForm* item, TESForm* containerOwner, TESObjectREFR* containerRef, EventType eventType);
-		DEFINE_MEMBER_FN(StartActivation, void, PLAYER_CHARACTER_START_ACTIVATION_FN);
+		DEFINE_MEMBER_FN(StartActivation, void, PLAYER_CHARACTER_START_ACTIVATION);
 	};
 
 	STATIC_ASSERT(offsetof(PlayerCharacter, playerGrabbedHandle) == 0x8C8);

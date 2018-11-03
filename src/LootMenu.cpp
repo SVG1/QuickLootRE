@@ -207,7 +207,7 @@ namespace QuickLootRE
 	UInt32 LootMenu::ProcessMessage(UIMessage* a_message)
 	{
 		if (!Settings::isApplied) {
-			Setup();
+			Register(kScaleform_Setup);
 		}
 
 		switch (a_message->message) {
@@ -224,9 +224,7 @@ namespace QuickLootRE
 
 	void LootMenu::Render()
 	{
-		if (_badRender) {
-			_badRender = false;
-		} else if (IsOpen()) {
+		if (IsOpen()) {
 			view->Render();
 		}
 	}
@@ -267,7 +265,7 @@ namespace QuickLootRE
 		case kDeviceType_Gamepad:
 			if (_platform != kPlatform_Other) {
 				_platform = kPlatform_Other;
-				SetPlatform();
+				Register(kScaleform_SetPlatform);
 			}
 			switch (a_event->keyMask) {
 			case Gamepad::kGamepad_Up:
@@ -281,7 +279,7 @@ namespace QuickLootRE
 		case kDeviceType_Mouse:
 			if (_platform != kPlatform_PC) {
 				_platform = kPlatform_PC;
-				SetPlatform();
+				Register(kScaleform_SetPlatform);
 			}
 			switch (a_event->keyMask) {
 			case Mouse::kMouse_WheelUp:
@@ -296,7 +294,7 @@ namespace QuickLootRE
 		{
 			if (_platform != kPlatform_PC) {
 				_platform = kPlatform_PC;
-				SetPlatform();
+				Register(kScaleform_SetPlatform);
 			}
 			static InputStringHolder* holder = InputStringHolder::GetSingleton();
 			if (*a_event->GetControlID() == holder->zoomIn) {
@@ -313,25 +311,17 @@ namespace QuickLootRE
 
 	void LootMenu::OnMenuOpen()
 	{
-		SimpleLocker lock(&_lock);
-
 		_selectedIndex = 0;
 		_isOpen = true;
-		static RE::MenuControls* mc = RE::MenuControls::GetSingleton();
-		mc->RegisterHandler(this);
-		DelayedUpdater::Register();
+		Register(kScaleform_OpenContainer);
 	}
 
 
 	void LootMenu::OnMenuClose()
 	{
 		if (IsOpen()) {
-			SimpleLocker lock(&_lock);
-
 			_isOpen = false;
-			static RE::MenuControls* mc = RE::MenuControls::GetSingleton();
-			mc->RemoveHandler(this);
-			CloseContainer();
+			Register(kScaleform_CloseContainer);
 		}
 	}
 
@@ -340,8 +330,6 @@ namespace QuickLootRE
 	{
 		typedef RE::PlayerCharacter::EventType	EventType;
 		typedef RE::TESObjectREFR::RemoveType	RemoveType;
-
-		SimpleLocker lock(&_lock);
 
 		if (!IsOpen() || !_containerRef || g_invList.empty()) {
 			return;
@@ -421,167 +409,19 @@ namespace QuickLootRE
 			_containerRef->RemoveItem(&droppedHandle, item.form(), numItems, lootMode, xList, player, 0, 0);
 		}
 
-		DelayedUpdater::Register();
+		Register(kScaleform_OpenContainer);
 	}
 
 	void LootMenu::ModSelectedIndex(SInt32 a_indexOffset)
 	{
 		if (IsOpen()) {
-			SimpleLocker lock(&_lock);
-
 			_selectedIndex += a_indexOffset;
 			if (_selectedIndex < 0) {
 				_selectedIndex = 0;
 			} else if (_selectedIndex > g_invList.size() - 1) {
 				_selectedIndex = g_invList.size() - 1;
 			}
-			SetSelectedIndex();
-		}
-	}
-
-
-	void LootMenu::SetPlatform()
-	{
-		if (IsOpen()) {
-			SimpleLocker lock(&_lock);
-
-			LootMenuUIDelegate* dlgt = (LootMenuUIDelegate*)Heap_Allocate(sizeof(LootMenuUIDelegate));
-			new (dlgt)LootMenuUIDelegate(".SetPlatform", 2);
-
-			dlgt->args[0].SetNumber(_platform);
-			dlgt->args[0].SetBool(false);
-
-			g_task->AddUITask(dlgt);
-		}
-	}
-
-
-	void LootMenu::Setup()
-	{
-		if (IsOpen()) {
-			SimpleLocker lock(&_lock);
-
-			LootMenuUIDelegate* dlgt = (LootMenuUIDelegate*)Heap_Allocate(sizeof(LootMenuUIDelegate));
-			new (dlgt)LootMenuUIDelegate(".Setup", 4);
-
-			RE::GFxMovieDef* def = view->GetMovieDef();
-
-			double x = Settings::positionX;
-			double y = Settings::positionY;
-			double scale = Settings::scale;
-			double opacity = Settings::opacity;
-
-			x = (0 <= x && x <= 100) ? (x * def->GetWidth() * 0.01) : -1;
-			y = (0 <= y && y <= 100) ? (y * def->GetHeight() * 0.01) : -1;
-			if (scale >= 0) {
-				if (scale < 25)
-					scale = 25;
-				else if (scale > 400)
-					scale = 400;
-			}
-			if (opacity >= 0) {
-				if (opacity > 100)
-					opacity = 100;
-			}
-
-			dlgt->args[0].SetNumber(x);
-			dlgt->args[1].SetNumber(y);
-			dlgt->args[2].SetNumber(scale);
-			dlgt->args[3].SetNumber(opacity);
-
-			Settings::isApplied = true;
-
-			g_task->AddUITask(dlgt);
-		}
-	}
-
-
-	void LootMenu::OpenContainer()
-	{
-		if (IsOpen()) {
-			SimpleLocker lock(&_lock);
-
-			LootMenuUIDelegate* dlgt = 0;
-
-			try {
-				dlgt = (LootMenuUIDelegate*)Heap_Allocate(sizeof(LootMenuUIDelegate));
-				new (dlgt)LootMenuUIDelegate(".openContainer", 6);
-
-				view->CreateArray(&dlgt->args[0]);
-				if (!dlgt->args[0].objectInterface) {
-					throw bad_gfx_value_interface();
-				}
-
-				for (SInt32 i = 0; i < g_invList.size() && i < Settings::itemLimit; ++i) {
-					GFxValue item;
-					dlgt->AddRef();
-					view->CreateObject(&item);
-
-					GFxValue text;
-					dlgt->AddRef();
-					text.SetString(g_invList[i].name());
-					GFxValue count;
-					dlgt->AddRef();
-					count.SetNumber(g_invList[i].count());
-					GFxValue value;
-					dlgt->AddRef();
-					value.SetNumber(g_invList[i].value());
-					GFxValue weight;
-					dlgt->AddRef();
-					weight.SetNumber(g_invList[i].weight());
-					GFxValue isStolen;
-					dlgt->AddRef();
-					isStolen.SetBool(g_invList[i].isStolen());
-					GFxValue iconLabel;
-					dlgt->AddRef();
-					iconLabel.SetString(g_invList[i].icon());
-
-					item.SetMember("text", &text);
-					item.SetMember("count", &count);
-					item.SetMember("value", &value);
-					item.SetMember("weight", &weight);
-					item.SetMember("isStolen", &isStolen);
-					item.SetMember("iconLabel", &iconLabel);
-
-					dlgt->args[0].PushBack(&item);
-				}
-
-				dlgt->args[1].SetNumber(_containerRef->formID);
-				dlgt->args[2].SetString(_containerRef->GetReferenceName());
-				dlgt->args[3].SetString("Take");
-				dlgt->args[4].SetString("Search");
-				dlgt->args[5].SetNumber(_selectedIndex);
-
-				g_task->AddUITask(dlgt);
-			} catch (std::exception& e) {
-				_ERROR(e.what());
-				dlgt->Dispose();
-			}
-		}
-	}
-
-
-	void LootMenu::CloseContainer()
-	{
-		SimpleLocker lock(&_lock);
-
-		LootMenuUIDelegate* dlgt = (LootMenuUIDelegate*)Heap_Allocate(sizeof(LootMenuUIDelegate));
-		new (dlgt)LootMenuUIDelegate(".closeContainer", 0);
-		g_task->AddUITask(dlgt);
-	}
-
-
-	void LootMenu::SetSelectedIndex()
-	{
-		if (IsOpen()) {
-			SimpleLocker lock(&_lock);
-
-			LootMenuUIDelegate* dlgt = (LootMenuUIDelegate*)Heap_Allocate(sizeof(LootMenuUIDelegate));
-			new (dlgt)LootMenuUIDelegate(".setSelectedIndex", 1);
-
-			dlgt->args[0].SetNumber(_selectedIndex);
-
-			g_task->AddUITask(dlgt);
+			Register(kScaleform_SetSelectedIndex);
 		}
 	}
 
@@ -626,8 +466,6 @@ namespace QuickLootRE
 	void LootMenu::PlayAnimation(const char* fromName, const char* toName)
 	{
 		typedef RE::NiControllerManager NiControllerManager;
-
-		SimpleLocker lock(&_lock);
 
 		RE::NiNode* niNode = _containerRef->GetNiNode();
 		if (!niNode) {
@@ -684,85 +522,256 @@ namespace QuickLootRE
 	}
 
 
-	LootMenuUIDelegate::LootMenuUIDelegate(std::string a_target, UInt32 a_numArgs) :
-		_target(a_target),
-		args(a_numArgs + 10),
-		_refCount(0)
+	void LootMenu::Register(Scaleform a_reg)
 	{
-		for (int i = 0; i < a_numArgs; ++i) {
-			args.emplace_back();
-			AddRef();
+		switch (a_reg) {
+		case kScaleform_SetPlatform:
+		{
+			SetPlatforUIDelegate* dlgt = (SetPlatforUIDelegate*)Heap_Allocate(sizeof(SetPlatforUIDelegate));
+			new (dlgt)SetPlatforUIDelegate;
+			g_task->AddUITask(dlgt);
+			break;
 		}
-		//args.shrink_to_fit();
+		case kScaleform_Setup:
+		{
+			SetupUIDelegate* dlgt = (SetupUIDelegate*)Heap_Allocate(sizeof(SetupUIDelegate));
+			new (dlgt)SetupUIDelegate;
+			g_task->AddUITask(dlgt);
+			break;
+		}
+		case kScaleform_OpenContainer:
+		{
+			OpenContainerUIDelegate* dlgt = (OpenContainerUIDelegate*)Heap_Allocate(sizeof(OpenContainerUIDelegate));
+			new (dlgt)OpenContainerUIDelegate;
+			g_task->AddUITask(dlgt);
+			break;
+		}
+		case kScaleform_CloseContainer:
+		{
+			CloseContainerUIDelegate* dlgt = (CloseContainerUIDelegate*)Heap_Allocate(sizeof(CloseContainerUIDelegate));
+			new (dlgt)CloseContainerUIDelegate;
+			g_task->AddUITask(dlgt);
+			break;
+		}
+		case kScaleform_SetSelectedIndex:
+		{
+			SetSelectedIndexUIDelegate* dlgt = (SetSelectedIndexUIDelegate*)Heap_Allocate(sizeof(SetSelectedIndexUIDelegate));
+			new (dlgt)SetSelectedIndexUIDelegate;
+			g_task->AddUITask(dlgt);
+			break;
+		}
+		default:
+			_ERROR("[ERROR] Invalid registration (%i)", a_reg);
+		}
 	}
 
 
-	void LootMenuUIDelegate::Run()
+	LootMenu*			LootMenu::_singleton = 0;
+	SInt32				LootMenu::_selectedIndex = 0;
+	RE::TESObjectREFR*	LootMenu::_containerRef = 0;
+	bool				LootMenu::_isOpen = false;
+	LootMenu::Platform	LootMenu::_platform = kPlatform_PC;
+
+
+	void SetPlatforUIDelegate::Run()
 	{
 		if (LootMenu::IsOpen()) {
-			RE::GFxMovieView* view = LootMenu::_singleton->view;
+			GFxValue args[2];
 
-			std::string name = "_root.Menu_mc" + _target;
+			args[0].SetNumber(LootMenu::_platform);
+			args[0].SetBool(false);
 
-			GFxValue* value = 0;
-			if (args.size() > 0) {
-				value = &args[0];
-			}
-
-			view->Invoke(name.c_str(), 0, value, args.size());
+			LootMenu::_singleton->view->Invoke("_root.Menu_mc.SetPlatform", 0, args, 2);
 		}
 	}
 
 
-	void LootMenuUIDelegate::Dispose()
+	void SetPlatforUIDelegate::Dispose()
 	{
 		if (this) {
-			while (_refCount--) {
-				LootMenu::_singleton->Release();
-			}
 			Heap_Free(this);
 		}
 	}
 
 
-	void LootMenuUIDelegate::AddRef()
+	void SetupUIDelegate::Run()
 	{
-		LootMenu::_singleton->AddRef();
-		++_refCount;
+		if (LootMenu::IsOpen()) {
+			RE::MenuControls* mc = RE::MenuControls::GetSingleton();
+			mc->RegisterHandler(LootMenu::_singleton);
+
+			GFxValue args[4];
+
+			RE::GFxMovieDef* def = LootMenu::_singleton->view->GetMovieDef();
+
+			double x = Settings::positionX;
+			double y = Settings::positionY;
+			double scale = Settings::scale;
+			double opacity = Settings::opacity;
+
+			x = (0 <= x && x <= 100) ? (x * def->GetWidth() * 0.01) : -1;
+			y = (0 <= y && y <= 100) ? (y * def->GetHeight() * 0.01) : -1;
+			if (scale >= 0) {
+				if (scale < 25)
+					scale = 25;
+				else if (scale > 400)
+					scale = 400;
+			}
+			if (opacity >= 0) {
+				if (opacity > 100)
+					opacity = 100;
+			}
+
+			args[0].SetNumber(x);
+			args[1].SetNumber(y);
+			args[2].SetNumber(scale);
+			args[3].SetNumber(opacity);
+
+			Settings::isApplied = true;
+
+			LootMenu::_singleton->view->Invoke("_root.Menu_mc.Setup", 0, args, 4);
+		}
 	}
 
 
-	void DelayedUpdater::Run()
+	void SetupUIDelegate::Dispose()
+	{
+		if (this) {
+			Heap_Free(this);
+		}
+	}
+
+
+	void OpenContainerUIDelegate::Run()
 	{
 		if (LootMenu::IsOpen()) {
-			if (Settings::disableIfEmpty && g_invList.empty()) {
-				CALL_MEMBER_FN(UIManager::GetSingleton(), AddMessage)(&LootMenu::GetName(), UIMessage::kMessage_Close, 0);
-				LootMenu::ClearContainerRef();
-			} else {
-				LootMenu::_singleton->OpenContainer();
+			try {
+				GFxValue args[6];
+
+				LootMenu::_singleton->view->CreateArray(&args[0]);
+				if (!args[0].objectInterface) {
+					throw bad_gfx_value_interface();
+				}
+
+				SInt32 size = (g_invList.size() < Settings::itemLimit) ? g_invList.size() : Settings::itemLimit;
+
+				GFxValue* item = (GFxValue*)ScaleformHeap_Allocate(sizeof(GFxValue) * size);
+				new (item)GFxValue[size];
+				GFxValue* text = (GFxValue*)ScaleformHeap_Allocate(sizeof(GFxValue) * size);
+				new (text)GFxValue[size];
+				GFxValue* count = (GFxValue*)ScaleformHeap_Allocate(sizeof(GFxValue) * size);
+				new (count)GFxValue[size];
+				GFxValue* value = (GFxValue*)ScaleformHeap_Allocate(sizeof(GFxValue) * size);
+				new (value)GFxValue[size];
+				GFxValue* weight = (GFxValue*)ScaleformHeap_Allocate(sizeof(GFxValue) * size);
+				new (weight)GFxValue[size];
+				GFxValue* isStolen = (GFxValue*)ScaleformHeap_Allocate(sizeof(GFxValue) * size);
+				new (isStolen)GFxValue[size];
+				GFxValue* iconLabel = (GFxValue*)ScaleformHeap_Allocate(sizeof(GFxValue) * size);
+				new (iconLabel)GFxValue[size];
+
+				for (SInt32 i = 0; i < size; ++i) {
+					LootMenu::_singleton->view->CreateObject(&item[i]);
+
+					text[i].SetString(g_invList[i].name());
+					count[i].SetNumber(g_invList[i].count());
+					value[i].SetNumber(g_invList[i].value());
+					weight[i].SetNumber(g_invList[i].weight());
+					isStolen[i].SetBool(g_invList[i].isStolen());
+					iconLabel[i].SetString(g_invList[i].icon());
+
+					item[i].SetMember("text", &text[i]);
+					item[i].SetMember("count", &count[i]);
+					item[i].SetMember("value", &value[i]);
+					item[i].SetMember("weight", &weight[i]);
+					item[i].SetMember("isStolen", &isStolen[i]);
+					item[i].SetMember("iconLabel", &iconLabel[i]);
+
+					args[0].PushBack(&item[i]);
+				}
+
+				args[1].SetNumber(LootMenu::_containerRef->formID);
+				args[2].SetString(LootMenu::_containerRef->GetReferenceName());
+				args[3].SetString("Take");
+				args[4].SetString("Search");
+				args[5].SetNumber(LootMenu::_selectedIndex);
+
+				LootMenu::_singleton->view->Invoke("_root.Menu_mc.openContainer", 0, args, 6);
+
+				GFxValueDeallocTaskDelegate* dlgt = (GFxValueDeallocTaskDelegate*)Heap_Allocate(sizeof(GFxValueDeallocTaskDelegate));
+				new (dlgt)GFxValueDeallocTaskDelegate;
+				dlgt->heapAllocVals.push_back(item);
+				dlgt->heapAllocVals.push_back(text);
+				dlgt->heapAllocVals.push_back(count);
+				dlgt->heapAllocVals.push_back(value);
+				dlgt->heapAllocVals.push_back(weight);
+				dlgt->heapAllocVals.push_back(isStolen);
+				dlgt->heapAllocVals.push_back(iconLabel);
+				g_task->AddTask(dlgt);
+			} catch (std::exception& e) {
+				_ERROR(e.what());
 			}
 		}
 	}
 
 
-	void DelayedUpdater::Dispose()
-	{}
-
-
-	void DelayedUpdater::Register()
+	void OpenContainerUIDelegate::Dispose()
 	{
-		static DelayedUpdater singleton;
-		g_task->AddTask(&singleton);
+		if (this) {
+			Heap_Free(this);
+		}
 	}
 
 
-	LootMenu*			LootMenu::_singleton = 0;
-	SimpleLock			LootMenu::_lock;
-	SInt32				LootMenu::_selectedIndex = 0;
-	RE::TESObjectREFR*	LootMenu::_containerRef = 0;
-	bool				LootMenu::_isOpen = false;
-	LootMenu::Platform	LootMenu::_platform = kPlatform_PC;
-	bool				LootMenu::_badRender = false;
+	void CloseContainerUIDelegate::Run()
+	{
+		LootMenu::_singleton->view->Invoke("_root.Menu_mc.closeContainer", 0, 0, 0);
+	}
+
+
+	void CloseContainerUIDelegate::Dispose()
+	{
+		if (this) {
+			Heap_Free(this);
+		}
+	}
+
+
+	void SetSelectedIndexUIDelegate::Run()
+	{
+		if (LootMenu::IsOpen()) {
+			GFxValue args[1];
+
+			args[0].SetNumber(LootMenu::_selectedIndex);
+
+			LootMenu::_singleton->view->Invoke("_root.Menu_mc.setSelectedIndex", 0, args, 1);
+		}
+	}
+
+
+	void SetSelectedIndexUIDelegate::Dispose()
+	{
+		if (this) {
+			Heap_Free(this);
+		}
+	}
+
+
+	void GFxValueDeallocTaskDelegate::Run()
+	{
+		for (auto& val : heapAllocVals) {
+			ScaleformHeap_Free(val);
+		}
+	}
+
+
+	void GFxValueDeallocTaskDelegate::Dispose()
+	{
+		if (this) {
+			Heap_Free(this);
+		}
+	}
+
 
 	SKSETaskInterface* g_task = 0;
 }

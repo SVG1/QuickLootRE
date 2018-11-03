@@ -336,6 +336,12 @@
     <ClInclude Include="include\RE\GFxLoader.h">
       <Filter>include\RE\Skyrim\Scaleform</Filter>
     </ClInclude>
+    <ClInclude Include="include\RE\ActivateHandler.h">
+      <Filter>include\RE\Skyrim\BSDevices</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RE\HeldStateHandler.h">
+      <Filter>include\RE\Skyrim\BSDevices</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="version.rc" />

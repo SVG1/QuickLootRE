@@ -11,10 +11,11 @@
 #include "skse64/gamethreads.h"  // TaskDelegate
 #include "skse64/GameTypes.h"  // BSFixedString, SimpleLock
 #include "skse64/Hooks_UI.h"  // UIDelegate_v1
+#include "skse64/PapyrusUI.h"  // UIDelegate
 #include "skse64/PluginAPI.h"  // SKSETaskInterface
 #include "skse64/ScaleformValue.h"  // GFxValue
 
-#include <vector>  // vector
+#include <vector>
 #include <string>  // string
 
 #include "RE/IMenu.h"  // RE::IMenu
@@ -45,9 +46,12 @@ namespace QuickLootRE
 		public RE::IMenu,
 		public RE::MenuEventHandler
 	{
-		friend class DelayedUpdater;
 		friend class LootMenuCreator;
-		friend class LootMenuUIDelegate;
+		friend class SetPlatforUIDelegate;
+		friend class SetupUIDelegate;
+		friend class OpenContainerUIDelegate;
+		friend class CloseContainerUIDelegate;
+		friend class SetSelectedIndexUIDelegate;
 	private:
 		enum Platform : UInt32
 		{
@@ -55,8 +59,17 @@ namespace QuickLootRE
 			kPlatform_Other = 2
 		};
 
-
 	public:
+		enum Scaleform : UInt32
+		{
+			kScaleform_SetPlatform,
+			kScaleform_Setup,
+			kScaleform_OpenContainer,
+			kScaleform_CloseContainer,
+			kScaleform_SetSelectedIndex
+		};
+
+
 		LootMenu(const char* a_swfPath);
 
 		static LootMenu*			GetSingleton();
@@ -67,6 +80,7 @@ namespace QuickLootRE
 		static void					ClearContainerRef();
 		static bool					CanOpen(RE::TESObjectREFR* a_ref);
 		static bool					IsOpen();
+		static void					Register(Scaleform a_reg);
 
 		// IMenu
 		virtual UInt32				ProcessMessage(UIMessage* a_message) override;
@@ -81,13 +95,6 @@ namespace QuickLootRE
 		void						TakeItem();
 		void						ModSelectedIndex(SInt32 a_indexOffset);
 
-		// Scaleform
-		void						SetPlatform();
-		void						Setup();
-		void						OpenContainer();
-		void						CloseContainer();
-		void						SetSelectedIndex();
-
 	private:
 		bool						SingleLootEnabled();
 		void						PlayAnimation(const char* fromName, const char* toName);
@@ -97,40 +104,61 @@ namespace QuickLootRE
 
 
 		static LootMenu*			_singleton;
-		static SimpleLock			_lock;
 		static SInt32				_selectedIndex;
 		static RE::TESObjectREFR*	_containerRef;
 		static bool					_isOpen;
 		static Platform				_platform;
-		static bool					_badRender;
 	};
 
 
-	class LootMenuUIDelegate : public UIDelegate_v1
+	class SetPlatforUIDelegate : public UIDelegate_v1
 	{
 	public:
-		LootMenuUIDelegate(std::string a_target, UInt32 a_numArgs);
-
-		virtual void			Run() override;
-		virtual void			Dispose() override;
-		void					AddRef();
-
-
-		std::vector<GFxValue>	args;
-
-	private:
-		std::string				_target;
-		SInt32					_refCount;
+		virtual void Run() override;
+		virtual void Dispose() override;
 	};
 
 
-	class DelayedUpdater : public TaskDelegate
+	class SetupUIDelegate : public UIDelegate_v1
+	{
+	public:
+		virtual void Run() override;
+		virtual void Dispose() override;
+	};
+
+
+	class OpenContainerUIDelegate : public UIDelegate_v1
+	{
+	public:
+		virtual void Run() override;
+		virtual void Dispose() override;
+	};
+
+
+	class CloseContainerUIDelegate : public UIDelegate_v1
+	{
+	public:
+		virtual void Run() override;
+		virtual void Dispose() override;
+	};
+
+
+	class SetSelectedIndexUIDelegate : public UIDelegate_v1
+	{
+	public:
+		virtual void Run() override;
+		virtual void Dispose() override;
+	};
+
+
+	class GFxValueDeallocTaskDelegate : public TaskDelegate
 	{
 	public:
 		virtual void Run() override;
 		virtual void Dispose() override;
 
-		static void	Register();
+
+		std::vector<GFxValue*> heapAllocVals;
 	};
 
 

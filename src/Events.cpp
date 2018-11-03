@@ -87,7 +87,7 @@ namespace QuickLootRE
 				if (container) {
 					g_invList.clear();
 					getInventoryList(&ref->extraData, container);
-					DelayedUpdater::Register();
+					LootMenu::Register(LootMenu::kScaleform_OpenContainer);
 				}
 			}
 		}
